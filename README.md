@@ -92,29 +92,6 @@ Parampara/
 - **Mapping**: Leaflet.js (OpenStreetMap)
 - **Styling**: Custom CSS with modern design principles
 
-## 📡 API Endpoints
-
-### Cultural Items
-- `GET /api/items` - Get all cultural items
-- `POST /api/items` - Add a new cultural item
-
-### Heritage Paths
-- `GET /api/paths` - Get all heritage paths
-- `POST /api/paths` - Create a new heritage path
-
-### User Progress
-- `GET /api/progress/:userId` - Get user progress
-- `POST /api/progress/:userId` - Update user progress
-
-### Village Posts
-- `GET /api/posts` - Get all village posts
-- `POST /api/posts` - Create a new village post
-
-### AI Chat
-- `POST /api/chat` - Send a question to the AI curator
-
-### GPS Check-in
-- `POST /api/checkin` - Check in at a village location
 
 ## 🎨 Features in Detail
 
@@ -136,17 +113,6 @@ Plan responsible visits to villages. Get contact information for local hosts, le
 ### 6. AI Chat
 Ask questions about rural traditions, crafts, festivals, and stories. The AI curator draws from the archive to provide answers.
 
-## 🔮 Future Enhancements
-
-- Database integration (MongoDB/PostgreSQL)
-- User authentication and profiles
-- Real audio file uploads and playback
-- Advanced AI integration (OpenAI/Claude)
-- Mobile app version
-- Multi-language support
-- Advanced analytics and insights
-- Community forums
-- Payment integration for craft purchases
 
 ## 🤝 Contributing
 
@@ -156,6 +122,11 @@ This is a community-driven project. Contributions are welcome! Areas for contrib
 - Adding new features
 - Writing documentation
 - Testing and bug fixes
+
+## ⭐ Star the Repo!
+
+If this project inspired you or helped in any way — do leave a ⭐<br>
+It keeps us going and growing!
 
 ## 📝 License
 
