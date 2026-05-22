@@ -149,6 +149,7 @@ git push origin feature/your-feature-name
 ### Step 7: Create a Pull Request
 Go to GitHub and click "Create Pull Request". Done! 🚀
 
+For further information read CONTRIBUTING.md carefully
 ---
 
 ## ⭐ Star the Repo!
