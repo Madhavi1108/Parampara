@@ -5,7 +5,7 @@ const router = express.Router();
 const {
   getItems,
   createItem
-} = require("../controllers/itemController");
+} = require("../controllers/item.controller");
 
 router.get("/", getItems);
 

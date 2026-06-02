@@ -5,121 +5,358 @@ let markers = [];
 let heatmapLayer = null;
 let ambientSoundEnabled = true;
 let currentSound = null;
+let currentTileLayer;
 
-// Sample village data
+
+let currentLanguage =
+    localStorage.getItem("language") || "en";
+
+
+
 const sampleVillages = [
-    {
-        name: 'Sundarbans Village',
-        coordinates: [21.9497, 88.8156],
-        traditions: ['Folk tales about tigers', 'Traditional fishing methods', 'Honey collection rituals'],
-        festivals: ['Bonbibi Puja', 'Honey Festival'],
-        crafts: ['Coconut shell crafts', 'Traditional boat making'],
-        description: 'A village in the Sundarbans known for its unique relationship with nature and tigers.',
-        ambientSound: 'birds'
+{
+    name: {
+        en: "Sundarbans Village",
+        hi: "सुंदरबन गांव",
+        mr: "सुंदरबन गाव"
     },
-    {
-        name: 'Kantha Village, Bengal',
-        coordinates: [22.5726, 88.3639],
-        traditions: ['Kantha embroidery', 'Oral storytelling', 'Traditional songs'],
-        festivals: ['Durga Puja', 'Kali Puja'],
-        crafts: ['Kantha stitch work', 'Traditional sarees'],
-        description: 'Famous for Kantha embroidery, where old saris are layered and stitched with beautiful patterns.',
-        ambientSound: 'flute'
+    coordinates: [21.9497, 88.8156],
+    traditions: {
+        en: ["Folk tales about tigers", "Traditional fishing methods", "Honey collection rituals"],
+        hi: ["बाघों की लोककथाएँ", "पारंपरिक मछली पकड़ने की विधियाँ", "शहद संग्रह अनुष्ठान"],
+        mr: ["वाघांच्या लोककथा", "पारंपरिक मासेमारी पद्धती", "मध संकलन विधी"]
     },
-    {
-        name: 'Madhubani Village, Bihar',
-        coordinates: [26.3537, 86.0719],
-        traditions: ['Madhubani painting', 'Mithila art', 'Folk songs'],
-        festivals: ['Chhath Puja', 'Teej'],
-        crafts: ['Madhubani paintings', 'Traditional pottery'],
-        description: 'Home to the world-famous Madhubani paintings, a traditional art form passed down through generations.',
-        ambientSound: 'flute'
+    festivals: {
+        en: ["Bonbibi Puja", "Honey Festival"],
+        hi: ["बोनबिबी पूजा", "हनी फेस्टिवल"],
+        mr: ["बोनबिबी पूजा", "हनी फेस्टिवल"]
     },
-    {
-        name: 'Dokra Village, Chhattisgarh',
-        coordinates: [21.2787, 81.8661],
-        traditions: ['Dokra metal craft', 'Tribal dances', 'Harvest songs'],
-        festivals: ['Bastar Dussehra', 'Harvest Festival'],
-        crafts: ['Dokra metalwork', 'Bamboo crafts'],
-        description: 'Known for Dokra, a traditional non-ferrous metal casting technique using the lost-wax casting method.',
-        ambientSound: 'birds'
-    }
+    crafts: {
+        en: ["Coconut shell crafts", "Traditional boat making"],
+        hi: ["नारियल शिल्प", "पारंपरिक नाव निर्माण"],
+        mr: ["नारळ हस्तकला", "पारंपरिक होडी निर्मिती"]
+    },
+    description: {
+        en: "A village in the Sundarbans known for its unique relationship with nature and tigers.",
+        hi: "सुंदरबन का एक गांव जो प्रकृति और बाघों के साथ अपने अनोखे संबंध के लिए प्रसिद्ध है।",
+        mr: "निसर्ग आणि वाघांशी असलेल्या अनोख्या नात्यासाठी प्रसिद्ध गाव."
+    },
+    ambientSound: "birds"
+},
+
+{
+    name: {
+        en: "Kantha Village, Bengal",
+        hi: "कांथा गांव, बंगाल",
+        mr: "कांथा गाव, बंगाल"
+    },
+    coordinates: [22.5726, 88.3639],
+    traditions: {
+        en: ["Kantha embroidery", "Oral storytelling", "Traditional songs"],
+        hi: ["कांथा कढ़ाई", "मौखिक कथाएँ", "पारंपरिक गीत"],
+        mr: ["कांथा भरतकाम", "लोककथा", "पारंपरिक गीते"]
+    },
+    festivals: {
+        en: ["Durga Puja", "Kali Puja"],
+        hi: ["दुर्गा पूजा", "काली पूजा"],
+        mr: ["दुर्गा पूजा", "काली पूजा"]
+    },
+    crafts: {
+        en: ["Kantha stitch work", "Traditional sarees"],
+        hi: ["कांथा सिलाई", "पारंपरिक साड़ियाँ"],
+        mr: ["कांथा शिवणकाम", "पारंपरिक साड्या"]
+    },
+    description: {
+        en: "Famous for Kantha embroidery, where old saris are layered and stitched.",
+        hi: "कांथा कढ़ाई के लिए प्रसिद्ध, जिसमें पुरानी साड़ियों को जोड़कर सुंदर डिज़ाइन बनाए जाते हैं।",
+        mr: "कांथा भरतकामासाठी प्रसिद्ध."
+    },
+    ambientSound: "flute"
+},
+
+{
+    name: {
+        en: "Madhubani Village, Bihar",
+        hi: "मधुबनी गांव, बिहार",
+        mr: "मधुबनी गाव, बिहार"
+    },
+    coordinates: [26.3537, 86.0719],
+    traditions: {
+        en: ["Madhubani painting", "Mithila art", "Folk songs"],
+        hi: ["मधुबनी चित्रकला", "मिथिला कला", "लोकगीत"],
+        mr: ["मधुबनी चित्रकला", "मिथिला कला", "लोकगीते"]
+    },
+    festivals: {
+        en: ["Chhath Puja", "Teej"],
+        hi: ["छठ पूजा", "तीज"],
+        mr: ["छठ पूजा", "तीज"]
+    },
+    crafts: {
+        en: ["Madhubani paintings", "Traditional pottery"],
+        hi: ["मधुबनी पेंटिंग", "मिट्टी के बर्तन"],
+        mr: ["मधुबनी चित्रे", "मातीची भांडी"]
+    },
+    description: {
+        en: "Home to the world-famous Madhubani paintings.",
+        hi: "विश्व प्रसिद्ध मधुबनी चित्रकला का केंद्र।",
+        mr: "जगप्रसिद्ध मधुबनी चित्रकलेचे केंद्र."
+    },
+    ambientSound: "flute"
+},
+
+{
+    name: {
+        en: "Dokra Village, Chhattisgarh",
+        hi: "डोकरा गांव, छत्तीसगढ़",
+        mr: "डोकरा गाव, छत्तीसगड"
+    },
+    coordinates: [21.2787, 81.8661],
+    traditions: {
+        en: ["Dokra metal craft", "Tribal dances", "Harvest songs"],
+        hi: ["डोकरा धातु कला", "जनजातीय नृत्य", "फसल गीत"],
+        mr: ["डोकरा धातुकाम", "आदिवासी नृत्य", "पीक गीते"]
+    },
+    festivals: {
+        en: ["Bastar Dussehra", "Harvest Festival"],
+        hi: ["बस्तर दशहरा", "फसल उत्सव"],
+        mr: ["बस्तर दसरा", "पीक उत्सव"]
+    },
+    crafts: {
+        en: ["Dokra metalwork", "Bamboo crafts"],
+        hi: ["डोकरा धातुकला", "बांस शिल्प"],
+        mr: ["डोकरा धातुकाम", "बांबू हस्तकला"]
+    },
+    description: {
+        en: "Known for Dokra metal casting.",
+        hi: "डोकरा धातु ढलाई कला के लिए प्रसिद्ध।",
+        mr: "डोकरा धातुकामासाठी प्रसिद्ध."
+    },
+    ambientSound: "birds"
+}
 ];
 
+function getTranslation() {
+    return translations[currentLanguage];
+}
+
+function translatePage() {
+    const t = getTranslation();
+
+    document.querySelector(".map-header h2").textContent =
+        t.mapTitle;
+
+    document.querySelector(".map-header p").textContent =
+        t.mapDescription;
+
+    document.getElementById("village-name").textContent =
+        t.selectVillage;
+
+    document.getElementById("info-content").innerHTML =
+        `<p>${t.clickVillage}</p>`;
+
+    const heatmapBtn =
+        document.getElementById("toggle-heatmap");
+
+    if (heatmapLayer) {
+        heatmapBtn.textContent =
+            t.hideHeatmap;
+    } else {
+        heatmapBtn.textContent =
+            t.toggleHeatmap;
+    }
+
+    document.getElementById("toggle-sound")
+        .textContent =
+        ambientSoundEnabled
+            ? t.soundOn
+            : t.soundOff;
+}
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     initializeMap();
+//     setupEventListeners();
+//     loadCulturalItems();
+// });
+
 document.addEventListener('DOMContentLoaded', () => {
+
+    const selector =
+        document.getElementById("language-selector");
+
+    selector.value = currentLanguage;
+
+    // selector.addEventListener("change", (e) => {
+
+    //     currentLanguage = e.target.value;
+
+    //     localStorage.setItem(
+    //         "language",
+    //         currentLanguage
+    //     );
+
+    //     translatePage();
+    // });
+    selector.addEventListener("change", (e) => {
+
+    currentLanguage = e.target.value;
+
+    localStorage.setItem(
+        "language",
+        currentLanguage
+    );
+
+    loadMapLayer(currentLanguage);
+
+    translatePage();
+    map.eachLayer((layer) => {
+    if (layer instanceof L.Marker) {
+        map.removeLayer(layer);
+    }
+});
+
+markers = [];
+
+sampleVillages.forEach(village => {
+    addVillageMarker(village);
+});
+});
+
     initializeMap();
     setupEventListeners();
     loadCulturalItems();
+    translatePage();
 });
 
+
 function initializeMap() {
-    // Initialize Leaflet map centered on India
     map = L.map('map').setView([23.0225, 72.5714], 5);
-    
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 18
-    }).addTo(map);
-    
-    // Add sample village markers
+
+    loadMapLayer(currentLanguage);
+
     sampleVillages.forEach(village => {
         addVillageMarker(village);
     });
 }
 
+
+function loadMapLayer(language) {
+
+    if (currentTileLayer) {
+        map.removeLayer(currentTileLayer);
+    }
+
+    // English
+    if (language === "en") {
+
+        currentTileLayer = L.tileLayer(
+            'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+            {
+                attribution:
+                    '&copy; OpenStreetMap contributors &copy; CARTO',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }
+        );
+
+    }
+    // Hindi / Marathi
+    else {
+
+        currentTileLayer = L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18
+            }
+        );
+
+    }
+
+    currentTileLayer.addTo(map);
+}
+
+
 function addVillageMarker(village) {
+
     const marker = L.marker(village.coordinates).addTo(map);
-    
+
     marker.bindPopup(`
-        <div style="color: #1a1a2e;">
-            <h3 style="color: #f4a261; margin-bottom: 0.5rem;">${village.name}</h3>
-            <p style="margin-bottom: 0.5rem;">${village.description}</p>
-            <strong>Festivals:</strong> ${village.festivals.join(', ')}
+        <div style="color:#1a1a2e;">
+            <h3 style="color:#f4a261;">
+                ${village.name[currentLanguage]}
+            </h3>
+
+            <p>
+                ${village.description[currentLanguage]}
+            </p>
+
+            <strong>
+                ${getTranslation().festivals}:
+            </strong>
+
+            ${village.festivals[currentLanguage].join(", ")}
         </div>
     `);
-    
+
     marker.on('click', () => {
         showVillageInfo(village);
         playAmbientSound(village.ambientSound);
     });
-    
-    marker.on('mouseover', () => {
-        if (ambientSoundEnabled) {
-            playAmbientSound(village.ambientSound);
-        }
-    });
-    
+
     markers.push({ marker, village });
 }
 
 function showVillageInfo(village) {
-    const infoPanel = document.getElementById('village-info');
-    const villageName = document.getElementById('village-name');
-    const infoContent = document.getElementById('info-content');
-    
-    villageName.textContent = village.name;
+
+    const t = getTranslation();
+
+    const infoPanel =
+        document.getElementById('village-info');
+
+    const villageName =
+        document.getElementById('village-name');
+
+    const infoContent =
+        document.getElementById('info-content');
+
+    // villageName.textContent = village.name;
+    villageName.textContent =
+    village.name[currentLanguage];
+
     infoContent.innerHTML = `
-        <p><strong>Description:</strong> ${village.description}</p>
+        <p>
+            <strong>${t.description}:</strong>
+           
+            ${village.description[currentLanguage]}
+        </p>
+
         <div class="village-details">
+
             <div class="detail-item">
-                <h4>🎭 Traditions</h4>
-                <p>${village.traditions.join(', ')}</p>
+                <h4>🎭 ${t.traditions}</h4>
+              ${village.traditions[currentLanguage].join(', ')}
             </div>
+
             <div class="detail-item">
-                <h4>🎉 Festivals</h4>
-                <p>${village.festivals.join(', ')}</p>
+                <h4>🎉 ${t.festivals}</h4>
+                ${village.festivals[currentLanguage].join(', ')}
             </div>
+
             <div class="detail-item">
-                <h4>🎨 Crafts</h4>
-                <p>${village.crafts.join(', ')}</p>
+                <h4>🎨 ${t.crafts}</h4>
+                ${village.crafts[currentLanguage].join(', ')}
             </div>
+
         </div>
-        <div style="margin-top: 1.5rem;">
-            <a href="trails.html" class="btn btn-primary">Plan a Visit</a>
+
+        <div style="margin-top:1.5rem;">
+            <a href="trails.html"
+               class="btn btn-primary">
+               ${t.planVisit}
+            </a>
         </div>
     `;
-    
+
     infoPanel.classList.add('active');
 }
 
@@ -157,7 +394,9 @@ function toggleHeatmap() {
     if (heatmapLayer) {
         map.removeLayer(heatmapLayer);
         heatmapLayer = null;
-        document.getElementById('toggle-heatmap').textContent = 'Toggle Heatmap';
+        document.getElementById('toggle-heatmap')
+.textContent =
+getTranslation().toggleHeatmap;
     } else {
         // Create a simple visual heatmap effect
         markers.forEach(({ marker, village }) => {
@@ -179,14 +418,21 @@ function toggleHeatmap() {
         if (heatmapLayer) {
             map.addLayer(heatmapLayer);
         }
-        document.getElementById('toggle-heatmap').textContent = 'Hide Heatmap';
+      document.getElementById('toggle-heatmap')
+.textContent =
+getTranslation().hideHeatmap;
     }
 }
 
 function toggleSound() {
     ambientSoundEnabled = !ambientSoundEnabled;
-    document.getElementById('toggle-sound').textContent = 
-        `Ambient Sounds: ${ambientSoundEnabled ? 'ON' : 'OFF'}`;
+  const t = getTranslation();
+
+document.getElementById('toggle-sound')
+.textContent =
+ambientSoundEnabled
+? t.soundOn
+: t.soundOff;
     
     if (!ambientSoundEnabled && currentSound) {
         currentSound.pause();

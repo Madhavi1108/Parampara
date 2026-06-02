@@ -1,15 +1,16 @@
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
 const app = express();
 
-const itemRoutes = require("./routes/itemRoutes");
-const pathRoutes = require("./routes/pathRoutes");
-const progressRoutes = require("./routes/progressRoutes");
-const postRoutes = require("./routes/postRoutes");
-const chatRoutes = require("./routes/chatRoutes");
-const checkinRoutes = require("./routes/checkinRoutes");
+const itemRoutes = require("./routes/item.routes");
+const pathRoutes = require("./routes/path.routes");
+const progressRoutes = require("./routes/progress.routes");
+const postRoutes = require("./routes/post.routes");
+const chatRoutes = require("./routes/chat.routes");
+const checkinRoutes = require("./routes/checkin.routes");
 
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
@@ -35,6 +36,7 @@ app.use(
 
 // Initialize Data
 initializeSampleData();
+
 
 // Home Route
 app.get("/", (req, res) => {
