@@ -167,3 +167,99 @@
     transform: translateY(-2px);
 }
 
+/* Back To Top Button */
+#backToTopBtn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: linear-gradient(135deg,
+            var(--terracotta),
+            var(--accent-color));
+
+    color: var(--warm-beige);
+    font-size: 1.5rem;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.25),
+        0 0 12px rgba(205, 133, 63, 0.4);
+
+    /* opacity: 0; */
+    visibility: hidden;
+
+    transform: translateY(20px);
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease,
+        visibility 0.3s ease;
+
+    z-index: 9999;
+    background-color: black !important;
+}
+
+/* Show Button */
+#backToTopBtn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Hover Effect */
+#backToTopBtn:hover {
+    transform: translateY(-5px) scale(1.08);
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.35),
+        0 0 18px rgba(205, 133, 63, 0.6);
+}
+
+/* Click Effect */
+#backToTopBtn:active {
+    transform: scale(0.95);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    #backToTopBtn {
+        width: 48px;
+        height: 48px;
+
+        bottom: 20px;
+        right: 20px;
+
+        font-size: 1.2rem;
+    }
+}
+
+#backToTopBtn1 {
+    background-color: #2C1810;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 55px;
+    height: 55px;
+    border: none;
+    color: #8B4513;
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.25),
+        0 0 12px rgba(205, 133, 63, 0.4);
+}
