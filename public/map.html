@@ -16,6 +16,7 @@
                 <p class="tagline">Preserving Living Traditions</p>
             </div>
             <ul class="nav-menu">
+
                 <li><a href="index.html">Home</a></li>
                 <li><a href="map.html" class="active">Explore Map</a></li>
                 <li><a href="gallery.html">Gallery</a></li>
@@ -23,6 +24,7 @@
                 <li><a href="quest.html">Discovery Quest</a></li>
                 <li><a href="trails.html">Heritage Trails</a></li>
                 <li><a href="chat.html">Talk to Elder</a></li>
+
             </ul>
         </div>
     </nav>
@@ -31,10 +33,16 @@
         <div class="map-header">
             <h2>Digital Time-Travel: Explore Rural Heritage</h2>
             <p>Click on villages to discover their unique traditions, festivals, and crafts</p>
-            <div class="map-controls">
-                <button id="toggle-heatmap" class="btn btn-secondary">Toggle Heatmap</button>
-                <button id="toggle-sound" class="btn btn-secondary">Ambient Sounds: ON</button>
-            </div>
+           <div class="map-controls">
+    <select id="language-selector" class="btn btn-secondary">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="mr">मराठी</option>
+    </select>
+
+    <button id="toggle-heatmap" class="btn btn-secondary">Toggle Heatmap</button>
+    <button id="toggle-sound" class="btn btn-secondary">Ambient Sounds: ON</button>
+</div>
         </div>
         
         <div id="map" class="map-view"></div>
@@ -57,7 +65,8 @@
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="scripts/map.js"></script>
+    <script src="scripts/translations.js"></script>
+<script src="scripts/map.js"></script>
 </body>
 </html>
 
