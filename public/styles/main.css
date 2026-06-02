@@ -104,8 +104,8 @@ body > * {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    align-content: center;
     flex-wrap: nowrap;
-    gap: 2rem;
 }
 
 .logo {
@@ -639,7 +639,42 @@ body > * {
         grid-template-columns: 1fr;
     }
 }
+/* ==========================================================================
+   Responsive Mobile Adjustments (Max-width: 768px)
+   ========================================================================== */
+   /* navbar */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 0.4rem;
+        padding: 0.3rem 0;
+    }
+    .logo {
+        align-items: center;
+        text-align: center;
+        min-width: unset;
+        max-width: 100%;
+    }
 
+    .logo h1 {
+        font-size: 1.4rem; 
+        margin-bottom: 0.1rem;
+    }
+
+    .tagline {
+        font-size: 0.75rem; 
+    }
+
+    .nav-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.2rem 0.3rem; 
+        width: 100%;
+    }
+    .nav-menu a {
+        padding: 0.3rem 0.4rem;
+        font-size: 0.8rem;
+    }
 
 /* Back To Top Button */
 #backToTopBtn {
@@ -704,7 +739,7 @@ body > * {
 #backToTopBtn:active {
     transform: scale(0.95);
 }
-
+}
 /* Mobile Responsive */
 @media (max-width: 768px) {
     #backToTopBtn {
