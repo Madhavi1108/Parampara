@@ -156,3 +156,24 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+
+
+
+const backToTopBtn = document.getElementById("backToTopBtn");
+
+// Show button after scrolling
+window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+        backToTopBtn.classList.add("show");
+    } else {
+        backToTopBtn.classList.remove("show");
+    }
+});
+
+// Smooth scroll to top
+backToTopBtn.addEventListener("click", () => {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+});
