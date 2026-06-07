@@ -159,13 +159,16 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-      <div class="container">
-        <p>
-          &copy; 2024 Parampara. Preserving rural heritage, one story at a time.
-        </p>
-      </div>
-    </footer>
+  <footer class="footer">
+    <div class="container">
+        <p id="copyright"></p>
+    </div>
+</footer>
+
+<script>
+document.getElementById("copyright").innerHTML =
+    `© ${new Date().getFullYear()} Parampara. Preserving rural heritage, one story at a time.`;
+</script>
 <!-- Back To Top Button -->
 <button id="backToTopBtn" aria-label="Back to top">
     ↑

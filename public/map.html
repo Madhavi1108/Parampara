@@ -88,11 +88,16 @@
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 Parampara. Preserving rural heritage, one story at a time.</p>
-        </div>
-    </footer>
+   <footer class="footer">
+    <div class="container">
+        <p id="copyright"></p>
+    </div>
+</footer>
+
+<script>
+document.getElementById("copyright").innerHTML =
+    `© ${new Date().getFullYear()} Parampara. Preserving rural heritage, one story at a time.`;
+</script>
 
     <!-- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> -->
 <!-- Back To Top Button -->
