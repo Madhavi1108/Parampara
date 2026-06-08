@@ -222,6 +222,7 @@ background: #C67A1A;
 }
 
 .btn-primary {
+  height: fit-content;
   background: #2c1810;
   color: var(--warm-beige);
   border: 2px solid var(--clay-orange);
@@ -234,6 +235,7 @@ background: #C67A1A;
 }
 
 .btn-secondary {
+  height: fit-content;
   background: #344b06;
   color: var(--warm-beige);
   border: 2px solid var(--success);
@@ -251,7 +253,7 @@ background: #C67A1A;
   min-height: 80vh;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   animation: fadeInUp 0.8s ease;
   gap: 0;
 }
