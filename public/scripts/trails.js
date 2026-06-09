@@ -5,6 +5,7 @@ const sampleTrails = [
     {
         id: 'trail-1',
         title: 'Kantha Embroidery Trail',
+        image: url('../images/image.png'),
         village: 'Kantha Village, Bengal',
         location: [22.5726, 88.3639],
         description: 'Experience the beautiful art of Kantha embroidery, where old saris are transformed into stunning works of art through intricate stitching.',

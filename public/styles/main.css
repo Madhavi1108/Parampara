@@ -253,33 +253,36 @@ background: #C67A1A;
 
 /* Hero Section */
 .hero-content {
-  display: flex;
-  min-height: 80vh;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  animation: fadeInUp 0.8s ease;
-  gap: 0;
+    
+    display:flex;
+    min-height:80vh;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    animation: fadeInUp 0.8s ease;
+    gap: 0;
 }
-.hero-texts {
-  min-height: 80vh;
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 2rem 2rem 3rem;
-  background-image: url("../images/hero-text-image.png");
-  background-position: center;
+.hero-texts{
+    min-height:80vh;
+    width:50%;
+    display:flex;
+    flex-direction:column;
+    align-content:center;
+    align-items:center;
+    justify-content: center;
+    padding: 2rem 2rem 2rem 3rem;
+     position: relative;
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+    url('../images/hero-text-image.png');
   background-size: cover;
 }
-.hero-img {
-  min-height: 80vh;
-  width: 50%;
-  background-image: url("../images/heroimg.png");
-  background-position: center;
-  background-size: cover;
+.hero-img{
+    min-height: 80vh;
+    width:50%;
+    background-image:url('../images/heroimg.png');
+    background-position: center;
+    background-size: cover;
 }
 .hero-title {
   font-size: 3rem;
