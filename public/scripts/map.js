@@ -35,13 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
         setMapLanguage(currentLanguage);
     }
 
-    addVillageMarkers();
+    if (map) {
+        addVillageMarkers();
+    }
+
     translatePage();
 });
 
-    initializeMap();       // map must come first
+    initializeMap();
     setupEventListeners();
-    loadCulturalItems();
     translatePage();
 });
 
@@ -202,37 +204,81 @@ function translatePage() {
         ambientSoundEnabled
             ? t.soundOn
             : t.soundOff;
+
+    updateMapUnavailableNotice();
 }
 
+function showMapUnavailableNotice(message) {
+    const mapEl = document.getElementById("map");
+    mapEl.innerHTML = "";
+    mapEl.classList.add("map-unavailable");
 
+    const notice = document.createElement("div");
+    notice.className = "map-unavailable-notice";
+    notice.id = "map-unavailable-notice";
 
-function initializeMap() {
-    map = new maplibregl.Map({
-        container: 'map',
-        style: getMapStyle(currentLanguage),
-        center: [78.9629, 22.5937], // centre of India [lng, lat]
-        zoom: 5
-    });
-    window.map = map;
+    const t = getTranslation();
+    notice.innerHTML = `
+        <p class="map-unavailable-icon">🗺️</p>
+        <p class="map-unavailable-message">${message || t.mapConfigMessage}</p>
+        <p class="map-unavailable-hint">${t.mapConfigHint}</p>
+    `;
 
-    map.addControl(new maplibregl.NavigationControl());
-
-    // Only add markers AFTER the map style has fully loaded
-    map.on('load', () => {
-        console.log("MAP LOADED");
-        setMapLanguage(currentLanguage);
-        addVillageMarkers();
-    });
-}
-// function getMapStyle(language) {
-  
-   
-    function getMapStyle() {
-    return "/api/map-style";
+    mapEl.appendChild(notice);
 }
 
+function updateMapUnavailableNotice() {
+    const notice = document.getElementById("map-unavailable-notice");
+    if (!notice) {
+        return;
+    }
+
+    const t = getTranslation();
+    notice.querySelector(".map-unavailable-message").textContent =
+        t.mapConfigMessage;
+    notice.querySelector(".map-unavailable-hint").textContent =
+        t.mapConfigHint;
+}
+
+async function initializeMap() {
+    try {
+        const response = await fetch("/api/map-style");
+        const data = await response.json();
+
+        if (!response.ok || data.configured === false) {
+            showMapUnavailableNotice(data.message);
+            return;
+        }
+
+        map = new maplibregl.Map({
+            container: "map",
+            style: data,
+            center: [78.9629, 22.5937],
+            zoom: 5,
+        });
+        window.map = map;
+
+        map.addControl(new maplibregl.NavigationControl());
+
+        map.on("load", () => {
+            setMapLanguage(currentLanguage);
+            addVillageMarkers();
+            loadCulturalItems();
+        });
+
+        map.on("error", (event) => {
+            console.error("Map error:", event.error);
+        });
+    } catch (error) {
+        console.error("Error initializing map:", error);
+        showMapUnavailableNotice(getTranslation().mapConfigMessage);
+    }
+}
 
 function setMapLanguage(lang) {
+    if (!map) {
+        return;
+    }
 
     const style = map.getStyle();
 
@@ -317,6 +363,10 @@ function addVillageMarker(village) {
 }
 
 function addVillageMarkers() {
+    if (!map) {
+        return;
+    }
+
     // Remove existing markers
     markers.forEach(m => m.remove());
     markers = [];
@@ -423,6 +473,10 @@ function setupEventListeners() {
 
 
 function toggleHeatmap() {
+    if (!map) {
+        return;
+    }
+
     const t = getTranslation();
 
     if (heatmapLayer) {
@@ -478,6 +532,10 @@ ambientSoundEnabled
 
 
 async function loadCulturalItems() {
+    if (!map) {
+        return;
+    }
+
     try {
         const response = await fetch('/api/items');
 
@@ -506,6 +564,28 @@ async function loadCulturalItems() {
     } catch (error) {
         console.error("Error loading cultural items:", error);
     }
+}
+
+function showPopup(item) {
+    const t = getTranslation();
+    const infoPanel = document.getElementById("village-info");
+    const villageName = document.getElementById("village-name");
+    const infoContent = document.getElementById("info-content");
+
+    villageName.textContent = item.title;
+
+    const tagsHtml =
+        item.tags && item.tags.length > 0
+            ? `<p><strong>${t.tags}:</strong> ${item.tags.join(", ")}</p>`
+            : "";
+
+    infoContent.innerHTML = `
+        <p><strong>${t.description}:</strong> ${item.description || ""}</p>
+        <p><strong>${t.location}:</strong> ${item.location || ""}</p>
+        ${tagsHtml}
+    `;
+
+    infoPanel.classList.add("active");
 }
 
 // const backToTopBtn = document.getElementById("backToTopBtn");

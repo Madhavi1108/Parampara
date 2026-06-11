@@ -22,9 +22,19 @@ const translations = {
         soundOff: "Ambient Sounds: OFF",
 
         description: "Description",
+
+
+        mapConfigMessage:
+            "Map tiles require a MapTiler API key. Please add MAPTILER_KEY to your .env file.",
+        mapConfigHint:
+            "Copy .env.example to .env and add a free key from maptiler.com",
+        location: "Location",
+        tags: "Tags"
+
         trailsTitle: "Heritage Trails & Local Hosts",
-trailsDesc: "Plan responsible visits to villages, meet cultural hosts, and support local artisans",
-trailDetailsTitle: "Trail Details"
+        trailsDesc: "Plan responsible visits to villages, meet cultural hosts, and support local artisans",
+        trailDetailsTitle: "Trail Details"
+
     },
 
     hi: {
@@ -50,7 +60,14 @@ trailDetailsTitle: "Trail Details"
         soundOn: "पर्यावरण ध्वनि: चालू",
         soundOff: "पर्यावरण ध्वनि: बंद",
 
-        description: "विवरण"
+        description: "विवरण",
+
+        mapConfigMessage:
+            "मानचित्र टाइल्स के लिए MapTiler API कुंजी आवश्यक है। कृपया अपनी .env फ़ाइल में MAPTILER_KEY जोड़ें।",
+        mapConfigHint:
+            ".env.example को .env में कॉपी करें और maptiler.com से एक मुफ्त कुंजी जोड़ें",
+        location: "स्थान",
+        tags: "टैग"
     },
 
     mr: {
@@ -80,9 +97,19 @@ trailDetailsTitle: "ट्रेल विवरण",
         soundOff: "पर्यावरणीय ध्वनी: बंद",
 
         description: "वर्णन",
+
+
+        mapConfigMessage:
+            "नकाशा टाइल्ससाठी MapTiler API की आवश्यक आहे. कृपया तुमच्या .env फाइलमध्ये MAPTILER_KEY जोडा.",
+        mapConfigHint:
+            ".env.example ला .env मध्ये कॉपी करा आणि maptiler.com वरून विनामूल्य की जोडा",
+        location: "स्थान",
+        tags: "टॅग"
+
         trailsTitle: "वारसा ट्रेल्स आणि स्थानिक होस्ट",
-trailsDesc: "गावांना जबाबदारीने भेट द्या आणि कलाकारांना भेटा",
-trailDetailsTitle: "ट्रेल तपशील"
+        trailsDesc: "गावांना जबाबदारीने भेट द्या आणि कलाकारांना भेटा",
+        trailDetailsTitle: "ट्रेल तपशील"
+
     }
 };
 

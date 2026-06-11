@@ -39,7 +39,22 @@ A community-driven digital archive for preserving rural cultural heritage. Param
    npm install
    ```
 
-3. **Start the server**
+3. **Configure environment variables**
+
+   Copy `.env.example` to `.env` and add your MapTiler API key (free at [maptiler.com](https://www.maptiler.com/)):
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   ```env
+   PORT=3000
+   MAPTILER_KEY=your_key
+   ```
+
+   The map page loads without a key and shows setup instructions. Add a MapTiler key to enable interactive map tiles, village markers, and heatmap overlays.
+
+4. **Start the server**
    ```bash
    npm start
    ```
@@ -49,7 +64,7 @@ A community-driven digital archive for preserving rural cultural heritage. Param
    npm run dev
    ```
 
-4. **Open your browser**
+5. **Open your browser**
    Navigate to `http://localhost:3000`
 
 ## 📁 Project Structure
@@ -89,7 +104,7 @@ Parampara/
 
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Backend**: Node.js, Express.js
-- **Mapping**: Leaflet.js (OpenStreetMap)
+- **Mapping**: MapLibre GL JS, MapTiler
 - **Styling**: Custom CSS with modern design principles
 
 
