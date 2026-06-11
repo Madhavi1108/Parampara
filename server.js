@@ -50,6 +50,12 @@ app.get("/", (req, res) => {
         )
     );
 });
+app.get("/api/language", (req, res) => {
+    res.json({
+        default: "en",
+        supported: ["en", "hi", "mr"]
+    });
+});
 
 // API Routes
 app.use("/api/items", itemRoutes);
