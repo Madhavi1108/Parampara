@@ -16,13 +16,9 @@ const translations = {
 
         toggleHeatmap: "Toggle Heatmap",
         hideHeatmap: "Hide Heatmap",
-
         soundOn: "Ambient Sounds: ON",
         soundOff: "Ambient Sounds: OFF",
-
         description: "Description",
-
-
         mapConfigMessage:
             "Map tiles require a MapTiler API key. Please add MAPTILER_KEY to your .env file.",
         mapConfigHint:
@@ -41,12 +37,9 @@ const translations = {
 
         mapDescription:
             "गांवों पर क्लिक करके उनकी परंपराओं, त्योहारों और हस्तशिल्प को जानें",
-
         selectVillage: "एक गांव चुनें",
-
         clickVillage:
             "विवरण देखने के लिए किसी गांव पर क्लिक करें",
-
         traditions: "परंपराएँ",
         festivals: "त्योहार",
         crafts: "हस्तशिल्प",
