@@ -44,15 +44,20 @@
   border: 2px solid var(--accent-color);
   border-radius: var(--border-radius);
   background: var(--warm-beige);
-  color: var(--wheat-yellow);
+  color: var(--primary-color);
   font-size: 1rem;
 }
 
 .search-input:focus {
   outline: none;
   border-color: var(--terracotta);
-  background: #fff;
+  background: var(--warm-beige);
   box-shadow: 0 0 0 3px rgba(201, 125, 96, 0.2);
+}
+
+.search-input::placeholder{
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 .filter-select {
@@ -60,9 +65,14 @@
   border: 2px solid var(--accent-color);
   border-radius: var(--border-radius);
   background: var(--warm-beige);
-  color: var(--warm-beige);
+  color: var(--primary-color);
+  font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.filter-select option{
+  width: 100%;
 }
 
 .gallery-grid {
