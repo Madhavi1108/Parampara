@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
 
 const app = express();
 
@@ -21,6 +22,33 @@ const initializeSampleData = require('./config/sampleData');
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", 'https://unpkg.com'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
+        imgSrc: [
+          "'self'",
+          'data:',
+          'blob:',
+          'https://unpkg.com',
+          'https://api.maptiler.com',
+          'https://cdn.sanity.io',
+          'https://encrypted-tbn0.gstatic.com',
+          'https://cdn.shopify.com',
+        ],
+        connectSrc: ["'self'", 'https://api.maptiler.com'],
+        workerSrc: ["'self'", 'blob:'],
+        childSrc: ["'self'", 'blob:'],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+  })
+);
+
 app.use(cors());
 
 app.use(express.json());
