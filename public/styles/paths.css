@@ -2,13 +2,15 @@
 
 .paths-container {
   padding: 2rem;
+  display: flex;
   max-width: 1200px;
   margin: 0 auto;
+  flex-direction: column;
+  gap: 54px;
 }
 
 .paths-header {
   text-align: center;
-  margin-bottom: 3rem;
 }
 
 .paths-header h2 {
@@ -31,9 +33,16 @@
 }
 
 .paths-list {
+  max-height: 600px;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(3, 1fr);
+}
+
+.paths-list::-webkit-scrollbar{
+background: transparent;
 }
 
 .path-card {
@@ -174,6 +183,11 @@
 .path-controls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+#create-path-btn {
+  width: 200px;
+  margin: 0 auto;
 }
 
 /* Fix: Remove extra space below footer */
