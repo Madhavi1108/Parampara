@@ -23,24 +23,22 @@
     <!-- Navigation -->
     <nav class="navbar">
       <div class="nav-container">
-        <div class="nav-logo-btn">
-          <div class="logo">
-            <h1 data-i18n="brand_name">Parampara</h1>
-            <p class="tagline" data-i18n="brand_tagline">
-              Preserving Living Traditions
-            </p>
-          </div>
-          <button
-            class="hamburger"
-            id="hamburgerBtn"
-            aria-label="Toggle navigation"
-          >
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-          </button>
+        <div class="logo">
+          <h1 data-i18n="brand_name">Parampara</h1>
+          <p class="tagline" data-i18n="brand_tagline">
+            Preserving Living Traditions
+          </p>
         </div>
         <!-- Language selector injected here by language-switcher.js -->
+        <button
+          class="hamburger"
+          id="hamburgerBtn"
+          aria-label="Toggle navigation"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
         <ul class="nav-menu" id="navMenu">
           <li>
             <a href="index.html" class="active"
@@ -69,6 +67,12 @@
           <li>
             <a href="chat.html"
               ><i class="ti ti-message-circle"></i> Talk to Elder</a
+            >
+          </li>
+          <li>
+            <a href="risk-dashboard.html"
+              ><i class="ti ti-alert-triangle"></i>
+              <span data-i18n="nav_risk">Risk Dashboard</span></a
             >
           </li>
         </ul>
@@ -209,11 +213,43 @@
     </section>
 
     <!-- Footer -->
+ 
     <footer class="footer">
-      <div class="container">
-        <p data-i18n="footer_copy">
-          © 2024 Parampara. Preserving rural heritage, one story at a time.
-        </p>
+      <div class="footer-container">
+        <!-- Brand Section -->
+        <div class="footer-brand">
+          <h2 class="footer-logo">🏛️ Parampara</h2>
+          <p>
+            Preserving rural heritage, traditions, and stories for future
+            generations.
+          </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="map.html">Explore Map</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="paths.html">Heritage Paths</a></li>
+          </ul>
+        </div>
+
+        <!-- Features -->
+        <div class="footer-links">
+          <h3>Explore</h3>
+          <ul>
+            <li><a href="quest.html">Discovery Quest</a></li>
+            <li><a href="trails.html">Heritage Trails</a></li>
+            <li><a href="chat.html">Talk to Elder</a></li>
+            <li><a href="risk-dashboard.html">Risk Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
       </div>
     </footer>
 
@@ -223,6 +259,6 @@
     <script src="scripts/main.js"></script>
     <script src="scripts/translations.js"></script>
     <script src="scripts/languageSwitcher.js"></script>
-    <script src="scripts/navbar.js"></script>
+    <!-- <script src="scripts/navbar.js"></script> -->
   </body>
-</html>
+</html>    
