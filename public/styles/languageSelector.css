@@ -6,9 +6,9 @@
 /* Wrapper sits at the right end of the nav-container */
 .lang-selector-wrapper {
   display: flex;
-  align-items: center;
-  margin-left: auto; /* push to far right of navbar */
-  padding-left: 1.5rem;
+  align-items: center; /* push to far right of navbar */
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
 }
 
 /* The <select> pill */
@@ -50,33 +50,9 @@
 }
 
 /* Mobile: make selector full-width row below nav links */
-/* @media (max-width: 768px) {
-  .lang-selector-wrapper {
-    width: 100%;
-    justify-content: flex-end;
-    margin-left: 0;
-    padding: 0.5rem 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-} */
-
 @media (max-width: 768px) {
   .lang-selector-wrapper {
-    width: auto;
-    /* was 100% — was pushing it to wrap below */
+    width: fit-content;
     justify-content: flex-end;
-    margin-left: 0;
-    padding: 0;
-    border-top: none;
-  }
-
-  .nav-container {
-    gap: 0.6rem;
-    /* small gap between logo, hamburger, and language pill */
-  }
-
-  .global-lang-selector {
-    font-size: 0.78rem;
-    padding: 0.3rem 1.3rem 0.3rem 0.6rem;
   }
 }

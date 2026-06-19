@@ -1,5 +1,4 @@
 // Map Page JavaScript
-
 let map;
 let markers = [];
 let heatmapLayer = null;
@@ -348,7 +347,6 @@ function showVillageInfo(village) {
 
   const infoContent = document.getElementById('info-content');
 
-  // villageName.textContent = village.name;
   villageName.textContent = village.name[currentLanguage];
 
   infoContent.innerHTML = `
@@ -390,17 +388,7 @@ function showVillageInfo(village) {
 
 function playAmbientSound(type) {
   if (!ambientSoundEnabled) return;
-
-  // In a real implementation, you would play actual audio files
-  // For now, we'll just log it
   console.log(`Playing ambient sound: ${type}`);
-
-  // You can integrate actual audio files here
-  // const audio = new Audio(`/sounds/${type}.mp3`);
-  // audio.loop = true;
-  // audio.volume = 0.3;
-  // audio.play();
-  // currentSound = audio;
 }
 
 function setupEventListeners() {
@@ -437,13 +425,12 @@ function toggleHeatmap() {
   const t = getTranslation();
 
   if (heatmapLayer) {
-    // Remove heatmap overlay divs
     heatmapMarkers.forEach((m) => m.remove());
     heatmapMarkers = [];
     heatmapLayer = null;
     document.getElementById('toggle-heatmap').textContent = t.toggleHeatmap;
   } else {
-    heatmapLayer = true; // flag
+    heatmapLayer = true;
 
     sampleVillages.forEach((village) => {
       const intensity = Math.random() * 0.5 + 0.5;
@@ -507,7 +494,7 @@ async function loadCulturalItems() {
           .addTo(map);
 
         el.addEventListener('click', () => {
-          showPopup(item); // better than alert
+          showPopup(item);
         });
       }
     });
@@ -536,26 +523,6 @@ function showPopup(item) {
     `;
 
   infoPanel.classList.add('active');
-}
-
-// const backToTopBtn = document.getElementById("backToTopBtn");
-const backToTopBtn = document.getElementById('backToTopBtn');
-
-if (backToTopBtn) {
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 300) {
-      backToTopBtn.classList.add('show');
-    } else {
-      backToTopBtn.classList.remove('show');
-    }
-  });
-
-  backToTopBtn.addEventListener('click', () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  });
 }
 
 // ── Re-render map and elements when language changes globally

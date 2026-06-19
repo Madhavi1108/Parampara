@@ -114,12 +114,12 @@
     });
 
     // Wrap in a div and append to nav-container
-    var navContainer = document.querySelector('.nav-container');
-    if (navContainer) {
+    var nav_Container = document.querySelector('.nav-container');
+    if (nav_Container) {
       var wrapper = document.createElement('div');
       wrapper.className = 'lang-selector-wrapper';
       wrapper.appendChild(sel);
-      navContainer.appendChild(wrapper);
+      nav_Container.appendChild(wrapper);
     } else {
       // Fallback: fixed pill bottom-right corner
       sel.style.cssText = 'position:fixed;bottom:1rem;right:1rem;z-index:9999;';
