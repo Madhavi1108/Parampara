@@ -392,6 +392,164 @@ function initializeSampleData() {
       image: '📲'
     }
   );
+
+  store.storySourceData.push(
+    {
+      id: 'story-madhubani',
+      name: 'Madhubani Art',
+      village: 'Madhubani Village, Bihar',
+      history: [
+        'Originating in the Mithila region of Bihar, Madhubani Art was traditionally painted by women on mud walls to mark births and weddings.',
+        'During a severe drought in the late 1960s, the Indian government encouraged the transition of these paintings to paper to create a source of livelihood.',
+        'Over the decades, it has evolved into a globally celebrated folk art form represented in prominent museums worldwide.'
+      ],
+      traditions: [
+        'Paintings are crafted using natural dyes extracted from turmeric, soot, flowers, and leaves mixed with tree gum.',
+        'Artists use twigs, matches, fingers, and nib-pens instead of modern brushes to draw fine lines.',
+        'A key feature is the double-line border filled with cross-hatching, leaving no empty space on the canvas.'
+      ],
+      festivals: [
+        'Chhath Puja, when mud walls are freshly painted with sacred motifs.',
+        'Mithila Lok Utsav, showcasing community heritage paintings.'
+      ],
+      landmarks: [
+        'Madhubani Village, the ancestral hub where families practice the art.',
+        'Mithila Art Institute, dedicated to training young rural women in traditional styles.'
+      ],
+      culturalSignificance: [
+        'Paintings depict themes of nature, birds, fish, and deities like the Sun and Moon to symbolise fertility and prosperity.',
+        'The transition to paper has empowered rural women by providing financial independence and a voice in their communities.'
+      ],
+      notableFacts: [
+        'Madhubani artists painted trees along highways in Bihar with religious motifs to successfully prevent illegal logging.',
+        'The paint is organic and zero-waste, traditionally utilizing cow dung paste to treat the paper before painting.'
+      ]
+    },
+    {
+      id: 'story-kantha',
+      name: 'Kantha Embroidery',
+      village: 'Kantha Village, Bengal',
+      history: [
+        'Kantha embroidery started as a domestic recycling technique where Bengal women hand-stitched layers of old cotton saris together to make quilts.',
+        'In the late 20th century, self-help groups and non-profits structured the craft to supply commercial markets.',
+        'Today, Kantha is featured on high-fashion runways and exported globally as a premium sustainable textile.'
+      ],
+      traditions: [
+        'The primary technique is the running stitch, which creates a rippled, textured effect across the fabric.',
+        'Stitches are drawn in circular patterns, starting from the center of the textile and radiating outwards.',
+        'Patterns are traditionally hand-drawn with soap or charcoal before stitching begins.'
+      ],
+      festivals: [
+        'Bengal Craft Bazaars, celebrating traditional textile arts.',
+        'Naba Barsha (Bengali New Year), where new Kantha items are gifted.'
+      ],
+      landmarks: [
+        'Shantiniketan, the cultural hub founded by Rabindranath Tagore that popularized Kantha revival.',
+        'Rural Bengal Artisan Guilds, supporting women weavers.'
+      ],
+      culturalSignificance: [
+        'Stitched patterns convey personal stories, folk tales, and wishes for the health and safety of family members.',
+        'It is an expression of recycling and zero-waste, embodying the spirit of rural resourcefulness.'
+      ],
+      notableFacts: [
+        'Traditionally, the thread used for embroidery was pulled out of the borders of the very same old saris being recycled.',
+        'A large Kantha quilt can take up to six months of collective labor by multiple village women.'
+      ]
+    },
+    {
+      id: 'story-dokra',
+      name: 'Dokra Metal Craft',
+      village: 'Dokra Village, Chhattisgarh',
+      history: [
+        'Dokra is a 4,000-year-old non-ferrous metal casting art that traces back directly to the lost-wax casting of the Harappan civilization.',
+        'Originally practiced by nomadic Dhokra Damar metalsmiths traveling across Central India, it eventually settled in artisan hubs.',
+        'Modern initiatives have shifted the craft from tribal icons to contemporary home decor, ensuring its economic survival.'
+      ],
+      traditions: [
+        'The process utilizes a clay core wrapped in fine beeswax threads, which is then covered in a outer clay shell.',
+        'Molten scrap brass or bronze is poured into the heated mold, melting and replacing the wax (lost-wax technique).',
+        'Every mold is broken to extract the final metal piece, making each Dokra sculpture completely unique.'
+      ],
+      festivals: [
+        'Bastar Lokotsav, where tribal artisans gather to display and sell their cast metal icons.',
+        'Dussehra, during which traditional brass deities are cleaned and offered prayers.'
+      ],
+      landmarks: [
+        'Kondagaon, known as the craft capital of Bastar, housing master casting workshops.',
+        'Ekta Artisan Center, providing community kilns and furnaces.'
+      ],
+      culturalSignificance: [
+        'Dokra art traditionally represents tribal deities, animals (elephants, horses), and items used in forest ceremonies.',
+        'It reflects the deep spiritual connection of tribal communities with nature and local mythology.'
+      ],
+      notableFacts: [
+        'Since the clay mold must be broken to retrieve the bronze figure, no two Dokra metal pieces are ever identical.',
+        'Workshops are adopting eco-friendly solar furnaces to replace traditional coal, reducing air pollution for local families.'
+      ]
+    },
+    {
+      id: 'story-kathputli',
+      name: 'Kathputli Puppetry',
+      village: 'Jodhpur, Rajasthan',
+      history: [
+        'Kathputli puppetry originated over a thousand years ago with the Bhatt community performing epics in the royal courts of Rajasthan.',
+        'Following the decline of royal patronage, puppeteers adapted by bringing their shows to public streets and villages.',
+        'In the digital age, puppeteers are using online platforms and resort showcases to preserve their oral storytelling traditions.'
+      ],
+      traditions: [
+        'Puppets are carved from a single block of mango wood (Kath meaning wood, and Putli meaning doll).',
+        'Puppeteers control the dolls using a loop of string tied to their fingers, whistling with a bamboo device called a Pua.',
+        'Performances are accompanied by the dynamic beats of the Dholak and oral songs that narrate folk tales.'
+      ],
+      festivals: [
+        'Rajasthan Kabir Yatra, featuring traditional performance arts.',
+        'Marwar Festival, where grand puppet shows are staged for global audiences.'
+      ],
+      landmarks: [
+        'Kathputli Colony in Jaipur, a historic settlement of traditional artists and puppet makers.',
+        'Jodhpur Cultural Center, organizing tourist showcases and educational workshops.'
+      ],
+      culturalSignificance: [
+        'Plays historically retold stories of Rajasthani legends like Amar Singh Rathore, celebrating bravery and loyalty.',
+        'Modern puppet shows have become powerful tools for social change, conveying messages of literacy, sanitation, and hygiene.'
+      ],
+      notableFacts: [
+        'The puppeteer makes a high-pitched whistling sound during the play to represent the puppet speaking, which a narrator then translates.',
+        'The colorful clothing on puppets is made from leftover scraps of traditional Rajasthani textiles.'
+      ]
+    },
+    {
+      id: 'story-sikki',
+      name: 'Sikki Grass Craft',
+      village: 'Mithila Region, Bihar',
+      history: [
+        'Sikki Grass Craft is a ancient craft from Bihar where wild golden grass is woven into utility and decorative objects.',
+        'Traditionally, mothers taught their daughters to weave Sikki boxes so they could store dowry items for marriage.',
+        'Today, Sikki grass is marketed as a eco-friendly, biodegradable alternative to plastic home accessories.'
+      ],
+      traditions: [
+        'Wild Sikki grass is collected, dried, and dyed in vibrant colors like pink, green, and red.',
+        'Weavers split the grass and weave it around a inner core of sturdy Munj grass to build structural forms.',
+        'The main tool used is a simple metallic needle with a wooden handle, called a Takua.'
+      ],
+      festivals: [
+        'Madhushravani Festival, during which newly wed brides use Sikki baskets to collect flowers.',
+        'Saurath Sabha, an annual gathering displaying local Mithila crafts.'
+      ],
+      landmarks: [
+        'Madhubani and Darbhanga Districts, the main geographical areas for Sikki grass weaving.',
+        'Bihar State Cooperative Union, helping rural women export baskets directly.'
+      ],
+      culturalSignificance: [
+        'The craft symbolizes domestic self-reliance and represents the maternal blessings of passing down traditional skills.',
+        'It is an expression of organic living, turning local wild river grass into durable household products.'
+      ],
+      notableFacts: [
+        'Sikki grass is naturally translucent and has a golden sheen, which is why it is often called the Golden Grass of Bihar.',
+        'Items are highly durable and naturally damp-resistant, meaning they can store grains and spices for years.'
+      ]
+    }
+  );
 }
 
 module.exports = initializeSampleData;

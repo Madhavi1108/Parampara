@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Generate engaging, AI-assisted stories based on rural cultural heritage archives."
+    />
+    <title>AI Story Generator - Parampara</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/story-generator.css" />
+    <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="logo">
+          <h1 data-i18n="brand_name">Parampara</h1>
+          <p class="tagline" data-i18n="brand_tagline">
+            Preserving Living Traditions
+          </p>
+        </div>
+        <button
+          class="hamburger"
+          id="hamburgerBtn"
+          aria-label="Toggle navigation"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        <ul class="nav-menu" id="navMenu">
+          <li>
+            <a href="index.html"><i class="ti ti-home"></i> Home</a>
+          </li>
+          <li>
+            <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
+          </li>
+          <li>
+            <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
+          </li>
+          <li>
+            <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
+          </li>
+          <li>
+            <a href="quest.html"
+              ><i class="ti ti-compass"></i> Discovery Quest</a
+            >
+          </li>
+          <li>
+            <a href="trails.html"
+              ><i class="ti ti-trail-sign"></i> Heritage Trails</a
+            >
+          </li>
+          <li>
+            <a href="chat.html"
+              ><i class="ti ti-message-circle"></i> Talk to Elder</a
+            >
+          </li>
+          <li>
+            <a href="risk-dashboard.html"
+              ><i class="ti ti-alert-triangle"></i>
+              <span data-i18n="nav_risk">Risk Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a href="reputation.html"
+              ><i class="ti ti-medal"></i>
+              <span data-i18n="nav_reputation">Contributor Reputation</span></a
+            >
+          </li>
+          <li>
+            <a href="timeline.html"
+              ><i class="ti ti-history"></i>
+              <span data-i18n="nav_timeline">Historical Timeline</span></a
+            >
+          </li>
+          <li>
+            <a href="story-generator.html" class="active"
+              ><i class="ti ti-books"></i>
+              <span data-i18n="nav_story_generator">AI Story Generator</span></a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="story-generator-container">
+      <header class="story-generator-header">
+        <h2 data-i18n="storyGeneratorTitle">AI-Powered Cultural Story Generator</h2>
+        <p data-i18n="storyGeneratorSubtitle">
+          Transform rural cultural archives into engaging narrative-style stories.
+        </p>
+      </header>
+
+      <!-- Generator Grid -->
+      <div class="story-grid">
+        <!-- Configuration Card -->
+        <section class="config-card">
+          <h3 data-i18n="nav_story_generator">AI Story Generator</h3>
+          
+          <div class="form-group">
+            <label for="item-select" data-i18n="select_item">Select Cultural Heritage Item</label>
+            <select id="item-select" class="form-select">
+              <option value="" disabled selected>-- Select an Item --</option>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="style-select" data-i18n="select_style">Select Storytelling Style</label>
+            <select id="style-select" class="form-select">
+              <option value="educational" data-i18n="style_educational">Educational</option>
+              <option value="children" data-i18n="style_children">Children's Story</option>
+              <option value="tourist" data-i18n="style_tourist">Tourist Guide</option>
+              <option value="documentary" data-i18n="style_documentary">Cultural Documentary</option>
+            </select>
+          </div>
+
+          <button id="generate-btn" class="btn btn-primary btn-generate" disabled>
+            <i class="ti ti-wand"></i>
+            <span data-i18n="btn_generate">Generate Story</span>
+          </button>
+        </section>
+
+        <!-- Output Cards -->
+        <div class="output-section">
+          <!-- Story Content Card -->
+          <article class="story-card" id="story-display-card">
+            <div class="story-card-header">
+              <h3 id="story-title">...</h3>
+              <span class="story-style-tag" id="style-tag">Educational</span>
+            </div>
+            
+            <div class="story-body" id="story-text">
+              <div class="empty-state">
+                <i class="ti ti-archive"></i>
+                <p>Select a cultural item and click generate to begin the storytelling journey.</p>
+              </div>
+            </div>
+
+            <!-- Narration Toolbar -->
+            <div class="narration-toolbar hidden" id="narration-controls">
+              <button id="btn-play" class="btn-narration" data-i18n-title="playNarration" aria-label="Play Narration">
+                <i class="ti ti-player-play"></i> <span data-i18n="playNarration">Play Narration</span>
+              </button>
+              <button id="btn-pause" class="btn-narration" data-i18n-title="pauseNarration" aria-label="Pause Narration" disabled>
+                <i class="ti ti-player-pause"></i> <span data-i18n="pauseNarration">Pause</span>
+              </button>
+              <button id="btn-stop" class="btn-narration" data-i18n-title="stopNarration" aria-label="Stop Narration" disabled>
+                <i class="ti ti-player-stop"></i> <span data-i18n="stopNarration">Stop</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Summary & Highlights Card -->
+          <section class="summary-card hidden" id="summary-section">
+            <div class="summary-block">
+              <h4 data-i18n="summary_label">Short Summary</h4>
+              <p id="summary-text-content">...</p>
+            </div>
+            <div class="highlights-block">
+              <h4 data-i18n="highlights_label">Key Highlights</h4>
+              <ul id="highlights-list">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+          </section>
+
+          <!-- Stats Dashboard -->
+          <section class="stats-card hidden" id="stats-section">
+            <h4 data-i18n="stats_label">Story Statistics</h4>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-value" id="stat-length">0</span>
+                <span class="stat-label" data-i18n="stats_length">Story Length</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value" id="stat-time">0</span>
+                <span class="stat-label" data-i18n="stats_reading_time">Reading Time</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value" id="stat-references">0</span>
+                <span class="stat-label" data-i18n="stats_references">Cultural References</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value" id="stat-style-name">Educational</span>
+                <span class="stat-label" data-i18n="stats_style">Story Style</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Static AI Disclaimer -->
+          <div class="disclaimer-bar">
+            <i class="ti ti-alert-circle"></i>
+            <div>
+              <strong data-i18n="disclaimer_label">AI Disclaimer</strong>
+              <p data-i18n="disclaimer_text">
+                AI-generated cultural narrative based on available Parampara records. This story is intended for educational and exploratory purposes and may not represent a verified historical account.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p data-i18n="footer_copy">
+          © 2024 Parampara. Preserving rural heritage, one story at a time.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Back To Top Button -->
+    <button id="backToTopBtn" aria-label="Back to top">↑</button>
+
+    <!-- Scripts -->
+    <script src="scripts/translations.js"></script>
+    <script src="scripts/languageSwitcher.js"></script>
+    <script src="scripts/navbar.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/story-generator.js"></script>
+  </body>
+</html>

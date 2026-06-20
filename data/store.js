@@ -5,6 +5,7 @@ const store = {
   villagePosts: [],
   contributors: [],
   timelineEvents: [],
+  storySourceData: [],
 };
 
 module.exports = store;
