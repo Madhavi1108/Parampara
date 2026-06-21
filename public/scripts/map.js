@@ -3,6 +3,7 @@ let map;
 let markers = [];
 let heatmapLayer = null;
 let ambientSoundEnabled = true;
+let toggleSound = true;
 let currentSound = null;
 let heatmapMarkers = [];
 
@@ -191,9 +192,9 @@ function translatePage() {
     heatmapBtn.textContent = t.toggleHeatmap;
   }
 
-  document.getElementById('toggle-sound').textContent = ambientSoundEnabled
-    ? t.soundOn
-    : t.soundOff;
+  // document.getElementById('toggle-sound').textContent = ambientSoundEnabled
+  //   ? t.soundOn
+  //   : t.soundOff;
 
   updateMapUnavailableNotice();
 }
@@ -320,7 +321,7 @@ function addVillageMarker(village) {
   marker.getElement().addEventListener('click', (e) => {
     e.stopPropagation(); // important
     showVillageInfo(village);
-    playAmbientSound(village.ambientSound);
+    // playAmbientSound(village.ambientSound);
   });
 
   markers.push(marker);
@@ -414,7 +415,7 @@ function setupEventListeners() {
   });
 
   heatmapBtn.addEventListener('click', toggleHeatmap);
-  soundBtn.addEventListener('click', toggleSound);
+  // soundBtn.addEventListener('click', toggleSound);
 }
 
 function toggleHeatmap() {
@@ -456,19 +457,19 @@ function toggleHeatmap() {
   }
 }
 
-function toggleSound() {
-  ambientSoundEnabled = !ambientSoundEnabled;
-  const t = getTranslation();
+// function toggleSound() {
+//   ambientSoundEnabled = !ambientSoundEnabled;
+//   const t = getTranslation();
 
-  document.getElementById('toggle-sound').textContent = ambientSoundEnabled
-    ? t.soundOn
-    : t.soundOff;
+//   document.getElementById('toggle-sound').textContent = ambientSoundEnabled
+//     ? t.soundOn
+//     : t.soundOff;
 
-  if (!ambientSoundEnabled && currentSound) {
-    currentSound.pause();
-    currentSound = null;
-  }
-}
+//   if (!ambientSoundEnabled && currentSound) {
+//     currentSound.pause();
+//     currentSound = null;
+//   }
+// }
 
 async function loadCulturalItems() {
   if (!map) {
@@ -543,4 +544,26 @@ window.addEventListener('parampara:langchange', (e) => {
   }
 
   translatePage();
+});
+
+const ambientMusic = new Audio("assets/sounds/ambientSound.mp3");
+
+ambientMusic.loop = true;
+ambientMusic.volume = 0.3;
+
+let toggle_btn = document.getElementById('toggle-sound');
+function soundToggler() {
+  toggleSound = !toggleSound;
+  if(toggleSound){
+    ambientMusic.pause()
+    toggle_btn.textContent = "Ambient Sound : ON"
+  }else{
+    ambientMusic.play()
+    toggle_btn.textContent = "Ambient Sound : OFF"
+  }
+}
+
+toggle_btn.addEventListener("click", () => {
+  toggle_btn.textContent = ""
+  soundToggler()
 });
