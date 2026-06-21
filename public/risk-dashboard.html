@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/risk-dashboard.css" />
     <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link rel="stylesheet" href="styles/theme.css" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -20,6 +21,13 @@
     <!-- Navigation -->
     <nav class="navbar">
       <div class="nav-container">
+        <button
+          id="themeToggle"
+          class="theme-toggle"
+          aria-label="Toggle theme"
+        >
+          🌙
+        </button>
         <div class="logo">
           <h1 data-i18n="brand_name">Parampara</h1>
           <p class="tagline" data-i18n="brand_tagline">
@@ -208,10 +216,13 @@
     <button id="backToTopBtn" aria-label="Back to top">↑</button>
 
     <!-- Scripts -->
+    <button id="backToTopBtn" aria-label="Back to top">↑</button>
+    <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
     <script src="scripts/translations.js"></script>
+    <script src="scripts/map.js"></script>
     <script src="scripts/languageSwitcher.js"></script>
     <script src="scripts/navbar.js"></script>
-    <script src="scripts/main.js"></script>
-    <script src="scripts/risk-dashboard.js"></script>
+     <script src="scripts/main.js"></script>
+     <script src="scripts/theme.js"></script>
   </body>
 </html>

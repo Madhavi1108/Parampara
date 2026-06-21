@@ -11,10 +11,18 @@
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/chat.css" />
     <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link rel="stylesheet" href="styles/theme.css" />
   </head>
   <body>
     <nav class="navbar">
       <div class="nav-container">
+        <button
+          id="themeToggle"
+          class="theme-toggle"
+          aria-label="Toggle theme"
+        >
+          🌙
+        </button>
         <div class="logo">
           <h1 data-i18n="brand_name">Parampara</h1>
           <p class="tagline" data-i18n="brand_tagline">
@@ -214,5 +222,6 @@
     <script src="scripts/languageSwitcher.js"></script>
     <script src="scripts/navbar.js"></script>
     <script src="scripts/main.js"></script>
+    <script src="scripts/theme.js"></script>
   </body>
 </html>

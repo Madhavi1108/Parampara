@@ -26,6 +26,14 @@
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 }
 
+.reputation-header,
+.reputation-header h2,
+.reputation-header p {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+
 /* Grid Layout */
 .reputation-grid {
   display: grid;
@@ -102,7 +110,7 @@
 
 .profile-details h4 {
   font-size: 1.5rem;
-  color: #ffffff;
+  color: var(--theme-text);
   margin: 0 0 0.5rem 0;
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
@@ -132,7 +140,7 @@
 }
 
 .date-value {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--theme-text-secondary);
   font-size: 0.95rem;
 }
 
@@ -157,7 +165,7 @@
 .score-value {
   font-size: 2.2rem;
   font-weight: 800;
-  color: #ffffff;
+   color: var(--theme-accent);
   text-shadow: 0 2px 10px rgba(218, 165, 32, 0.6);
 }
 
@@ -207,7 +215,7 @@
 .stat-number {
   font-size: 1.25rem;
   font-weight: bold;
-  color: #ffffff;
+  color: var(--theme-text);
 }
 
 .stat-label {
@@ -246,7 +254,7 @@
 
 .leaderboard-table td {
   padding: 1rem;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--theme-text);
   border-bottom: 1px solid rgba(205, 133, 63, 0.2);
   font-size: 0.95rem;
 }
@@ -362,4 +370,53 @@
     flex-direction: column;
     text-align: center;
   }
+}
+/* THEME OVERRIDES */
+
+.reputation-header h2,
+.card-header,
+.profile-details h4,
+.stat-number,
+.leaderboard-table th,
+.leaderboard-table td {
+  color: var(--theme-text) !important;
+}
+
+.reputation-header p,
+.badge-label,
+.date-label,
+.stat-label {
+  color: var(--theme-text-secondary) !important;
+}
+
+.badge-value,
+.score-value {
+  color: var(--theme-accent) !important;
+}
+
+.profile-card,
+.stats-card,
+.leaderboard-card,
+.score-display,
+.stat-box {
+  background: var(--theme-card) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.stat-box {
+  background: var(--theme-surface) !important;
+}
+
+.leaderboard-table th {
+  background: var(--theme-surface) !important;
+}
+
+
+
+.reputation-header p,
+.badge-label,
+.date-label,
+.date-value,
+.stat-label {
+  color: var(--theme-text-secondary) !important;
 }

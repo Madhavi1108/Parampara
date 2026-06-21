@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/timeline.css" />
     <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link rel="stylesheet" href="styles/theme.css" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -20,6 +21,13 @@
     <!-- Navigation -->
     <nav class="navbar">
       <div class="nav-container">
+        <button
+          id="themeToggle"
+          class="theme-toggle"
+          aria-label="Toggle theme"
+        >
+          🌙
+        </button>
         <div class="logo">
           <h1 data-i18n="brand_name">Parampara</h1>
           <p class="tagline" data-i18n="brand_tagline">
@@ -211,12 +219,42 @@
       </section>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
-      <div class="container">
-        <p data-i18n="footer_copy">
-          © 2024 Parampara. Preserving rural heritage, one story at a time.
-        </p>
+      <div class="footer-container">
+        <!-- Brand Section -->
+        <div class="footer-brand">
+          <h2 class="footer-logo">🏛️ Parampara</h2>
+          <p>
+            Preserving rural heritage, traditions, and stories for future
+            generations.
+          </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="map.html">Explore Map</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="paths.html">Heritage Paths</a></li>
+          </ul>
+        </div>
+
+        <!-- Features -->
+        <div class="footer-links">
+          <h3>Explore</h3>
+          <ul>
+            <li><a href="quest.html">Discovery Quest</a></li>
+            <li><a href="trails.html">Heritage Trails</a></li>
+            <li><a href="chat.html">Talk to Elder</a></li>
+            <li><a href="risk-dashboard.html">Risk Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
       </div>
     </footer>
 
@@ -229,5 +267,6 @@
     <script src="scripts/navbar.js"></script>
     <script src="scripts/main.js"></script>
     <script src="scripts/timeline.js"></script>
+    <script src="scripts/theme.js"></script>
   </body>
 </html>

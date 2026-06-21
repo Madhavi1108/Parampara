@@ -10,8 +10,8 @@
     <title>Cultural Map - Parampara</title>
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/map.css" />
-    <!-- <link rel="stylesheet" href="styles/languageSelector.css" /> -->
-
+    <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link rel="stylesheet" href="styles/theme.css" />
     <link
       href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css"
       rel="stylesheet"
@@ -21,6 +21,13 @@
   <body>   
     <nav class="navbar">
       <div class="nav-container">
+        <button
+        id="themeToggle"
+        class="theme-toggle"
+        aria-label="Toggle theme"
+      >
+        🌙
+      </button>
         <div class="logo">
           <h1 data-i18n="brand_name">Parampara</h1>
           <p class="tagline" data-i18n="brand_tagline">
@@ -106,11 +113,6 @@
         </p>
         <div class="map-controls">
           <!-- language-switcher.js keeps this in sync with the global selector -->
-          <select id="language-selector" class="btn btn-secondary">
-            <option value="en">English</option>
-            <option value="hi">हिन्दी</option>
-            <option value="mr">मराठी</option>
-          </select>
           <button
             id="toggle-heatmap"
             class="btn btn-secondary"
@@ -191,9 +193,10 @@
     <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
     <script src="scripts/translations.js"></script>
     <script src="scripts/map.js"></script>
- <script src="scripts/languageSwitcher.js"></script>
+    <script src="scripts/languageSwitcher.js"></script>
     <script src="scripts/navbar.js"></script>
      <script src="scripts/main.js"></script>
+     <script src="scripts/theme.js"></script>
   </body>
 </html>
  
