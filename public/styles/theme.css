@@ -233,9 +233,15 @@ background: var(--theme-accent-hover) !important;
 .theme-toggle {
 background: transparent !important;
 color: var(--theme-text) !important;
+padding: 5px;
 border: 1px solid var(--theme-border) !important;
+border-radius: 50%;
 }
 
+.theme-toggle:hover{
+  background: var(--theme-card-hover);
+  cursor: pointer;
+}
 /* ==========================================
 FORMS
 ========================================== */
@@ -312,7 +318,8 @@ SCROLLBAR
 ========================================== */
 
 ::-webkit-scrollbar {
-width: 8px;
+width: 12px;
+height: 12px;
 }
 
 ::-webkit-scrollbar-track {
@@ -321,7 +328,10 @@ background: var(--theme-surface);
 
 ::-webkit-scrollbar-thumb {
 background: var(--theme-accent);
-border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background: var(--theme-accent-hover);
 }
 
 /* ==========================================
