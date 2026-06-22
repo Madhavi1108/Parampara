@@ -14,7 +14,7 @@
 }
 
 .timeline-header h2 {
-  font-size: 2.5rem;
+  font-size: 2.7rem;
     color: var(--theme-text);
   text-shadow: none;
   margin-bottom: 0.75rem;
@@ -22,7 +22,7 @@
 }
 
 .timeline-header p {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--theme-text-secondary);
   text-shadow: none;
 }

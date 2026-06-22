@@ -13,7 +13,7 @@
 }
 
 .story-generator-header h2 {
-  font-size: 2.5rem;
+  font-size: 2.7rem;
   color: var(--warm-beige);
   text-shadow: 2px 2px 8px rgba(45, 24, 16, 0.7);
   margin-bottom: 0.75rem;
@@ -21,7 +21,7 @@
 }
 
 .story-generator-header p {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--theme-text-secondary);
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 }

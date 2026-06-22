@@ -13,7 +13,7 @@
 }
 
 .reputation-header h2 {
-  font-size: 2.5rem;
+  font-size: 2.7rem;
   color: var(--warm-beige);
   text-shadow: 2px 2px 8px rgba(45, 24, 16, 0.7);
   margin-bottom: 0.75rem;
@@ -21,7 +21,7 @@
 }
 
 .reputation-header p {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: rgba(245, 222, 179, 0.85);
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 }
