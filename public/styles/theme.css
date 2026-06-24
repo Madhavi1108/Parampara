@@ -810,7 +810,7 @@ body > * {
 }
 
 .nav-menu {
-  display: flex;
+  display: none;
   list-style: none;
   gap: 0.2rem;
   align-items: center;
