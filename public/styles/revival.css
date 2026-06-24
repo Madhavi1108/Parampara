@@ -226,10 +226,15 @@
 
 .tradition-card-body h3 {
   color: var(--warm-beige);
+  height: 3rem;
   font-size: 1.2rem;
   font-weight: bold;
   margin: 0;
+  display: -webkit-box;
   line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .tradition-card-meta {
