@@ -7,21 +7,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const itemSelect = document.getElementById('item-select');
   const styleSelect = document.getElementById('style-select');
   const generateBtn = document.getElementById('generate-btn');
-  
+
+  const outputSection = document.getElementById('story-display-card')
   const storyTitle = document.getElementById('story-title');
   const styleTag = document.getElementById('style-tag');
   const storyText = document.getElementById('story-text');
-  
+
   const summarySection = document.getElementById('summary-section');
   const summaryText = document.getElementById('summary-text-content');
   const highlightsList = document.getElementById('highlights-list');
-  
+
   const statsSection = document.getElementById('stats-section');
   const statLength = document.getElementById('stat-length');
   const statTime = document.getElementById('stat-time');
   const statReferences = document.getElementById('stat-references');
   const statStyleName = document.getElementById('stat-style-name');
-  
+
   const narrationControls = document.getElementById('narration-controls');
   const btnPlay = document.getElementById('btn-play');
   const btnPause = document.getElementById('btn-pause');
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch('/api/story-generator');
       if (!response.ok) throw new Error('Failed to load cultural items');
-      
+
       availableItems = await response.json();
       populateItemSelector();
     } catch (err) {
@@ -61,8 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Populate Item Selector dropdown
   function populateItemSelector() {
-    itemSelect.innerHTML = '<option value="" disabled selected>-- Select an Item --</option>';
-    availableItems.forEach(item => {
+    itemSelect.innerHTML =
+      '<option value="" disabled selected>-- Select an Item --</option>';
+    availableItems.forEach((item) => {
       const option = document.createElement('option');
       option.value = item.name;
       option.textContent = item.name;
@@ -78,22 +80,25 @@ document.addEventListener('DOMContentLoaded', () => {
   generateBtn.addEventListener('click', async () => {
     const itemName = itemSelect.value;
     const style = styleSelect.value;
-    
+
     if (!itemName) return;
 
     // Show loading state
     generateBtn.disabled = true;
     const originalText = generateBtn.innerHTML;
     generateBtn.innerHTML = `<i class="ti ti-loader animated-spin"></i> <span>${getTranslation('btn_generating')}</span>`;
-    storyText.innerHTML = '<div class="empty-state"><i class="ti ti-loader animated-spin"></i><p>Consulting historical archives and crafting your narrative...</p></div>';
+    storyText.innerHTML =
+      '<div class="empty-state"><i class="ti ti-loader animated-spin"></i><p>Consulting historical archives and crafting your narrative...</p></div>';
 
     // Cancel any ongoing narration
     stopSpeech();
 
     try {
-      const response = await fetch(`/api/story-generator?item=${encodeURIComponent(itemName)}`);
+      const response = await fetch(
+        `/api/story-generator?item=${encodeURIComponent(itemName)}`
+      );
       if (!response.ok) throw new Error('Failed to fetch details');
-      
+
       selectedItemDetails = await response.json();
       generateStoryContent(selectedItemDetails, style);
     } catch (err) {
@@ -106,14 +111,25 @@ document.addEventListener('DOMContentLoaded', () => {
       generateBtn.disabled = false;
       generateBtn.innerHTML = originalText;
     }
+
+    scrollToView();
   });
 
   // Rule-based narrative engine
   function generateStoryContent(data, style) {
-    const { name, village, history, traditions, festivals, landmarks, culturalSignificance, notableFacts } = data;
-    
+    const {
+      name,
+      village,
+      history,
+      traditions,
+      festivals,
+      landmarks,
+      culturalSignificance,
+      notableFacts,
+    } = data;
+
     let storyHtml = '';
-    
+
     if (style === 'educational') {
       storyHtml = `
         <p>The historical journey of <strong>${name}</strong> began in the region of <strong>${village}</strong>, serving as a testament to the region's rich cultural fabric. Historically, ${history[0]} As time progressed, ${history[1]} This laid the groundwork for its modern evolution and current preservation practices. Today, ${history[2]}</p>
@@ -157,21 +173,28 @@ document.addEventListener('DOMContentLoaded', () => {
     highlightsList.innerHTML = '';
     const highlights = [
       `Deep historical roots in ${village}`,
-      traditions[0].replace(/^\w/, c => c.toUpperCase()),
-      culturalSignificance[1].replace(/^\w/, c => c.toUpperCase()),
-      notableFacts[0].replace(/^\w/, c => c.toUpperCase())
+      traditions[0].replace(/^\w/, (c) => c.toUpperCase()),
+      culturalSignificance[1].replace(/^\w/, (c) => c.toUpperCase()),
+      notableFacts[0].replace(/^\w/, (c) => c.toUpperCase()),
     ];
 
-    highlights.forEach(hl => {
+    highlights.forEach((hl) => {
       const li = document.createElement('li');
       li.textContent = hl;
       highlightsList.appendChild(li);
     });
 
     // Compute Stats
-    const words = generatedStory.split(/\s+/).filter(w => w.length > 0).length;
+    const words = generatedStory
+      .split(/\s+/)
+      .filter((w) => w.length > 0).length;
     const readingTime = Math.ceil(words / 200);
-    const refsCount = history.length + traditions.length + festivals.length + landmarks.length + notableFacts.length;
+    const refsCount =
+      history.length +
+      traditions.length +
+      festivals.length +
+      landmarks.length +
+      notableFacts.length;
 
     // Update Stats UI
     statLength.innerHTML = `${words} <small style="font-size:0.75rem; color:var(--text-muted);">${getTranslation('words')}</small>`;
@@ -183,6 +206,13 @@ document.addEventListener('DOMContentLoaded', () => {
     summarySection.classList.remove('hidden');
     statsSection.classList.remove('hidden');
     narrationControls.classList.remove('hidden');
+  }
+
+  function scrollToView() {
+    outputSection.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
   }
 
   // TTS Narration Logic
@@ -213,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!text) return;
 
     speechUtterance = new SpeechSynthesisUtterance(text);
-    
+
     // Choose voice matching current UI language
     let targetLocale = 'en-US';
     if (lang === 'hi') targetLocale = 'hi-IN';
@@ -222,8 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
     speechUtterance.lang = targetLocale;
 
     const voices = synth.getVoices();
-    const matchingVoice = voices.find(v => v.lang.startsWith(targetLocale) || v.lang.startsWith(lang));
-    
+    const matchingVoice = voices.find(
+      (v) => v.lang.startsWith(targetLocale) || v.lang.startsWith(lang)
+    );
+
     if (matchingVoice) {
       speechUtterance.voice = matchingVoice;
     }
@@ -272,7 +304,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Translation mapping helper
   function getTranslation(key) {
     const lang = localStorage.getItem('parampara_lang') || 'en';
-    if (typeof PARAMPARA_TRANSLATIONS !== 'undefined' && PARAMPARA_TRANSLATIONS[lang]) {
+    if (
+      typeof PARAMPARA_TRANSLATIONS !== 'undefined' &&
+      PARAMPARA_TRANSLATIONS[lang]
+    ) {
       return PARAMPARA_TRANSLATIONS[lang][key] || key;
     }
     return key;
@@ -281,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Listen to Language Change event to keep dynamically generated contents in sync
   window.addEventListener('parampara:langchange', (e) => {
     const newLang = e.detail.lang;
-    
+
     // Update dropdown select placeholder if no item selected yet
     if (!itemSelect.value) {
       populateItemSelector();
@@ -292,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const style = styleSelect.value;
       generateStoryContent(selectedItemDetails, style);
     }
-    
+
     // Reset TTS on lang switch to prevent speaking old story lang
     stopSpeech();
   });
