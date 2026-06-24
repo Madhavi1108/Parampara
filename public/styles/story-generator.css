@@ -13,7 +13,7 @@
 }
 
 .story-generator-header h2 {
-  font-size: 2.5rem;
+  font-size: 2.7rem;
   color: var(--warm-beige);
   text-shadow: 2px 2px 8px rgba(45, 24, 16, 0.7);
   margin-bottom: 0.75rem;
@@ -21,11 +21,17 @@
 }
 
 .story-generator-header p {
-  font-size: 1.1rem;
-  color: rgba(245, 222, 179, 0.85);
+  font-size: 1.3rem;
+  color: var(--theme-text-secondary);
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 }
 
+.story-generator-header,
+.story-generator-header h2 ,
+.story-generator-header p {
+  background: transparent !important;
+  box-shadow: none !important;
+}
 /* Grid Layout */
 .story-grid {
   display: grid;
@@ -439,4 +445,99 @@
   .stats-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* =========================
+   THEME OVERRIDES
+========================= */
+
+.story-generator-header h2,
+.config-card h3,
+.story-card-header h3,
+.summary-card h4,
+.stats-card h4,
+.disclaimer-bar strong {
+  color: var(--theme-text) !important;
+}
+
+.story-generator-header p,
+.form-group label,
+.story-body,
+.summary-block p,
+.highlights-block li,
+.stat-label,
+.disclaimer-bar p,
+.empty-state,
+.empty-state p {
+  color: var(--theme-text-secondary) !important;
+}
+
+.config-card,
+.story-card,
+.summary-card,
+.stats-card,
+.disclaimer-bar {
+  background: var(--theme-card) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.stat-item,
+.story-style-tag,
+.btn-narration {
+  background: var(--theme-surface) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.form-select {
+  background: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.form-select option {
+  background: var(--theme-card) !important;
+  color: var(--theme-text) !important;
+}
+
+.story-style-tag,
+.stat-value,
+.disclaimer-bar i {
+  color: var(--theme-accent) !important;
+}
+
+.story-body,
+.summary-block p,
+.highlights-block li,
+.disclaimer-bar p {
+  color: var(--theme-text) !important;
+}
+
+.btn-narration {
+  color: var(--theme-text) !important;
+}
+
+.btn-narration:hover:not(:disabled) {
+  background: var(--theme-accent) !important;
+  color: var(--theme-bg) !important;
+}
+
+.btn-narration.speaking-active {
+  background: var(--theme-accent) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-bg) !important;
+}
+
+.stat-item {
+  border-color: var(--theme-border) !important;
+}
+
+.empty-state i {
+  color: var(--theme-accent) !important;
+}
+
+.story-card-header,
+.narration-toolbar,
+.summary-card h4,
+.config-card h3 {
+  border-color: var(--theme-border) !important;
 }

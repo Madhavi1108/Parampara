@@ -7,6 +7,14 @@
   --primary-color: #0066ff;
   --text-color: #333;
   --accent-color: #ff6600;
+    /* Typography Scale */
+  --font-xs: 0.75rem;      /* 12px */
+  --font-sm: 0.875rem;     /* 14px */
+  --font-base: 1rem;       /* 16px */
+  --font-md: 1.125rem;     /* 18px */
+  --font-lg: 1.25rem;      /* 20px */
+  --font-xl: 1.5rem;       /* 24px */
+  --font-2xl: 2rem;        /* 32px */
 }
 
 body {
@@ -14,6 +22,8 @@ body {
   font-family: 'Inter', sans-serif;
   background: var(--bg-color);
   color: var(--text-color);
+  font-size: var(--font-base);
+  line-height: 1.8;
 }
 
 .container {
@@ -47,13 +57,17 @@ body {
 
 .profile-header .info h2 {
   margin: 0 0 0.5rem;
-  font-size: 1.8rem;
+  font-size: var(--font-2xl);
   color: var(--primary-color);
+  font-weight: 700;
 }
 
 .profile-header .info p {
   margin: 0.3rem 0;
+  font-size: var(--font-base);
+  line-height: 1.7;
 }
+
 
 .profile-header .info .badge {
   display: inline-block;
@@ -62,7 +76,8 @@ body {
   background: var(--accent-color);
   color: #fff;
   border-radius: 4px;
-  font-size: 0.85rem;
+  font-size: var(--font-sm);
+  font-weight: 600;
 }
 
 section {
@@ -71,12 +86,14 @@ section {
 
 section h2 {
   margin-bottom: 0.8rem;
-  font-size: 1.5rem;
+  font-size: var(--font-xl);
   color: var(--primary-color);
+  font-weight: 700;
 }
 
 .biography p {
-  line-height: 1.6;
+  line-height: 1.8;
+  font-size: var(--font-base);
 }
 
 .portfolio .grid {
@@ -95,6 +112,13 @@ section h2 {
 
 .contact p {
   margin: 0.4rem 0;
+  font-size: var(--font-base);
+  line-height: 1.7;
+}
+
+.related li {
+  font-size: var(--font-base);
+  line-height: 1.7;
 }
 
 .related ul {
@@ -103,13 +127,18 @@ section h2 {
 }
 
 @media (max-width: 600px) {
-  .profile-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  .profile-header .info h2 {
+      font-size: var(--font-xl);
+    }
 
-  .profile-header img {
-    width: 100%;
-    height: auto;
-  }
+    section h2 {
+      font-size: var(--font-lg);
+    }
+
+    .profile-header .info p,
+    .biography p,
+    .contact p,
+    .related li {
+      font-size: 0.95rem;
+    }
 }

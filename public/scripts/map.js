@@ -1,9 +1,9 @@
 // Map Page JavaScript
-
 let map;
 let markers = [];
 let heatmapLayer = null;
 let ambientSoundEnabled = true;
+let toggleSound = true;
 let currentSound = null;
 let heatmapMarkers = [];
 
@@ -14,31 +14,34 @@ let currentLanguage =
 
 document.addEventListener('DOMContentLoaded', () => {
   const selector = document.getElementById('language-selector');
-  selector.value = currentLanguage;
 
-  selector.addEventListener('change', (e) => {
-    currentLanguage = e.target.value;
+  if (selector) {
+    selector.value = currentLanguage;
 
-    localStorage.setItem('parampara_lang', currentLanguage);
-    localStorage.setItem('language', currentLanguage);
+    selector.addEventListener('change', (e) => {
+      currentLanguage = e.target.value;
 
-    if (map && map.isStyleLoaded()) {
-      setMapLanguage(currentLanguage);
-    }
+      localStorage.setItem('parampara_lang', currentLanguage);
+      localStorage.setItem('language', currentLanguage);
 
-    if (map) {
-      addVillageMarkers();
-    }
+      if (map && map.isStyleLoaded()) {
+        setMapLanguage(currentLanguage);
+      }
 
-    translatePage();
-  });
+      if (map) {
+        addVillageMarkers();
+      }
+
+      translatePage();
+    });
+  }
 
   initializeMap();
   setupEventListeners();
   translatePage();
 });
 
-�गीते'],
+�गीते'],
     },
     festivals: {
       en: ['Chhath Puja', 'Teej'],
@@ -96,12 +99,13 @@ function getTranslation() {
 function translatePage() {
   const t = getTranslation();
 
-  document.querySelector('.map-header h2').textContent = t.mapTitle;
+  const title = document.querySelector('.map-header h2');
+const subtitle = document.querySelector('.map-header p');
+const villageName = document.getElementById('village-name');
 
-  document.querySelector('.map-header p').textContent = t.mapDescription;
-
-  document.getElementById('village-name').textContent = t.selectVillage;
-
+if (title) title.textContent = t.mapTitle;
+if (subtitle) subtitle.textContent = t.mapDescription;
+if (villageName) villageName.textContent = t.selectVillage;
   document.getElementById('info-content').innerHTML =
     `<p>${t.clickVillage}</p>`;
 
@@ -113,9 +117,9 @@ function translatePage() {
     heatmapBtn.textContent = t.toggleHeatmap;
   }
 
-  document.getElementById('toggle-sound').textContent = ambientSoundEnabled
-    ? t.soundOn
-    : t.soundOff;
+  // document.getElementById('toggle-sound').textContent = ambientSoundEnabled
+  //   ? t.soundOn
+  //   : t.soundOff;
 
   updateMapUnavailableNotice();
 }
@@ -245,7 +249,7 @@ function addVillageMarker(village) {
   marker.getElement().addEventListener('click', (e) => {
     e.stopPropagation();
     showVillageInfo(village);
-    playAmbientSound(village.ambientSound);
+    // playAmbientSound(village.ambientSound);
   });
 
   // Store reference for later color updates
@@ -314,7 +318,6 @@ function showVillageInfo(village) {
 
   const infoContent = document.getElementById('info-content');
 
-  // villageName.textContent = village.name;
   villageName.textContent = village.name[currentLanguage];
 
   infoContent.innerHTML = `
@@ -356,17 +359,7 @@ function showVillageInfo(village) {
 
 function playAmbientSound(type) {
   if (!ambientSoundEnabled) return;
-
-  // In a real implementation, you would play actual audio files
-  // For now, we'll just log it
   console.log(`Playing ambient sound: ${type}`);
-
-  // You can integrate actual audio files here
-  // const audio = new Audio(`/sounds/${type}.mp3`);
-  // audio.loop = true;
-  // audio.volume = 0.3;
-  // audio.play();
-  // currentSound = audio;
 }
 
 function setupEventListeners() {
@@ -408,13 +401,12 @@ function toggleHeatmap() {
   const t = getTranslation();
 
   if (heatmapLayer) {
-    // Remove heatmap overlay divs
     heatmapMarkers.forEach((m) => m.remove());
     heatmapMarkers = [];
     heatmapLayer = null;
     document.getElementById('toggle-heatmap').textContent = t.toggleHeatmap;
   } else {
-    heatmapLayer = true; // flag
+    heatmapLayer = true;
 
     sampleVillages.forEach((village) => {
       const intensity = Math.random() * 0.5 + 0.5;
@@ -440,19 +432,19 @@ function toggleHeatmap() {
   }
 }
 
-function toggleSound() {
-  ambientSoundEnabled = !ambientSoundEnabled;
-  const t = getTranslation();
+// function toggleSound() {
+//   ambientSoundEnabled = !ambientSoundEnabled;
+//   const t = getTranslation();
 
-  document.getElementById('toggle-sound').textContent = ambientSoundEnabled
-    ? t.soundOn
-    : t.soundOff;
+//   document.getElementById('toggle-sound').textContent = ambientSoundEnabled
+//     ? t.soundOn
+//     : t.soundOff;
 
-  if (!ambientSoundEnabled && currentSound) {
-    currentSound.pause();
-    currentSound = null;
-  }
-}
+//   if (!ambientSoundEnabled && currentSound) {
+//     currentSound.pause();
+//     currentSound = null;
+//   }
+// }
 
 async function loadCulturalItems() {
   if (!map) {
@@ -478,7 +470,7 @@ async function loadCulturalItems() {
           .addTo(map);
 
         el.addEventListener('click', () => {
-          showPopup(item); // better than alert
+          showPopup(item);
         });
       }
     });
@@ -509,26 +501,6 @@ function showPopup(item) {
   infoPanel.classList.add('active');
 }
 
-// const backToTopBtn = document.getElementById("backToTopBtn");
-const backToTopBtn = document.getElementById('backToTopBtn');
-
-if (backToTopBtn) {
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 300) {
-      backToTopBtn.classList.add('show');
-    } else {
-      backToTopBtn.classList.remove('show');
-    }
-  });
-
-  backToTopBtn.addEventListener('click', () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  });
-}
-
 // ── Re-render map and elements when language changes globally
 window.addEventListener('parampara:langchange', (e) => {
   const newLang = e.detail.lang;
@@ -547,4 +519,26 @@ window.addEventListener('parampara:langchange', (e) => {
   }
 
   translatePage();
+});
+
+const ambientMusic = new Audio("assets/sounds/ambientSound.mp3");
+
+ambientMusic.loop = true;
+ambientMusic.volume = 0.3;
+
+let toggle_btn = document.getElementById('toggle-sound');
+function soundToggler() {
+  toggleSound = !toggleSound;
+  if(toggleSound){
+    ambientMusic.pause()
+    toggle_btn.textContent = "Ambient Sound : ON"
+  }else{
+    ambientMusic.play()
+    toggle_btn.textContent = "Ambient Sound : OFF"
+  }
+}
+
+toggle_btn.addEventListener("click", () => {
+  toggle_btn.textContent = ""
+  soundToggler()
 });

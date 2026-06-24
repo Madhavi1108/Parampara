@@ -7,10 +7,61 @@
  *   3. Render summary counts (Total, High, Medium, Low risk).
  *   4. Dynamically generate detail cards for each heritage tradition.
  *   5. Listen to language change events and re-translate dynamic contents.
+ *   6. Fall back to local mock data when the live API is unavailable.
  */
 
 // Global state to store loaded cultural assets
 let culturalAssets = [];
+
+// Tracks whether currently rendered data is mock/fallback data
+let isUsingMockData = false;
+
+/**
+ * Local mock dataset used as a fallback when the live API
+ * is unreachable or returns no usable data.
+ */
+const MOCK_HERITAGE_ASSETS = [
+  {
+    name: 'Kantha Embroidery Patterns',
+    location: 'Kantha Village, Bengal',
+    artisans: 12,
+    records: 18,
+    lastUpdated: '2026-05-15',
+    engagement: 85,
+  },
+  {
+    name: 'Dokra Metal Craft',
+    location: 'Dhamtari, Chhattisgarh',
+    artisans: 3,
+    records: 5,
+    lastUpdated: '2024-01-10',
+    engagement: 40,
+  },
+  {
+    name: 'Madhubani Paintings',
+    location: 'Madhubani, Bihar',
+    artisans: 25,
+    records: 30,
+    lastUpdated: '2026-06-01',
+    engagement: 90,
+  },
+  {
+    name: 'Sikki Grass Craft',
+    location: 'Bihar',
+    artisans: 4,
+    records: 7,
+    lastUpdated: '2025-08-20',
+    engagement: 55,
+  },
+  {
+    name: 'Kathputli String Puppetry',
+    location: 'Rajasthan',
+    artisans: 2,
+    records: 2,
+    lastUpdated: '2023-03-12',
+    engagement: 22,
+  },
+];
 
 document.addEventListener('DOMContentLoaded', () => {
   // Load and render initial dashboard data
@@ -20,6 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('parampara:langchange', () => {
     if (culturalAssets.length > 0) {
       renderDashboard(culturalAssets);
+      if (isUsingMockData) {
+        showMockDataBanner();
+      }
     }
   });
 });
@@ -44,7 +98,8 @@ function translate(key) {
 }
 
 /**
- * Fetch cultural asset data from server API endpoint
+ * Fetch cultural asset data from server API endpoint.
+ * Falls back to local mock data if the API is unavailable or returns no data.
  */
 async function loadDashboardData() {
   const gridContainer = document.getElementById('assets-grid');
@@ -54,20 +109,62 @@ async function loadDashboardData() {
       throw new Error(`API returned HTTP error status: ${response.status}`);
     }
 
-    culturalAssets = await response.json();
+    const data = await response.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new Error('API returned empty or invalid data');
+    }
+
+    culturalAssets = data;
+    isUsingMockData = false;
     renderDashboard(culturalAssets);
   } catch (error) {
-    console.error('Error fetching risk dashboard data:', error);
-    if (gridContainer) {
-      gridContainer.innerHTML = `
-        <div class="error-state">
-          <i class="ti ti-exclamation-circle" style="font-size: 3rem; color: var(--rust-red); display: block; margin-bottom: 1rem;"></i>
-          <h3>Failed to load dashboard data</h3>
-          <p>Please check your connection and try again later.</p>
-        </div>
-      `;
+    console.warn(
+      'Live API data unavailable, falling back to mock data:',
+      error.message
+    );
+
+    try {
+      culturalAssets = MOCK_HERITAGE_ASSETS;
+      isUsingMockData = true;
+      renderDashboard(culturalAssets);
+      showMockDataBanner();
+    } catch (renderError) {
+      // True last-resort fallback: even mock data rendering failed
+      console.error('Failed to render fallback mock data:', renderError);
+      if (gridContainer) {
+        gridContainer.innerHTML = `
+          <div class="error-state">
+            <i class="ti ti-exclamation-circle" style="font-size: 3rem; color: var(--rust-red); display: block; margin-bottom: 1rem;"></i>
+            <h3>Failed to load dashboard data</h3>
+            <p>Please check your connection and try again later.</p>
+          </div>
+        `;
+      }
     }
   }
+}
+
+/**
+ * Display a small non-blocking banner above the asset grid
+ * indicating that sample/mock data is being shown instead of live data.
+ */
+function showMockDataBanner() {
+  // Avoid duplicate banners if already present
+  if (document.getElementById('mock-data-banner')) return;
+
+  const assetsSection = document.querySelector('.assets-section');
+  if (!assetsSection) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'mock-data-banner';
+  banner.className = 'mock-data-banner';
+  banner.innerHTML = `
+    <i class="ti ti-info-circle"></i>
+    <span>Showing sample data — live data unavailable</span>
+  `;
+
+  assetsSection.insertBefore(banner, assetsSection.firstChild);
 }
 
 /**

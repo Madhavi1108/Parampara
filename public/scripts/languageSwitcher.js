@@ -81,49 +81,70 @@
 
   // ── Inject floating language-selector pill into navbar ────────────────────
   function injectSelector() {
-    if (document.getElementById('global-lang-selector')) return; // already there
+    if (document.getElementById('global-lang-selector')) return;
 
-    var langs = [
+    const langs = [
       { value: 'en', label: 'English' },
       { value: 'hi', label: 'हिन्दी' },
       { value: 'mr', label: 'मराठी' },
     ];
 
-    var sel = document.createElement('select');
-    sel.id = 'global-lang-selector';
-    sel.className = 'global-lang-selector';
-    sel.setAttribute('aria-label', 'Select language');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'lang-selector-wrapper';
 
-    langs.forEach(function (l) {
-      var opt = document.createElement('option');
-      opt.value = l.value;
-      opt.textContent = l.label;
-      sel.appendChild(opt);
+    const btn = document.createElement('button');
+    btn.id = 'global-lang-selector';
+    btn.className = 'lang-btn';
+
+    const currentLang = getCurrentLang();
+    btn.textContent =
+      langs.find((l) => l.value === currentLang)?.label || 'English';
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'lang-dropdown';
+
+    langs.forEach((lang) => {
+      const item = document.createElement('button');
+      item.className = 'lang-option';
+      item.textContent = lang.label;
+
+      item.addEventListener('click', () => {
+        btn.textContent = lang.label;
+
+        localStorage.setItem(STORAGE_KEY, lang.value);
+        localStorage.setItem('language', lang.value);
+
+        applyTranslations(lang.value);
+
+        const mapSel = document.getElementById('language-selector');
+        if (mapSel) mapSel.value = lang.value;
+
+        dropdown.classList.remove('show');
+      });
+
+      dropdown.appendChild(item);
     });
 
-    sel.value = getCurrentLang();
-
-    sel.addEventListener('change', function () {
-      var chosen = this.value;
-      localStorage.setItem(STORAGE_KEY, chosen);
-      localStorage.setItem('language', chosen);
-      applyTranslations(chosen);
-      // Keep map page selector in sync
-      var mapSel = document.getElementById('language-selector');
-      if (mapSel) mapSel.value = chosen;
+    btn.addEventListener('click', () => {
+      dropdown.classList.toggle('show');
     });
 
-    // Wrap in a div and append to nav-container
-    var navContainer = document.querySelector('.nav-container');
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    wrapper.append(btn, dropdown);
+
+    const navContainer = document.querySelector('.nav-container');
+
     if (navContainer) {
-      var wrapper = document.createElement('div');
-      wrapper.className = 'lang-selector-wrapper';
-      wrapper.appendChild(sel);
       navContainer.appendChild(wrapper);
     } else {
-      // Fallback: fixed pill bottom-right corner
-      sel.style.cssText = 'position:fixed;bottom:1rem;right:1rem;z-index:9999;';
-      document.body.appendChild(sel);
+      wrapper.style.cssText =
+        'position:fixed;bottom:1rem;right:1rem;z-index:9999;';
+      document.body.appendChild(wrapper);
     }
   }
 

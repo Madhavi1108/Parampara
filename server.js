@@ -222,12 +222,7 @@ app.use(notFound);
 // Error Middleware
 app.use(errorHandler);
 
-//map key
 
-//custom 404 route
-app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, './public', '404.html'));
-});
 
 // Start Server
 app.listen(PORT, () => {

@@ -11,16 +11,21 @@
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/quest.css" />
     <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link rel="stylesheet" href="styles/theme.css" />
   </head>
   <body>
-    <nav class="navbar">
+   <nav class="navbar">
       <div class="nav-container">
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
+          🌙
+        </button>
         <div class="logo">
           <h1 data-i18n="brand_name">Parampara</h1>
           <p class="tagline" data-i18n="brand_tagline">
             Preserving Living Traditions
           </p>
         </div>
+        <!-- Language selector injected here by language-switcher.js -->
         <button
           class="hamburger"
           id="hamburgerBtn"
@@ -92,6 +97,41 @@
       </div>
     </nav>
 
+    <!-- Full Width Nav Menu — BAHAR hai nav ke -->
+    <div class="nav-fullmenu" id="navFullMenu">
+      <div class="nav-fullmenu-inner">
+        <p class="nav-fullmenu-label">Navigation</p>
+        <div class="nav-fullmenu-grid">
+          <a href="index.html" class="active"
+            ><i class="ti ti-home"></i> Home</a
+          >
+          <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
+          <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
+          <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
+          <a href="quest.html"><i class="ti ti-compass"></i> Discovery Quest</a>
+          <a href="trails.html"
+            ><i class="ti ti-trail-sign"></i> Heritage Trails</a
+          >
+          <a href="chat.html"
+            ><i class="ti ti-message-circle"></i> Talk to Elder</a
+          >
+          <a href="risk-dashboard.html"
+            ><i class="ti ti-alert-triangle"></i> Risk Dashboard</a
+          >
+          <a href="reputation.html"
+            ><i class="ti ti-medal"></i> Contributor Reputation</a
+          >
+          <a href="timeline.html"
+            ><i class="ti ti-history"></i> Historical Timeline</a
+          >
+          <a href="story-generator.html"
+            ><i class="ti ti-books"></i> AI Story Generator</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="nav-overlay" id="navOverlay"></div>
+
     <main class="quest-container">
       <div class="quest-header">
         <h2 data-i18n="quest_title">The Discovery Quest</h2>
@@ -141,14 +181,74 @@
         </div>
       </div>
     </main>
+    
+    
 
     <footer class="footer">
-      <div class="container">
-        <p data-i18n="footer_copy">
-          © 2024 Parampara. Preserving rural heritage, one story at a time.
-        </p>
+      <div class="footer-container">
+        <!-- Brand Section -->
+        <div class="footer-brand">
+          <h2 class="footer-logo">🏛️ Parampara</h2>
+          <p>
+            Preserving rural heritage, traditions, and stories for future
+            generations.
+          </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-links">
+          <h3>More about Parampara</h3>
+          <ul>
+            <li>
+              <a href=""
+                ><img
+                  src="./assets/logos/instagram-svgrepo-com.svg"
+                  alt="insta-logo"
+              /></a>
+            </li>
+
+            <li>
+              <a href=""
+                ><img
+                  src="./assets/logos/facebook-svgrepo-com.svg"
+                  alt="facebook-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img src="./assets/logos/twitter-svgrepo-com.svg" alt="X-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  src="./assets/logos/reddit-fill-svgrepo-com.svg"
+                  alt="reddit-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  src="./assets/logos/github-142-svgrepo-com.svg"
+                  alt="git-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  src="./assets/logos/youtube-svgrepo-com.svg"
+                  alt="yt-logo"
+              /></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
       </div>
     </footer>
+
     <!-- Back To Top Button -->
     <button id="backToTopBtn" aria-label="Back to top">↑</button>
     <script src="scripts/quest.js"></script>
@@ -157,5 +257,6 @@
     <script src="scripts/navbar.js"></script>
 
     <script src="scripts/main.js"></script>
+    <script src="scripts/theme.js"></script>
   </body>
 </html>
