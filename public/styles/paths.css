@@ -213,9 +213,6 @@ main.paths-container {
   flex: 1;
 }
 
-.footer {
-  margin: 0;
-}
 /* Back To Top Button */
 #backToTopBtn {
   position: fixed;

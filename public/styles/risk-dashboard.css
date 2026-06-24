@@ -174,14 +174,13 @@
 
 .asset-card-header {
   padding: 1.5rem;
-  padding-bottom: 0;
+  padding-bottom: 10px;
   background: var(--card-bg-alt);
   border-bottom: 2px solid var(--accent-color);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-gap: 16px;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 
 .asset-card-title {
@@ -215,6 +214,8 @@ gap: 16px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin-left: auto;
+  margin-top: -25px;
 }
 
 .risk-badge.high-risk {

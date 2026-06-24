@@ -82,6 +82,11 @@ app.get('/api/language', (req, res) => {
 // API Routes
 app.use('/api/items', itemRoutes);
 
+// Heritage Score API
+const heritageScoreRoutes = require('./routes/heritageScore.routes');
+app.use('/api/heritage-score', heritageScoreRoutes);
+
+
 app.use('/api/paths', pathRoutes);
 
 app.use('/api/progress', progressRoutes);

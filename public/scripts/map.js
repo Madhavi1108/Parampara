@@ -40,86 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
   translatePage();
 });
-const sampleVillages = [
-  {
-    name: {
-      en: 'Sundarbans Village',
-      hi: 'सुंदरबन गांव',
-      mr: 'सुंदरबन गाव',
-    },
-    coordinates: [21.9497, 88.8156],
-    traditions: {
-      en: [
-        'Folk tales about tigers',
-        'Traditional fishing methods',
-        'Honey collection rituals',
-      ],
-      hi: [
-        'बाघों की लोककथाएँ',
-        'पारंपरिक मछली पकड़ने की विधियाँ',
-        'शहद संग्रह अनुष्ठान',
-      ],
-      mr: ['वाघांच्या लोककथा', 'पारंपरिक मासेमारी पद्धती', 'मध संकलन विधी'],
-    },
-    festivals: {
-      en: ['Bonbibi Puja', 'Honey Festival'],
-      hi: ['बोनबिबी पूजा', 'हनी फेस्टिवल'],
-      mr: ['बोनबिबी पूजा', 'हनी फेस्टिवल'],
-    },
-    crafts: {
-      en: ['Coconut shell crafts', 'Traditional boat making'],
-      hi: ['नारियल शिल्प', 'पारंपरिक नाव निर्माण'],
-      mr: ['नारळ हस्तकला', 'पारंपरिक होडी निर्मिती'],
-    },
-    description: {
-      en: 'A village in the Sundarbans known for its unique relationship with nature and tigers.',
-      hi: 'सुंदरबन का एक गांव जो प्रकृति और बाघों के साथ अपने अनोखे संबंध के लिए प्रसिद्ध है।',
-      mr: 'निसर्ग आणि वाघांशी असलेल्या अनोख्या नात्यासाठी प्रसिद्ध गाव.',
-    },
-    ambientSound: 'birds',
-  },
 
-  {
-    name: {
-      en: 'Kantha Village, Bengal',
-      hi: 'कांथा गांव, बंगाल',
-      mr: 'कांथा गाव, बंगाल',
-    },
-    coordinates: [22.5726, 88.3639],
-    traditions: {
-      en: ['Kantha embroidery', 'Oral storytelling', 'Traditional songs'],
-      hi: ['कांथा कढ़ाई', 'मौखिक कथाएँ', 'पारंपरिक गीत'],
-      mr: ['कांथा भरतकाम', 'लोककथा', 'पारंपरिक गीते'],
-    },
-    festivals: {
-      en: ['Durga Puja', 'Kali Puja'],
-      hi: ['दुर्गा पूजा', 'काली पूजा'],
-      mr: ['दुर्गा पूजा', 'काली पूजा'],
-    },
-    crafts: {
-      en: ['Kantha stitch work', 'Traditional sarees'],
-      hi: ['कांथा सिलाई', 'पारंपरिक साड़ियाँ'],
-      mr: ['कांथा शिवणकाम', 'पारंपरिक साड्या'],
-    },
-    description: {
-      en: 'Famous for Kantha embroidery, where old saris are layered and stitched.',
-      hi: 'कांथा कढ़ाई के लिए प्रसिद्ध, जिसमें पुरानी साड़ियों को जोड़कर सुंदर डिज़ाइन बनाए जाते हैं।',
-      mr: 'कांथा भरतकामासाठी प्रसिद्ध.',
-    },
-    ambientSound: 'flute',
-  },
-
-  {
-    name: {
-      en: 'Madhubani Village, Bihar',
-      hi: 'मधुबनी गांव, बिहार',
-      mr: 'मधुबनी गाव, बिहार',
-    },
-    coordinates: [26.3537, 86.0719],
-    traditions: {
-      en: ['Madhubani painting', 'Mithila art', 'Folk songs'],
-      hi: ['मधुबनी चित्रकला', 'मिथिला कला', 'लोकगीत'],
-      mr: ['मधुबनी चित्रकला', 'मिथिला कला', 'लोकगीते'],
+�गीते'],
     },
     festivals: {
       en: ['Chhath Puja', 'Teej'],
@@ -302,47 +224,19 @@ function setMapLanguage(lang) {
   });
 }
 
-// function addVillageMarker(village) {
-//   const el = document.createElement('div');
-
-//   el.className = 'marker';
-
-//   // IMPORTANT: make it clickable
-//   el.style.width = '20px';
-//   el.style.height = '20px';
-//   el.style.borderRadius = '50%';
-//   el.style.background = '#f4a261';
-//   el.style.border = '2px solid white';
-//   el.style.cursor = 'pointer';
-//   el.style.pointerEvents = 'auto';
-
-//   const marker = new maplibregl.Marker(el)
-//     .setLngLat([village.coordinates[1], village.coordinates[0]])
-//     .addTo(map);
-
-//   // safer: attach via marker element
-//   marker.getElement().addEventListener('click', (e) => {
-//     e.stopPropagation(); // important
-//     showVillageInfo(village);
-//     // playAmbientSound(village.ambientSound);
-//   });
-
-//   markers.push(marker);
-// }
-
-// function addVillageMarkers() {
-//   if (!map) {
-//     return;
-//   }
-
-//   // Remove existing markers
-//   markers.forEach((m) => m.remove());
-//   markers = [];
-
-//   sampleVillages.forEach((village) => addVillageMarker(village));
-// }
-
 function addVillageMarker(village) {
+  const el = document.createElement('div');
+
+  el.className = 'marker';
+
+  el.style.width = '20px';
+  el.style.height = '20px';
+  el.style.borderRadius = '50%';
+  el.style.background = '#f4a261';
+  el.style.border = '2px solid white';
+  el.style.cursor = 'pointer';
+  el.style.pointerEvents = 'auto';
+
   const popup = new maplibregl.Popup({
     closeButton: true,
     closeOnClick: true,
@@ -352,26 +246,68 @@ function addVillageMarker(village) {
       <p>${village.description[currentLanguage]}</p>
   `);
 
-  const marker = new maplibregl.Marker({
-    draggable: false,
-  })
+  const marker = new maplibregl.Marker(el)
     .setLngLat([village.coordinates[1], village.coordinates[0]])
     .setPopup(popup)
     .addTo(map);
 
-  marker.getElement().style.cursor = 'pointer';
-
-  // Force popup open on marker click
   marker.getElement().addEventListener('click', (e) => {
     e.stopPropagation();
 
     popup
       .setLngLat([village.coordinates[1], village.coordinates[0]])
       .addTo(map);
+
+    showVillageInfo(village);
   });
 
-  markers.push(marker);
+  markers.push({
+    id: village.id,
+    marker,
+    element: el,
+  });
 }
+
+// Update marker colors based on scores
+async function updateMarkerColors() {
+  if (!map) return;
+  const checkbox = document.getElementById('toggle-heritage-health');
+  const showHealth = checkbox && checkbox.checked;
+
+  // If not showing health view, reset to default colors
+  if (!showHealth) {
+    markers.forEach((m) => {
+      m.element.style.background = '#f4a261';
+    });
+    return;
+  }
+
+  // Fetch scores for all villages
+  const scorePromises = markers.map((m) =>
+    fetch(`/api/heritage-score/village/${m.id}`)
+      .then((res) => res.json())
+      .catch(() => ({ score: 0, category: 'Endangered' }))
+  );
+  const results = await Promise.all(scorePromises);
+
+  results.forEach((result, idx) => {
+    const el = markers[idx].element;
+    let color = '#ff4d4d'; // Endangered (red)
+    if (result.category === 'Thriving') color = '#4caf50'; // green
+    else if (result.category === 'Stable') color = '#2196f3'; // blue
+    else if (result.category === 'Vulnerable') color = '#ff9800'; // orange
+    el.style.background = color;
+    // Optionally set tooltip
+    el.title = `${result.category} (${result.score}/100)`;
+  });
+}
+
+// Listen for toggle change
+const heritageToggle = document.getElementById('toggle-heritage-health');
+if (heritageToggle) {
+  heritageToggle.addEventListener('change', updateMarkerColors);
+}
+
 
 function addVillageMarkers() {
   if (!map) return;
@@ -460,7 +396,12 @@ function setupEventListeners() {
   });
 
   heatmapBtn.addEventListener('click', toggleHeatmap);
-  // soundBtn.addEventListener('click', toggleSound);
+  soundBtn.addEventListener('click', toggleSound);
+  // Ensure heritage health view updates when markers are re-added
+  const heritageToggle = document.getElementById('toggle-heritage-health');
+  if (heritageToggle) {
+    heritageToggle.addEventListener('change', updateMarkerColors);
+  }
 }
 
 function toggleHeatmap() {

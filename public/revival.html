@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Discover and revive lost cultural traditions from rural India. Explore oral histories, references, and community contributions."
+    />
+    <title>Lost Traditions Revival Center - Parampara</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/revival.css" />
+    <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="logo">
+          <h1 data-i18n="brand_name">Parampara</h1>
+          <p class="tagline" data-i18n="brand_tagline">
+            Preserving Living Traditions
+          </p>
+        </div>
+        <button
+          class="hamburger"
+          id="hamburgerBtn"
+          aria-label="Toggle navigation"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        <ul class="nav-menu" id="navMenu">
+          <li>
+            <a href="index.html"><i class="ti ti-home"></i> Home</a>
+          </li>
+          <li>
+            <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
+          </li>
+          <li>
+            <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
+          </li>
+          <li>
+            <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
+          </li>
+          <li>
+            <a href="quest.html"
+              ><i class="ti ti-compass"></i> Discovery Quest</a
+            >
+          </li>
+          <li>
+            <a href="trails.html"
+              ><i class="ti ti-trail-sign"></i> Heritage Trails</a
+            >
+          </li>
+          <li>
+            <a href="chat.html"
+              ><i class="ti ti-message-circle"></i> Talk to Elder</a
+            >
+          </li>
+          <li>
+            <a href="revival.html" class="active"
+              ><i class="ti ti-hourglass"></i>
+              <span data-i18n="nav_revival">Lost Traditions</span></a
+            >
+          </li>
+          <li>
+            <a href="risk-dashboard.html"
+              ><i class="ti ti-alert-triangle"></i>
+              <span data-i18n="nav_risk">Risk Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a href="reputation.html"
+              ><i class="ti ti-medal"></i>
+              <span data-i18n="nav_reputation">Contributor Reputation</span></a
+            >
+          </li>
+          <li>
+            <a href="timeline.html"
+              ><i class="ti ti-history"></i>
+              <span data-i18n="nav_timeline">Historical Timeline</span></a
+            >
+          </li>
+          <li>
+            <a href="story-generator.html"
+              ><i class="ti ti-books"></i>
+              <span data-i18n="nav_story_generator">AI Story Generator</span></a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="revival-container">
+      <!-- Hero Section -->
+      <section class="revival-hero" aria-labelledby="revival-hero-title">
+        <div class="revival-hero-content">
+          <span class="revival-hero-badge" data-i18n="revival_hero_badge"
+            >Heritage Recovery Initiative</span
+          >
+          <h1 id="revival-hero-title" data-i18n="revival_title">
+            Lost Traditions Revival Center
+          </h1>
+          <p class="revival-hero-subtitle" data-i18n="revival_subtitle">
+            Documenting fading practices, preserving oral histories, and
+            connecting communities working to bring traditions back to life.
+          </p>
+          <a href="#traditions-grid" class="btn btn-primary revival-hero-cta">
+            <i class="ti ti-search" aria-hidden="true"></i>
+            <span data-i18n="revival_hero_cta">Explore Traditions</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Statistics Cards -->
+      <section class="revival-stats" aria-label="Tradition statistics">
+        <div class="stat-card">
+          <div class="stat-icon" aria-hidden="true">
+            <i class="ti ti-archive"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-total">0</span>
+            <span class="stat-label" data-i18n="revival_stat_total"
+              >Documented Traditions</span
+            >
+          </div>
+        </div>
+        <div class="stat-card stat-extinct">
+          <div class="stat-icon" aria-hidden="true">
+            <i class="ti ti-hourglass-off"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-extinct">0</span>
+            <span class="stat-label" data-i18n="revival_stat_extinct"
+              >Extinct or Dormant</span
+            >
+          </div>
+        </div>
+        <div class="stat-card stat-reviving">
+          <div class="stat-icon" aria-hidden="true">
+            <i class="ti ti-flame"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-reviving">0</span>
+            <span class="stat-label" data-i18n="revival_stat_reviving"
+              >Actively Reviving</span
+            >
+          </div>
+        </div>
+        <div class="stat-card stat-community">
+          <div class="stat-icon" aria-hidden="true">
+            <i class="ti ti-users"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-contributions">0</span>
+            <span class="stat-label" data-i18n="revival_stat_community"
+              >Community Contributions</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Search & Filters -->
+      <section class="revival-filters" aria-label="Search and filter traditions">
+        <div class="filter-bar">
+          <label for="revival-search" class="visually-hidden"
+            >Search traditions</label
+          >
+          <input
+            type="search"
+            id="revival-search"
+            class="search-input"
+            data-i18n-placeholder="revival_search_placeholder"
+            placeholder="Search by title, village, or category..."
+            aria-label="Search traditions by title, village, or category"
+          />
+          <label for="category-filter" class="visually-hidden"
+            >Filter by category</label
+          >
+          <select
+            id="category-filter"
+            class="filter-select"
+            aria-label="Filter by category"
+          >
+            <option value="all" data-i18n="revival_filter_all_categories">
+              All Categories
+            </option>
+          </select>
+          <label for="state-filter" class="visually-hidden"
+            >Filter by state</label
+          >
+          <select
+            id="state-filter"
+            class="filter-select"
+            aria-label="Filter by state or region"
+          >
+            <option value="all" data-i18n="revival_filter_all_states">
+              All States
+            </option>
+          </select>
+          <label for="status-filter" class="visually-hidden"
+            >Filter by revival status</label
+          >
+          <select
+            id="status-filter"
+            class="filter-select"
+            aria-label="Filter by revival status"
+          >
+            <option value="all" data-i18n="revival_filter_all_status">
+              All Statuses
+            </option>
+            <option value="extinct" data-i18n="revival_status_extinct">
+              Extinct
+            </option>
+            <option value="endangered" data-i18n="revival_status_endangered">
+              Endangered
+            </option>
+            <option value="documented" data-i18n="revival_status_documented">
+              Documented
+            </option>
+            <option value="reviving" data-i18n="revival_status_reviving">
+              Reviving
+            </option>
+            <option value="revived" data-i18n="revival_status_revived">
+              Revived
+            </option>
+          </select>
+        </div>
+        <p id="results-count" class="results-count" aria-live="polite"></p>
+      </section>
+
+      <!-- Tradition Cards Grid -->
+      <section
+        id="traditions-grid"
+        class="traditions-grid"
+        aria-label="Lost traditions directory"
+      >
+        <!-- Cards rendered by revival.js -->
+      </section>
+
+      <!-- Community Contribution Form -->
+      <section
+        class="contribution-section"
+        aria-labelledby="contribution-heading"
+      >
+        <div class="contribution-header">
+          <h2 id="contribution-heading" data-i18n="revival_contribute_title">
+            Share a Lost Tradition
+          </h2>
+          <p data-i18n="revival_contribute_subtitle">
+            Know of a fading practice? Contribute to the archive. Submissions are
+            saved locally in your browser.
+          </p>
+        </div>
+        <form id="contribution-form" class="contribution-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contrib-title" data-i18n="revival_form_name"
+                >Tradition Name</label
+              >
+              <input
+                type="text"
+                id="contrib-title"
+                name="title"
+                required
+                aria-required="true"
+              />
+            </div>
+            <div class="form-group">
+              <label for="contrib-village" data-i18n="revival_form_village"
+                >Village</label
+              >
+              <input
+                type="text"
+                id="contrib-village"
+                name="village"
+                required
+                aria-required="true"
+              />
+            </div>
+            <div class="form-group">
+              <label for="contrib-state" data-i18n="revival_form_state"
+                >State</label
+              >
+              <input
+                type="text"
+                id="contrib-state"
+                name="state"
+                required
+                aria-required="true"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="contrib-description" data-i18n="revival_form_description"
+              >Description</label
+            >
+            <textarea
+              id="contrib-description"
+              name="description"
+              rows="4"
+              required
+              aria-required="true"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="contrib-references" data-i18n="revival_form_references"
+              >References</label
+            >
+            <textarea
+              id="contrib-references"
+              name="references"
+              rows="2"
+              placeholder="Books, elders, archives, or links..."
+              data-i18n-placeholder="revival_form_references_placeholder"
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="ti ti-send" aria-hidden="true"></i>
+            <span data-i18n="revival_form_submit">Submit Contribution</span>
+          </button>
+          <p
+            id="contribution-feedback"
+            class="contribution-feedback"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </form>
+      </section>
+    </main>
+
+    <!-- Tradition Detail Modal -->
+    <div
+      id="tradition-modal"
+      class="modal revival-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-tradition-title"
+      aria-hidden="true"
+    >
+      <div class="modal-content revival-modal-content">
+        <div class="modal-header">
+          <h3 id="modal-tradition-title"></h3>
+          <button
+            class="close-btn"
+            id="close-tradition-modal"
+            aria-label="Close tradition details"
+          >
+            ×
+          </button>
+        </div>
+        <div class="modal-body" id="modal-tradition-body">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p data-i18n="footer_copy">
+          © 2024 Parampara. Preserving rural heritage, one story at a time.
+        </p>
+      </div>
+    </footer>
+
+    <button id="backToTopBtn" aria-label="Back to top">↑</button>
+
+    <script src="scripts/revival.js"></script>
+    <script src="scripts/translations.js"></script>
+    <script src="scripts/languageSwitcher.js"></script>
+    <script src="scripts/navbar.js"></script>
+    <script src="scripts/main.js"></script>
+  </body>
+</html>

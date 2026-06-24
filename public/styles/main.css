@@ -215,7 +215,7 @@ body>* {
   position: fixed;
   inset: 0;
   background: rgba(10, 4, 1, 0.6);
-  z-index: 9997;
+  z-index: 500;
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
@@ -795,7 +795,7 @@ body>* {
 .footer {
   display: flex;
   flex-direction: column;
-  min-height: 16vh;
+  min-height: 40vh;
   justify-content: center;
   align-items: center;
   background: rgba(15, 6, 2, 0.97);
