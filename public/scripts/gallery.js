@@ -52,9 +52,11 @@ function setupEventListeners() {
     .getElementById('add-item-form')
     .addEventListener('submit', handleAddItem);
 
+  const debouncedFilterItems = debounce(filterItems, 300);
+
   document
     .getElementById('search-input')
-    .addEventListener('input', filterItems);
+    .addEventListener('input', debouncedFilterItems);
   document
     .getElementById('type-filter')
     .addEventListener('change', filterItems);
