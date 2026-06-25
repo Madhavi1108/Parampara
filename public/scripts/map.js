@@ -260,6 +260,7 @@ async function initializeMap() {
       setMapLanguage(currentLanguage);
       addVillageMarkers();
       loadCulturalItems();
+      initRouting();
     });
 
     map.on('error', (event) => {
@@ -641,3 +642,123 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+
+// --- Heritage Path Routing ---
+let routeMarkers = [];
+
+async function initRouting() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const pathId = urlParams.get('pathId');
+  if (!pathId) return;
+
+  try {
+    const pathsRes = await fetch('/api/paths');
+    if (!pathsRes.ok) throw new Error('Failed to fetch paths');
+    const paths = await pathsRes.json();
+    const currentPath = paths.find(p => p.id === pathId);
+
+    if (!currentPath || !currentPath.items || currentPath.items.length === 0) return;
+
+    const itemsRes = await fetch('/api/items');
+    if (!itemsRes.ok) throw new Error('Failed to fetch items');
+    const items = await itemsRes.json();
+
+    const pathItems = currentPath.items.map(id => items.find(i => i.id === id)).filter(i => i && i.coordinates);
+
+    if (pathItems.length < 2) {
+      console.warn('Not enough items with coordinates to draw a route.');
+      return;
+    }
+
+    // Hide normal village markers
+    markers.forEach(m => m.marker.remove());
+
+    drawRoute(pathItems, currentPath);
+    addClearRouteButton();
+  } catch (error) {
+    console.error('Routing error:', error);
+  }
+}
+
+async function drawRoute(pathItems, pathInfo) {
+  // 1. Plot specific markers for the path
+  pathItems.forEach((item, index) => {
+    const el = document.createElement('div');
+    el.className = 'route-marker';
+    el.innerHTML = `<div style="background: #e76f51; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${index + 1}</div>`;
+
+    const popupHTML = `<h3>${item.title || item.name?.en || 'Location'}</h3><p>${item.location || ''}</p>`;
+    const marker = new maplibregl.Marker(el)
+      .setLngLat([item.coordinates[1], item.coordinates[0]])
+      .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(popupHTML))
+      .addTo(map);
+      
+    routeMarkers.push(marker);
+  });
+
+  // 2. Fetch Route from OSRM
+  const coordinatesStr = pathItems.map(item => `${item.coordinates[1]},${item.coordinates[0]}`).join(';');
+  const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordinatesStr}?overview=full&geometries=geojson`;
+
+  try {
+    const res = await fetch(osrmUrl);
+    const data = await res.json();
+    if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) return;
+
+    const routeGeoJSON = data.routes[0].geometry;
+
+    // 3. Draw Line on Map
+    map.addSource('route', {
+      'type': 'geojson',
+      'data': {
+        'type': 'Feature',
+        'properties': {},
+        'geometry': routeGeoJSON
+      }
+    });
+
+    map.addLayer({
+      'id': 'route-line',
+      'type': 'line',
+      'source': 'route',
+      'layout': {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      'paint': {
+        'line-color': '#e76f51',
+        'line-width': 5,
+        'line-opacity': 0.8
+      }
+    });
+
+    // 4. Fit bounds
+    const coordinates = routeGeoJSON.coordinates;
+    const bounds = coordinates.reduce(function(bounds, coord) {
+      return bounds.extend(coord);
+    }, new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
+
+    map.fitBounds(bounds, {
+      padding: 50
+    });
+  } catch (err) {
+    console.error('Error drawing route:', err);
+  }
+}
+
+function addClearRouteButton() {
+  const controlsDiv = document.querySelector('.map-controls');
+  if (controlsDiv) {
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'btn btn-secondary';
+    clearBtn.style.marginLeft = '1rem';
+    clearBtn.style.background = '#e76f51';
+    clearBtn.style.color = 'white';
+    clearBtn.textContent = '❌ Clear Route';
+    clearBtn.onclick = () => {
+      window.location.href = 'map.html'; // simplest way to reset the map state
+    };
+    controlsDiv.appendChild(clearBtn);
+  }
+}

@@ -221,9 +221,14 @@ function displayPaths() {
                 </div>
             </div>
             <p>${escapeHtml(pathDesc(path))}</p>
-            <div class="path-card-stats">
-                <span>📚 ${items.length} ${tPath('paths_items_label')}</span>
-                <span>⏱️ ~${Math.ceil(items.length * 3)} ${tPath('paths_min_label')}</span>
+            <div class="path-card-stats" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span>📚 ${items.length} ${tPath('paths_items_label')}</span>
+                    <span>⏱️ ~${Math.ceil(items.length * 3)} ${tPath('paths_min_label')}</span>
+                </div>
+                <button class="btn btn-primary" onclick="event.stopPropagation(); window.location.href='map.html?pathId=${path.id}';" style="padding: 0.25rem 0.75rem; font-size: 0.9rem;">
+                    🗺️ View Route
+                </button>
             </div>
         </div>`;
     })
