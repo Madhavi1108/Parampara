@@ -3,34 +3,246 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>404 - Page Not Found</title>
+    <title>404 - Lost in the Archives | Parampara</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link rel="stylesheet" href="styles/theme.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
     <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
+      .not-found-container {
+        min-height: 60vh;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-        flex-direction: column;
-        font-family: Arial, sans-serif;
         text-align: center;
-        gap: 1rem;
+        padding: 4rem 2rem;
+        gap: 1.5rem;
       }
-
-      a {
-        text-decoration: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        background: #2563eb;
-        color: white;
+      .not-found-icon {
+        font-size: 5rem;
+        color: var(--primary-color, #e76f51);
+        margin-bottom: 1rem;
+      }
+      .not-found-title {
+        font-size: 3rem;
+        margin: 0;
+        color: var(--text-color, #2d3748);
+      }
+      .not-found-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-muted, #718096);
+        max-width: 600px;
+      }
+      .not-found-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 2rem;
       }
     </style>
   </head>
   <body>
-    <h1>404 - Page Not Found</h1>
-    <p>The page you are looking for does not exist.</p>
-    <a href="/">Go back to Home</a>
+    <nav class="navbar">
+      <div class="nav-container">
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
+          🌙
+        </button>
+        <div class="logo">
+          <h1 data-i18n="brand_name">Parampara</h1>
+          <p class="tagline" data-i18n="brand_tagline">
+            Preserving Living Traditions
+          </p>
+        </div>
+        <!-- Language selector injected here by language-switcher.js -->
+        <button
+          class="hamburger"
+          id="hamburgerBtn"
+          aria-label="Toggle navigation"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        <ul class="nav-menu" id="navMenu">
+          <li>
+            <a href="index.html" class="active"
+              ><i class="ti ti-home"></i> Home</a
+            >
+          </li>
+          <li>
+            <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
+          </li>
+          <li>
+            <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
+          </li>
+          <li>
+            <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
+          </li>
+          <li>
+            <a href="quest.html"
+              ><i class="ti ti-compass"></i> Discovery Quest</a
+            >
+          </li>
+          <li>
+            <a href="trails.html"
+              ><i class="ti ti-trail-sign"></i> Heritage Trails</a
+            >
+          </li>
+          <li>
+            <a href="chat.html"
+              ><i class="ti ti-message-circle"></i> Talk to Elder</a
+            >
+          </li>
+          <li>
+            <a href="revival.html"
+              ><i class="ti ti-hourglass"></i>
+              <span data-i18n="nav_revival">Lost Traditions</span></a
+            >
+          </li>
+          <li>
+            <a href="risk-dashboard.html"
+              ><i class="ti ti-alert-triangle"></i>
+              <span data-i18n="nav_risk">Risk Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a href="reputation.html"
+              ><i class="ti ti-medal"></i>
+              <span data-i18n="nav_reputation">Contributor Reputation</span></a
+            >
+          </li>
+          <li>
+            <a href="timeline.html"
+              ><i class="ti ti-history"></i>
+              <span data-i18n="nav_timeline">Historical Timeline</span></a
+            >
+          </li>
+          <li>
+            <a href="story-generator.html"
+              ><i class="ti ti-books"></i>
+              <span data-i18n="nav_story_generator">AI Story Generator</span></a
+            >
+          </li>
+                  <li>
+            <a href="favorites.html"><i class="ti ti-heart"></i> My Favorites</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-    <script src="scripts/theme.js"></script>
-  </body>
+    <!-- Full Width Nav Menu — BAHAR hai nav ke -->
+    <div class="nav-fullmenu" id="navFullMenu">
+      <div class="nav-fullmenu-inner">
+        <p class="nav-fullmenu-label">Navigation</p>
+        <div class="nav-fullmenu-grid">
+          <a href="index.html" class="active"
+            ><i class="ti ti-home"></i> Home</a
+          >
+          <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
+          <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
+          <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
+          <a href="quest.html"><i class="ti ti-compass"></i> Discovery Quest</a>
+          <a href="trails.html"
+            ><i class="ti ti-trail-sign"></i> Heritage Trails</a
+          >
+          <a href="chat.html"
+            ><i class="ti ti-message-circle"></i> Talk to Elder</a
+          >
+          <a href="risk-dashboard.html"
+            ><i class="ti ti-alert-triangle"></i> Risk Dashboard</a
+          >
+          <a href="reputation.html"
+            ><i class="ti ti-medal"></i> Contributor Reputation</a
+          >
+          <a href="timeline.html"
+            ><i class="ti ti-history"></i> Historical Timeline</a
+          >
+          <a href="story-generator.html"
+            ><i class="ti ti-books"></i> AI Story Generator</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <main class="not-found-container">
+      <i class="ti ti-map-off not-found-icon"></i>
+      <h1 class="not-found-title">404 - Lost in the Archives</h1>
+      <p class="not-found-subtitle">It seems this cultural path hasn't been charted yet. The page you are looking for might have been moved, deleted, or never existed.</p>
+      
+      <div class="not-found-actions">
+        <a href="index.html" class="btn btn-primary"><i class="ti ti-home"></i> Return to Home</a>
+        <a href="gallery.html" class="btn btn-secondary"><i class="ti ti-photo"></i> Browse Gallery</a>
+        <a href="paths.html" class="btn btn-secondary"><i class="ti ti-route"></i> Heritage Paths</a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <!-- Brand Section -->
+        <div class="footer-brand">
+          <h2 class="footer-logo">🏛️ Parampara</h2>
+          <p>
+            Preserving rural heritage, traditions, and stories for future
+            generations.
+          </p>
+        </div>
+
+        <!-- Social media links -->
+        <div class="footer-links">
+          <h3>More about Parampara</h3>
+          <ul>
+            <li>
+              <a href=""
+                ><img loading="lazy"
+                  src="./assets/logos/instagram-svgrepo-com.svg"
+                  alt="insta-logo"
+              /></a>
+            </li>
+
+            <li>
+              <a href=""
+                ><img loading="lazy"
+                  src="./assets/logos/facebook-svgrepo-com.svg"
+                  alt="facebook-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img loading="lazy" src="./assets/logos/twitter-svgrepo-com.svg" alt="X-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img loading="lazy"
+                  src="./assets/logos/reddit-fill-svgrepo-com.svg"
+                  alt="reddit-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img loading="lazy"
+                  src="./assets/logos/github-142-svgrepo-com.svg"
+                  alt="git-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img loading="lazy"
+                  src="./assets/logos/youtube-svgrepo-com.svg"
+                  alt="yt-logo"
+              /></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
+      </div>
+    </footer>
+
+    <script src="scripts/theme.js"></script><script src="scripts/navbar.js"></script></body>
 </html>
