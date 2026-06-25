@@ -553,22 +553,149 @@ async function loadCulturalItems() {
 
     const items = await response.json();
 
-    items.forEach((item) => {
-      if (item.coordinates && item.coordinates.length === 2) {
-        const el = document.createElement('div');
-        el.className = 'cultural-marker';
+    const features = items
+      .filter((item) => item.coordinates && item.coordinates.length === 2)
+      .map((item) => ({
+        type: 'Feature',
+        properties: {
+          id: item.id,
+          title: item.title,
+          description: item.description || '',
+          location: item.location || '',
+          tags: item.tags ? item.tags.join(',') : '',
+          type: item.type
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [item.coordinates[1], item.coordinates[0]], // [lng, lat]
+        },
+      }));
 
-        new maplibregl.Marker({
-          element: el,
-        })
-          .setLngLat([item.coordinates[1], item.coordinates[0]])
-          .addTo(map);
+    const geojsonData = {
+      type: 'FeatureCollection',
+      features: features,
+    };
 
-        el.addEventListener('click', () => {
-          showPopup(item);
-        });
+    if (map.getSource('cultural-items')) {
+      map.getSource('cultural-items').setData(geojsonData);
+      return;
+    }
+
+    map.addSource('cultural-items', {
+      type: 'geojson',
+      data: geojsonData,
+      cluster: true,
+      clusterMaxZoom: 14,
+      clusterRadius: 50,
+    });
+
+    map.addLayer({
+      id: 'clusters',
+      type: 'circle',
+      source: 'cultural-items',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': [
+          'step',
+          ['get', 'point_count'],
+          '#f4a261',
+          10,
+          '#e76f51',
+          50,
+          '#264653'
+        ],
+        'circle-radius': [
+          'step',
+          ['get', 'point_count'],
+          15,
+          10,
+          20,
+          50,
+          25
+        ],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#ffffff'
+      },
+    });
+
+    map.addLayer({
+      id: 'cluster-count',
+      type: 'symbol',
+      source: 'cultural-items',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}',
+        'text-size': 12,
+      },
+      paint: {
+        'text-color': '#ffffff'
       }
     });
+
+    map.addLayer({
+      id: 'unclustered-point',
+      type: 'circle',
+      source: 'cultural-items',
+      filter: ['!', ['has', 'point_count']],
+      paint: {
+        'circle-color': '#2a9d8f',
+        'circle-radius': 8,
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#ffffff',
+      },
+    });
+
+    map.on('click', 'clusters', (e) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['clusters'],
+      });
+      const clusterId = features[0].properties.cluster_id;
+      map.getSource('cultural-items').getClusterExpansionZoom(
+        clusterId,
+        (err, zoom) => {
+          if (err) return;
+
+          map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom: zoom,
+          });
+        }
+      );
+    });
+
+    map.on('click', 'unclustered-point', (e) => {
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const props = e.features[0].properties;
+
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      const item = {
+        title: props.title,
+        description: props.description,
+        location: props.location,
+        tags: props.tags ? props.tags.split(',') : []
+      };
+      
+      map.flyTo({ center: coordinates, zoom: 15 });
+      showPopup(item);
+    });
+
+    map.on('mouseenter', 'clusters', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'clusters', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
+    map.on('mouseenter', 'unclustered-point', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'unclustered-point', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
   } catch (error) {
     console.error('Error loading cultural items:', error);
   }
