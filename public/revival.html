@@ -100,6 +100,42 @@
       </div>
     </nav>
 
+    <div class="nav-fullmenu" id="navFullMenu">
+      <div class="nav-fullmenu-inner">
+        <p class="nav-fullmenu-label">Navigation</p>
+        <div class="nav-fullmenu-grid">
+          <a href="index.html"><i class="ti ti-home"></i> Home</a>
+          <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
+          <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
+          <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
+          <a href="quest.html"><i class="ti ti-compass"></i> Discovery Quest</a>
+          <a href="trails.html"
+            ><i class="ti ti-trail-sign"></i> Heritage Trails</a
+          >
+          <a href="chat.html"
+            ><i class="ti ti-message-circle"></i> Talk to Elder</a
+          >
+          <a href="revival.html" class="active"
+            ><i class="ti ti-hourglass"></i>
+            <span data-i18n="nav_revival">Lost Traditions</span></a
+          >
+          <a href="risk-dashboard.html"
+            ><i class="ti ti-alert-triangle"></i> Risk Dashboard</a
+          >
+          <a href="reputation.html"
+            ><i class="ti ti-medal"></i> Contributor Reputation</a
+          >
+          <a href="timeline.html"
+            ><i class="ti ti-history"></i> Historical Timeline</a
+          >
+          <a href="story-generator.html"
+            ><i class="ti ti-books"></i> AI Story Generator</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="nav-overlay" id="navOverlay"></div>
+
     <main class="revival-container">
       <!-- Hero Section -->
       <section class="revival-hero" aria-labelledby="revival-hero-title">
@@ -170,7 +206,10 @@
       </section>
 
       <!-- Search & Filters -->
-      <section class="revival-filters" aria-label="Search and filter traditions">
+      <section
+        class="revival-filters"
+        aria-label="Search and filter traditions"
+      >
         <div class="filter-bar">
           <label for="revival-search" class="visually-hidden"
             >Search traditions</label
@@ -257,8 +296,8 @@
             Share a Lost Tradition
           </h2>
           <p data-i18n="revival_contribute_subtitle">
-            Know of a fading practice? Contribute to the archive. Submissions are
-            saved locally in your browser.
+            Know of a fading practice? Contribute to the archive. Submissions
+            are saved locally in your browser.
           </p>
         </div>
         <form id="contribution-form" class="contribution-form" novalidate>
@@ -301,7 +340,9 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="contrib-description" data-i18n="revival_form_description"
+            <label
+              for="contrib-description"
+              data-i18n="revival_form_description"
               >Description</label
             >
             <textarea
