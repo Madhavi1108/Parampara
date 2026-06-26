@@ -178,6 +178,18 @@
           >
           Ambient Sounds : OFF
           </button>
+          
+          <div class="radius-search-control" style="display: flex; align-items: center; gap: 0.5rem; margin-left: auto;">
+            <select id="radius-select" class="btn btn-secondary" aria-label="Select search radius">
+              <option value="5">5 km</option>
+              <option value="10">10 km</option>
+              <option value="25">25 km</option>
+              <option value="50">50 km</option>
+            </select>
+            <button id="btn-find-nearby" class="btn btn-primary">
+              <i class="ti ti-map-pin"></i> Find Nearby
+            </button>
+          </div>
         </div>
       </div>
 
@@ -285,6 +297,7 @@
 
     <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
     <script src="scripts/cacheLayer.js"></script>
+    <script src="scripts/spatial.js"></script>
     <script src="scripts/heritageScoreUtil.js"></script>
     <script src="scripts/map.js"></script>
     <script src="scripts/languageSwitcher.js"></script>

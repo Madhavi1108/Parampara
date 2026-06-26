@@ -485,6 +485,62 @@ function setupEventListeners() {
     }
   });
 
+  // Toggle heatmap functionality... (existing code below)
+  setupSpatialSearch();
+}
+
+function setupSpatialSearch() {
+  const findNearbyBtn = document.getElementById('btn-find-nearby');
+  const radiusSelect = document.getElementById('radius-select');
+  
+  if (!findNearbyBtn || !radiusSelect) return;
+  
+  findNearbyBtn.addEventListener('click', async () => {
+    try {
+      const originalText = findNearbyBtn.innerHTML;
+      findNearbyBtn.innerHTML = '<i class="ti ti-loader ti-spin"></i> Locating...';
+      findNearbyBtn.disabled = true;
+      
+      const position = await window.SpatialUtils.getUserLocation();
+      const userLat = position.coords.latitude;
+      const userLon = position.coords.longitude;
+      const radiusKm = parseFloat(radiusSelect.value);
+      
+      // Filter villages based on distance
+      const nearbyVillages = sampleVillages.filter(village => {
+        const [villageLat, villageLon] = village.coordinates;
+        const distance = window.SpatialUtils.calculateHaversineDistance(userLat, userLon, villageLat, villageLon);
+        return distance <= radiusKm;
+      });
+      
+      // Update markers
+      markers.forEach(marker => marker.remove());
+      markers = [];
+      nearbyVillages.forEach(village => addVillageMarker(village));
+      
+      // Fly to user location
+      if (map) {
+        map.flyTo({
+          center: [userLon, userLat],
+          zoom: radiusKm <= 10 ? 11 : 9,
+          essential: true
+        });
+      }
+      
+      findNearbyBtn.innerHTML = '<i class="ti ti-check"></i> Found ' + nearbyVillages.length;
+      setTimeout(() => {
+        findNearbyBtn.innerHTML = originalText;
+        findNearbyBtn.disabled = false;
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Location error:', error);
+      alert('Could not determine your location. Please check browser permissions.');
+      findNearbyBtn.innerHTML = '<i class="ti ti-map-pin"></i> Find Nearby';
+      findNearbyBtn.disabled = false;
+    }
+  });
+
   heatmapBtn.addEventListener('click', toggleHeatmap);
   soundBtn.addEventListener('click', toggleSound);
   // Ensure heritage health view updates when markers are re-added
