@@ -242,3 +242,34 @@
     0 6px 18px rgba(0, 0, 0, 0.25),
     0 0 12px rgba(205, 133, 63, 0.4);
 }
+
+/* Flyover Controls */
+.flyover-controls {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(45, 24, 16, 0.85);
+  border: 2px solid var(--mustard);
+  border-radius: var(--border-radius);
+  padding: 1rem 1.5rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.flyover-header h4 {
+  color: var(--wheat-yellow);
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+.flyover-actions {
+  display: flex;
+  gap: 1rem;
+}
