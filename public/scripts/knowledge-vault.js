@@ -220,10 +220,10 @@ let allKnowledge = [];
 let activeCategory = 'all';
 let lastFocusedElement = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   allKnowledge = getAllKnowledge();
   renderCategoryFilters();
-  renderKnowledgeCards(getFilteredKnowledge());
+  renderKnowledgeCards(await getFilteredKnowledge());
   updateStatistics(allKnowledge);
   setupEventListeners();
 });
@@ -289,14 +289,14 @@ function renderCategoryFilters() {
     .join('');
 
   container.querySelectorAll('.vault-filter-chip').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       activeCategory = btn.dataset.category;
       container.querySelectorAll('.vault-filter-chip').forEach((chip) => {
         const isActive = chip.dataset.category === activeCategory;
         chip.classList.toggle('active', isActive);
         chip.setAttribute('aria-pressed', String(isActive));
       });
-      renderKnowledgeCards(getFilteredKnowledge());
+      renderKnowledgeCards(await getFilteredKnowledge());
     });
   });
 }
@@ -304,8 +304,8 @@ function renderCategoryFilters() {
 function setupEventListeners() {
   const searchInput = document.getElementById('vault-search');
   if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      renderKnowledgeCards(getFilteredKnowledge());
+    searchInput.addEventListener('input', async () => {
+      renderKnowledgeCards(await getFilteredKnowledge());
     });
   }
 
@@ -325,25 +325,43 @@ function setupEventListeners() {
   if (form) form.addEventListener('submit', handleContributionSubmit);
 }
 
-function getFilteredKnowledge() {
+async function getFilteredKnowledge() {
   const searchEl = document.getElementById('vault-search');
   const search = searchEl ? searchEl.value.trim().toLowerCase() : '';
 
-  return allKnowledge.filter((entry) => {
-    const matchesCategory =
-      activeCategory === 'all' || entry.category === activeCategory;
+  try {
+    const grid = document.getElementById('knowledge-grid');
+    if (grid) grid.style.opacity = '0.5';
+    
+    const filtered = await window.dataWorker.runJob('filterKnowledgeVault', {
+      items: allKnowledge,
+      activeCategory,
+      search
+    });
+    
+    if (grid) grid.style.opacity = '1';
+    return filtered;
+  } catch (error) {
+    console.error('Worker filter error:', error);
+    const grid = document.getElementById('knowledge-grid');
+    if (grid) grid.style.opacity = '1';
+    
+    return allKnowledge.filter((entry) => {
+      const matchesCategory =
+        activeCategory === 'all' || entry.category === activeCategory;
 
-    const matchesSearch =
-      !search ||
-      entry.title.toLowerCase().includes(search) ||
-      entry.village.toLowerCase().includes(search) ||
-      entry.region.toLowerCase().includes(search) ||
-      entry.elderName.toLowerCase().includes(search) ||
-      entry.category.toLowerCase().includes(search) ||
-      entry.description.toLowerCase().includes(search);
+      const matchesSearch =
+        !search ||
+        (entry.title && entry.title.toLowerCase().includes(search)) ||
+        (entry.village && entry.village.toLowerCase().includes(search)) ||
+        (entry.region && entry.region.toLowerCase().includes(search)) ||
+        (entry.elderName && entry.elderName.toLowerCase().includes(search)) ||
+        (entry.category && entry.category.toLowerCase().includes(search)) ||
+        (entry.description && entry.description.toLowerCase().includes(search));
 
-    return matchesCategory && matchesSearch;
-  });
+      return matchesCategory && matchesSearch;
+    });
+  }
 }
 
 function updateStatistics(entries) {
@@ -585,7 +603,7 @@ function trapFocus(e, container) {
   }
 }
 
-function handleContributionSubmit(e) {
+async function handleContributionSubmit(e) {
   e.preventDefault();
 
   const feedback = document.getElementById('contribution-feedback');
@@ -626,7 +644,7 @@ function handleContributionSubmit(e) {
   form.reset();
 
   allKnowledge = getAllKnowledge();
-  renderKnowledgeCards(getFilteredKnowledge());
+  renderKnowledgeCards(await getFilteredKnowledge());
   updateStatistics(allKnowledge);
 }
 

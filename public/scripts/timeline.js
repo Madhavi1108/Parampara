@@ -126,20 +126,37 @@ async function fetchTimelineEvents() {
 /**
  * Apply category dropdown and search queries
  */
-function applyFilters() {
+async function applyFilters() {
   const searchQuery = document.getElementById('timeline-search').value.toLowerCase().trim();
   const category = document.getElementById('category-filter').value;
 
-  filteredTimelineEvents = allTimelineEvents.filter((event) => {
-    const matchesSearch =
-      event.item.toLowerCase().includes(searchQuery) ||
-      event.title.toLowerCase().includes(searchQuery) ||
-      event.description.toLowerCase().includes(searchQuery);
+  try {
+    const container = document.getElementById('events-container');
+    if (container) container.style.opacity = '0.5';
 
-    const matchesCategory = category === 'all' || event.type === category;
+    filteredTimelineEvents = await window.dataWorker.runJob('filterTimelineEvents', {
+      items: allTimelineEvents,
+      search: searchQuery,
+      category
+    });
 
-    return matchesSearch && matchesCategory;
-  });
+    if (container) container.style.opacity = '1';
+  } catch (error) {
+    console.error('Worker filter error:', error);
+    const container = document.getElementById('events-container');
+    if (container) container.style.opacity = '1';
+
+    filteredTimelineEvents = allTimelineEvents.filter((event) => {
+      const matchesSearch =
+        event.item.toLowerCase().includes(searchQuery) ||
+        event.title.toLowerCase().includes(searchQuery) ||
+        event.description.toLowerCase().includes(searchQuery);
+
+      const matchesCategory = category === 'all' || event.type === category;
+
+      return matchesSearch && matchesCategory;
+    });
+  }
 
   updateUI();
 }

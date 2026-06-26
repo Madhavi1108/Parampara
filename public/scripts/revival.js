@@ -304,10 +304,10 @@ let allTraditions = [];
 let lastFocusedElement = null;
 
 // ── Initialize on page load ──
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   allTraditions = getAllTraditions();
   populateFilterOptions();
-  renderTraditions(getFilteredTraditions());
+  renderTraditions(await getFilteredTraditions());
   updateStatistics(allTraditions);
   setupEventListeners();
 });
@@ -449,13 +449,13 @@ function setupEventListeners() {
     .addEventListener('submit', handleContributionSubmit);
 }
 
-function handleFilterChange() {
-  const filtered = getFilteredTraditions();
+async function handleFilterChange() {
+  const filtered = await getFilteredTraditions();
   renderTraditions(filtered);
 }
 
 // ── Search and filter logic ──
-function getFilteredTraditions() {
+async function getFilteredTraditions() {
   const search = document
     .getElementById('revival-search')
     .value.trim()
@@ -464,19 +464,39 @@ function getFilteredTraditions() {
   const state = document.getElementById('state-filter').value;
   const status = document.getElementById('status-filter').value;
 
-  return allTraditions.filter((t) => {
-    const matchesSearch =
-      !search ||
-      t.title.toLowerCase().includes(search) ||
-      t.village.toLowerCase().includes(search) ||
-      t.category.toLowerCase().includes(search);
+  try {
+    const grid = document.getElementById('traditions-grid');
+    if (grid) grid.style.opacity = '0.5';
 
-    const matchesCategory = category === 'all' || t.category === category;
-    const matchesState = state === 'all' || t.state === state;
-    const matchesStatus = status === 'all' || t.revivalStatus === status;
+    const filtered = await window.dataWorker.runJob('filterLostTraditions', {
+      items: allTraditions,
+      search,
+      category,
+      state,
+      status
+    });
 
-    return matchesSearch && matchesCategory && matchesState && matchesStatus;
-  });
+    if (grid) grid.style.opacity = '1';
+    return filtered;
+  } catch (error) {
+    console.error('Worker filter error:', error);
+    const grid = document.getElementById('traditions-grid');
+    if (grid) grid.style.opacity = '1';
+
+    return allTraditions.filter((t) => {
+      const matchesSearch =
+        !search ||
+        (t.title && t.title.toLowerCase().includes(search)) ||
+        (t.village && t.village.toLowerCase().includes(search)) ||
+        (t.category && t.category.toLowerCase().includes(search));
+
+      const matchesCategory = category === 'all' || t.category === category;
+      const matchesState = state === 'all' || t.state === state;
+      const matchesStatus = status === 'all' || t.revivalStatus === status;
+
+      return matchesSearch && matchesCategory && matchesState && matchesStatus;
+    });
+  }
 }
 
 // ── Update statistics cards ──
@@ -671,7 +691,7 @@ function trapFocus(e, container) {
 }
 
 // ── Community contribution form handler ──
-function handleContributionSubmit(e) {
+async function handleContributionSubmit(e) {
   e.preventDefault();
 
   const feedback = document.getElementById('contribution-feedback');
@@ -706,7 +726,7 @@ function handleContributionSubmit(e) {
 
   allTraditions = getAllTraditions();
   populateFilterOptions();
-  renderTraditions(getFilteredTraditions());
+  renderTraditions(await getFilteredTraditions());
   updateStatistics(allTraditions);
 }
 

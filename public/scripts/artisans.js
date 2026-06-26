@@ -57,23 +57,45 @@ function setupFilters() {
   filters.forEach(f => f.addEventListener('input', applyFilters));
 }
 
-function applyFilters() {
+async function applyFilters() {
   const search = document.getElementById('searchInput').value.toLowerCase();
   const craft = document.getElementById('craftFilter').value;
   const village = document.getElementById('villageFilter').value;
   const region = document.getElementById('regionFilter').value;
   const experience = document.getElementById('experienceFilter').value;
 
-  const filtered = allArtisans.filter(a => {
-    const matchesSearch = a.name.toLowerCase().includes(search) || a.craft.toLowerCase().includes(search);
-    const matchesCraft = craft === '' || a.craft === craft;
-    const matchesVillage = village === '' || a.village === village;
-    const matchesRegion = region === '' || a.region === region;
-    const matchesExp = experience === '' || experienceLevel(a.experience) === experience;
-    return matchesSearch && matchesCraft && matchesVillage && matchesRegion && matchesExp;
-  });
-  renderArtisanGrid(filtered);
-  updateStats(filtered);
+  try {
+    const grid = document.getElementById('artisanGrid');
+    if (grid) grid.style.opacity = '0.5';
+    
+    const filtered = await window.dataWorker.runJob('filterArtisans', {
+      items: allArtisans,
+      search,
+      craft,
+      village,
+      region,
+      experience
+    });
+    
+    if (grid) grid.style.opacity = '1';
+    renderArtisanGrid(filtered);
+    updateStats(filtered);
+  } catch (error) {
+    console.error('Worker filter error:', error);
+    const grid = document.getElementById('artisanGrid');
+    if (grid) grid.style.opacity = '1';
+    
+    const filtered = allArtisans.filter(a => {
+      const matchesSearch = (a.name && a.name.toLowerCase().includes(search)) || (a.craft && a.craft.toLowerCase().includes(search));
+      const matchesCraft = craft === '' || a.craft === craft;
+      const matchesVillage = village === '' || a.village === village;
+      const matchesRegion = region === '' || a.region === region;
+      const matchesExp = experience === '' || experienceLevel(a.experience) === experience;
+      return matchesSearch && matchesCraft && matchesVillage && matchesRegion && matchesExp;
+    });
+    renderArtisanGrid(filtered);
+    updateStats(filtered);
+  }
 }
 
 function experienceLevel(years) {

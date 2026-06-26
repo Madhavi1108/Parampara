@@ -131,8 +131,8 @@ function getEmptyStateHtml() {
 }
 
 // Re-render on language change
-window.addEventListener('parampara:langchange', () => {
-  displayItems(getCurrentFilteredItems());
+window.addEventListener('parampara:langchange', async () => {
+  displayItems(await getCurrentFilteredItems());
 });
 
 function displayItems(items) {
@@ -201,30 +201,35 @@ function getTypeIcon(type) {
   return icons[type] || '📄';
 }
 
-function getCurrentFilteredItems() {
-  const searchTerm = document
-    .getElementById('search-input')
-    .value.toLowerCase();
+async function getCurrentFilteredItems() {
+  const searchTerm = document.getElementById('search-input').value.toLowerCase();
   const typeFilter = document.getElementById('type-filter').value;
-  let filtered = allItems;
-  if (typeFilter !== 'all') {
-    filtered = filtered.filter((item) => item.type === typeFilter);
+  
+  const galleryGrid = document.getElementById('gallery-grid');
+  // Optional: show a loading state if search takes a while
+  if (galleryGrid) {
+    galleryGrid.style.opacity = '0.5';
   }
-  if (searchTerm) {
-    filtered = filtered.filter(
-      (item) =>
-        item.title.toLowerCase().includes(searchTerm) ||
-        item.description.toLowerCase().includes(searchTerm) ||
-        item.location.toLowerCase().includes(searchTerm) ||
-        (item.tags &&
-          item.tags.some((tag) => tag.toLowerCase().includes(searchTerm)))
-    );
+
+  try {
+    const filtered = await window.dataWorker.runJob('filterGalleryItems', {
+      items: allItems,
+      typeFilter,
+      searchTerm
+    });
+    
+    if (galleryGrid) galleryGrid.style.opacity = '1';
+    return filtered;
+  } catch (error) {
+    console.error('Worker filter error:', error);
+    if (galleryGrid) galleryGrid.style.opacity = '1';
+    return allItems;
   }
-  return filtered;
 }
 
-function filterItems() {
-  displayItems(getCurrentFilteredItems());
+async function filterItems() {
+  const filtered = await getCurrentFilteredItems();
+  displayItems(filtered);
 }
 
 async function handleAddItem(e) {
