@@ -280,7 +280,6 @@ async function getCurrentFilteredItems() {
   const typeFilter = document.getElementById('type-filter').value;
 
   const galleryGrid = document.getElementById('gallery-grid');
-
   if (galleryGrid) {
     galleryGrid.style.opacity = '0.5';
   }
@@ -292,12 +291,14 @@ async function getCurrentFilteredItems() {
       searchTerm
     });
 
-    if (galleryGrid) galleryGrid.style.opacity = '1';
     return filtered;
   } catch (error) {
     console.error('Worker filter error:', error);
-    if (galleryGrid) galleryGrid.style.opacity = '1';
     return allItems;
+  } finally {
+    if (galleryGrid) {
+      galleryGrid.style.opacity = '1';
+    }
   }
 }
 
@@ -369,8 +370,6 @@ async function handleAddItem(e) {
 
     if (response.ok) {
       const newItem = await response.json();
-      // Since it's a new item and we're paginated, ideally we just reload the first page 
-      // or if we're on page 1, insert at the beginning. We can just reload for simplicity.
       currentPage = 1;
       hasMore = true;
       loadGalleryItems(1, false);
