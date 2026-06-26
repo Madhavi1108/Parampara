@@ -81,10 +81,59 @@ function initializeSampleData() {
     engagement: 20,
   });
 
+  // ── Heritage Paths sample data ─────────────────────────────────────────────
   store.heritagePaths.push({
     id: 'path-1',
     title: 'The Journey of Kantha Stitch',
+    description:
+      'Follow the story of Kantha embroidery from its humble origins in Bengal to its recognition as a world-class art form.',
     theme: 'Embroidery Traditions',
+    items: ['1'],
+  });
+
+  store.heritagePaths.push({
+    id: 'path-2',
+    title: 'Colors of Madhubani',
+    description:
+      'Explore the vibrant world of Madhubani paintings, from their mythological roots to their modern-day expressions.',
+    theme: 'Painting Traditions',
+    items: ['3', '4'],
+  });
+
+  store.heritagePaths.push({
+    id: 'path-3',
+    title: 'Lost-Wax Legends of Dokra',
+    description:
+      'Trace the 4,000-year-old lost-wax metal casting tradition of the Dhokra artisans through the forests of Chhattisgarh.',
+    theme: 'Metal Craft',
+    items: ['2'],
+  });
+
+  store.heritagePaths.push({
+    id: 'path-4',
+    title: 'Shadows & Strings: Kathputli',
+    description:
+      'Step into the colourful world of Rajasthani string puppetry — from royal courts to modern resort stages.',
+    theme: 'Folklore & Performance',
+    items: ['5', '1', '3'],
+  });
+
+  store.heritagePaths.push({
+    id: 'path-5',
+    title: 'Golden Grass of Bihar',
+    description:
+      'Discover the delicate art of Sikki grass weaving, a craft practised by Mithila women for dowry and daily life.',
+    theme: 'Craft & Ecology',
+    items: ['4'],
+  });
+
+  store.heritagePaths.push({
+    id: 'path-6',
+    title: 'Festivals of Rural India',
+    description:
+      'Journey through the seasonal festivals that shape rural life — from Chhath Puja to Bastar Lokotsav.',
+    theme: 'Festivals',
+    items: ['1', '2', '3', '4', '5'],
   });
 
   // Artisan sample data

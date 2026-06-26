@@ -1,5 +1,186 @@
 /* Heritage Paths Page Styles */
 
+/* ── Filter & Sort Toolbar ────────────────────────────────────────────────── */
+
+.paths-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--card-bg);
+  border: 2px solid var(--accent-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 170px;
+}
+
+.control-group label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted, #888);
+}
+
+.control-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0.55rem 2.2rem 0.55rem 0.85rem;
+  border: 2px solid var(--accent-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-dark);
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b4e3d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.control-group select:hover {
+  border-color: var(--terracotta);
+}
+
+.control-group select:focus {
+  outline: none;
+  border-color: var(--terracotta);
+  box-shadow: 0 0 0 3px rgba(178, 90, 62, 0.2);
+}
+
+/* Active filters area (badges + clear button) */
+.controls-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-left: auto;
+}
+
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--terracotta, #b25a3e), var(--clay-orange, #c97b4b));
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  animation: badgePop 0.2s ease;
+}
+
+@keyframes badgePop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.filter-badge button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.1rem;
+  transition: color 0.15s;
+}
+
+.filter-badge button:hover {
+  color: #fff;
+}
+
+/* Ghost / secondary button variant for Clear All */
+.btn-ghost {
+  background: transparent;
+  border: 2px solid var(--accent-color);
+  color: var(--text-dark);
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-ghost:hover {
+  background: var(--terracotta, #b25a3e);
+  border-color: var(--terracotta, #b25a3e);
+  color: #fff;
+}
+
+/* Results count */
+.paths-results-count {
+  font-size: 0.9rem;
+  color: var(--text-muted, #888);
+  font-weight: 500;
+  margin: -1rem 0 0.5rem;   /* pulls up slightly under toolbar */
+  min-height: 1.2em;
+}
+
+/* Empty state */
+.paths-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-muted);
+  grid-column: 1 / -1;
+}
+
+.paths-empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.paths-empty-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Responsive tweaks ────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .paths-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .control-group {
+    min-width: unset;
+  }
+
+  .controls-actions {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-badge {
+    font-size: 0.76rem;
+  }
+
+  .paths-results-count {
+    font-size: 0.82rem;
+  }
+}
+
+
 .paths-container {
   padding: 2rem;
   display: flex;

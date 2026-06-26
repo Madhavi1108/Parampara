@@ -462,6 +462,11 @@ function openModal(entryId) {
   titleEl.textContent = entry.title;
   bodyEl.innerHTML = buildModalContent(entry);
 
+  const audioPlayer = bodyEl.querySelector('audio');
+  if (audioPlayer && typeof window.setupAudioVisualizer === 'function') {
+    window.setupAudioVisualizer(audioPlayer);
+  }
+
   bodyEl.querySelectorAll('[data-related-id]').forEach((btn) => {
     btn.addEventListener('click', () => openModal(btn.dataset.relatedId));
   });

@@ -7,9 +7,9 @@
       name="description"
       content="Explore traditional art forms, embroidery patterns, and crafts from rural India in the Parampara visual archive"
     />
-    <title>Visual Archive - Parampara</title>
+    <title>Compare Items - Parampara</title>
     <link rel="stylesheet" href="styles/main.css" />
-    <link rel="stylesheet" href="styles/gallery.css" />
+    <link rel="stylesheet" href="styles/compare.css" />
     <link rel="stylesheet" href="styles/languageSelector.css" />
     <link rel="stylesheet" href="styles/theme.css" />
     <link rel="stylesheet" href="styles/shareModal.css" />
@@ -66,75 +66,46 @@
     </div>
     <div class="nav-overlay" id="navOverlay"></div>
 
-    <main class="gallery-container">
-      <div class="gallery-header">
-        <h2 data-i18n="gallery_title">Visual Patterns Archive</h2>
-        <p data-i18n="gallery_subtitle">Explore traditional art forms, embroidery patterns, and crafts from rural India</p>
-        <button id="add-item-btn" class="btn btn-primary" data-i18n="gallery_add_btn">Add New Item</button>
+        <main class="compare-page-wrapper">
+      <div class="compare-header">
+        <h2>Compare Items</h2>
+        <p>Select two cultural items below to compare their traits, regions, and descriptions side-by-side.</p>
       </div>
 
-      <div class="filter-bar">
-        <input type="text" id="search-input" data-i18n-placeholder="gallery_search_placeholder" placeholder="Search patterns, villages, or crafts..." class="search-input" />
-        <select id="type-filter" class="filter-select">
-          <option value="all" data-i18n="gallery_filter_all">All Types</option>
-          <option value="visual" data-i18n="gallery_filter_visual">Visual Patterns</option>
-          <option value="audio" data-i18n="gallery_filter_audio">Audio Stories</option>
-          <option value="story" data-i18n="gallery_filter_story">Stories</option>
-        </select>
-      </div>
-
-      <div id="gallery-grid" class="gallery-grid"></div>
-      
-      <div id="loading-indicator" class="loading-indicator" style="display: none;">
-        <div class="spinner"></div>
-        <span data-i18n="gallery_loading">Loading more items...</span>
-      </div>
-      <div id="intersection-sentinel"></div>
-    </main>
-
-    <div id="add-item-modal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 data-i18n="modal_add_title">Add New Cultural Item</h3>
-          <button class="close-btn" id="close-modal" data-i18n="btn_close">Ã—</button>
-        </div>
-        <form id="add-item-form" class="modal-form">
-          <div class="form-group">
-            <label data-i18n="modal_label_title">Title</label>
-            <input type="text" name="title" required />
-          </div>
-          <div class="form-group">
-            <label data-i18n="modal_label_type">Type</label>
-            <select name="type" required>
-              <option value="visual" data-i18n="modal_type_visual">Visual Pattern</option>
-              <option value="audio" data-i18n="modal_type_audio">Audio Story</option>
-              <option value="story" data-i18n="modal_type_story">Story</option>
+      <div class="compare-container">
+        <!-- Item 1 Slot -->
+        <div class="compare-slot" id="compare-slot-1">
+          <div class="compare-selector-container">
+            <select id="select-item-1" class="compare-selector">
+              <option value="">Select Item A...</option>
             </select>
           </div>
-          <div class="form-group">
-            <label data-i18n="modal_label_location">Location/Village</label>
-            <input type="text" name="location" required />
+          <div id="compare-content-1" class="compare-content">
+            <div class="compare-placeholder">
+              <i class="ti ti-photo"></i>
+              <p>Select an item to begin comparison</p>
+            </div>
           </div>
-          <div class="form-group">
-            <label data-i18n="modal_label_desc">Description</label>
-            <textarea name="description" rows="4" required></textarea>
+        </div>
+
+        <!-- Item 2 Slot -->
+        <div class="compare-slot" id="compare-slot-2">
+          <div class="compare-selector-container">
+            <select id="select-item-2" class="compare-selector">
+              <option value="">Select Item B...</option>
+            </select>
           </div>
-          <div class="form-group">
-            <label data-i18n="modal_label_image_url">Image URL</label>
-            <input type="url" name="imageUrl" />
+          <div id="compare-content-2" class="compare-content">
+            <div class="compare-placeholder">
+              <i class="ti ti-photo"></i>
+              <p>Select an item to begin comparison</p>
+            </div>
           </div>
-          <div class="form-group">
-            <label data-i18n="modal_label_audio_url">Audio URL (if applicable)</label>
-            <input type="url" name="audioUrl" />
-          </div>
-          <div class="form-group">
-            <label data-i18n="modal_label_tags">Tags (comma-separated)</label>
-            <input type="text" name="tags" data-i18n-placeholder="modal_tags_placeholder" placeholder="e.g., embroidery, festival, story" />
-          </div>
-          <button type="submit" class="btn btn-primary" data-i18n="btn_add_item">Add Item</button>
-        </form>
+        </div>
       </div>
-    </div>
+    </main>
+
+    
 
     <footer class="footer">
       <div class="footer-container">
@@ -174,7 +145,7 @@
     <script src="scripts/favoritesManager.js"></script>
 <script src="scripts/utils.js"></script>
     <script src="scripts/shareUtils.js"></script>
-    <script src="scripts/gallery.js"></script>
+    <script src="scripts/compare.js"></script>
     <script src="scripts/cacheLayer.js"></script>
     <script src="scripts/languageSwitcher.js"></script>
     <script src="scripts/navbar.js"></script>
@@ -183,6 +154,7 @@
     <script src="scripts/sw-register.js"></script>
 </body>
 </html>
+
 
 
 

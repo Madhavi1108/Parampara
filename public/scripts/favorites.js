@@ -49,9 +49,11 @@ async function loadFavorites() {
     const response = await fetch('/api/items');
     const allItems = await response.json();
 
-    // Filter to only include favorited items
+    // Filter and sort to include favorited items in their saved order
     const favIds = typeof FavoritesManager !== 'undefined' ? FavoritesManager.getFavorites() : [];
-    allFavoriteItems = allItems.filter(item => favIds.includes(item.id));
+    allFavoriteItems = favIds
+      .map((id) => allItems.find((item) => item.id === id))
+      .filter(Boolean);
 
     displayFavorites(allFavoriteItems);
   } catch (error) {
@@ -120,7 +122,7 @@ function displayFavorites(items) {
       const heartSvg = HEART_FILLED_SVG; // On favorites page, all items are favorited
 
       return `
-        <div class="gallery-item" data-id="${escapeHtml(item.id)}" data-item-id="${escapeHtml(item.id)}" onclick="viewItem('${escapeHtml(item.id)}')">
+        <div class="gallery-item" draggable="true" data-id="${escapeHtml(item.id)}" data-item-id="${escapeHtml(item.id)}">
             <div class="gallery-item-image" style="position:relative;">
                 ${
                   item.imageUrl
@@ -157,6 +159,8 @@ function displayFavorites(items) {
     `;
     })
     .join('');
+
+  setupDragAndDrop();
 }
 
 
@@ -270,5 +274,118 @@ function closeItemModal() {
   if (modal) {
     modal.classList.remove('active');
     document.body.style.overflow = '';
+  }
+}
+
+// Drag and Drop Logic
+function setupDragAndDrop() {
+  const grid = document.getElementById('favorites-grid');
+  if (!grid) return;
+
+  // Remove existing listeners if setup is called multiple times
+  const newGrid = grid.cloneNode(true);
+  grid.parentNode.replaceChild(newGrid, grid);
+
+  let draggedItem = null;
+
+  // Click delegation (replaces inline onclick)
+  newGrid.addEventListener('click', (e) => {
+    // If clicking a favorite button, let setupFavDelegation handle it
+    if (e.target.closest('.favorite-btn')) return;
+    
+    const item = e.target.closest('.gallery-item');
+    if (item && !window.isDraggingFavorite) {
+      if (typeof viewItem === 'function') {
+        viewItem(item.dataset.id);
+      }
+    }
+  });
+
+  newGrid.addEventListener('dragstart', (e) => {
+    const item = e.target.closest('.gallery-item');
+    if (!item) return;
+    window.isDraggingFavorite = true;
+    draggedItem = item;
+    setTimeout(() => item.classList.add('dragging'), 0);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', item.dataset.id);
+  });
+
+  newGrid.addEventListener('dragend', (e) => {
+    const item = e.target.closest('.gallery-item');
+    if (!item) return;
+    item.classList.remove('dragging');
+    draggedItem = null;
+    
+    // Clear drag-over from all
+    newGrid.querySelectorAll('.gallery-item').forEach(el => el.classList.remove('drag-over'));
+    
+    // Slight delay to prevent click firing immediately after drag
+    setTimeout(() => {
+      window.isDraggingFavorite = false;
+    }, 100);
+  });
+
+  newGrid.addEventListener('dragover', (e) => {
+    e.preventDefault(); // necessary to allow dropping
+    const item = e.target.closest('.gallery-item');
+    if (!item || item === draggedItem) return;
+    
+    e.dataTransfer.dropEffect = 'move';
+  });
+
+  newGrid.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    const item = e.target.closest('.gallery-item');
+    if (item && item !== draggedItem) {
+      item.classList.add('drag-over');
+    }
+  });
+
+  newGrid.addEventListener('dragleave', (e) => {
+    const item = e.target.closest('.gallery-item');
+    if (item && item !== draggedItem) {
+      item.classList.remove('drag-over');
+    }
+  });
+
+  newGrid.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const targetItem = e.target.closest('.gallery-item');
+    
+    if (targetItem) {
+      targetItem.classList.remove('drag-over');
+    }
+
+    if (!targetItem || targetItem === draggedItem) return;
+
+    // Determine insertion point
+    const bounding = targetItem.getBoundingClientRect();
+    const offset = bounding.y + (bounding.height / 2);
+    
+    if (e.clientY - offset > 0) {
+      targetItem.parentNode.insertBefore(draggedItem, targetItem.nextSibling);
+    } else {
+      targetItem.parentNode.insertBefore(draggedItem, targetItem);
+    }
+
+    // Save new order
+    saveNewOrder(newGrid);
+  });
+}
+
+function saveNewOrder(grid) {
+  const items = Array.from(grid.querySelectorAll('.gallery-item'));
+  const newOrder = items.map(item => item.dataset.id);
+  
+  if (window.FavoritesManager) {
+    window.FavoritesManager.reorderFavorites(newOrder);
+    
+    // Update local state without re-rendering to prevent stutter
+    // (We manually sorted the DOM, so just syncing state is enough)
+    const favIds = window.FavoritesManager.getFavorites();
+    allFavoriteItems = favIds
+      .map(id => allFavoriteItems.find(item => item.id === id))
+      .filter(Boolean);
   }
 }

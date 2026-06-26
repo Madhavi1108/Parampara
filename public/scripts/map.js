@@ -9,6 +9,13 @@ let heatmapMarkers = [];
 
 let currentLanguage = localStorage.getItem('language') || 'en';
 
+// Flyover state
+let flyoverActive = false;
+let flyoverPaused = false;
+let flyoverCoordinates = [];
+let flyoverIndex = 0;
+let flyoverTimeout = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   const selector = document.getElementById('language-selector');
   selector.value = currentLanguage;
@@ -256,10 +263,11 @@ async function initializeMap() {
 
     map.addControl(new maplibregl.NavigationControl());
 
-    map.on('load', () => {
+    map.on('load', async () => {
       setMapLanguage(currentLanguage);
       addVillageMarkers();
-      loadCulturalItems();
+      await loadCulturalItems();
+      checkFlyover();
       initRouting();
     });
 
@@ -545,157 +553,31 @@ async function loadCulturalItems() {
   }
 
   try {
-    const response = await fetch('/api/items');
+    const response = await fetch('/api/items?limit=1000');
 
     if (!response.ok) {
       throw new Error('Failed to load cultural items');
     }
 
-    const items = await response.json();
+    const result = await response.json();
+    const items = result.data || result; // handle paginated or flat array
 
-    const features = items
-      .filter((item) => item.coordinates && item.coordinates.length === 2)
-      .map((item) => ({
-        type: 'Feature',
-        properties: {
-          id: item.id,
-          title: item.title,
-          description: item.description || '',
-          location: item.location || '',
-          tags: item.tags ? item.tags.join(',') : '',
-          type: item.type
-        },
-        geometry: {
-          type: 'Point',
-          coordinates: [item.coordinates[1], item.coordinates[0]], // [lng, lat]
-        },
-      }));
+    items.forEach((item) => {
+      if (item.coordinates && item.coordinates.length === 2) {
+        const el = document.createElement('div');
+        el.className = 'cultural-marker';
 
-    const geojsonData = {
-      type: 'FeatureCollection',
-      features: features,
-    };
+        new maplibregl.Marker({
+          element: el,
+        })
+          .setLngLat([item.coordinates[1], item.coordinates[0]])
+          .addTo(map);
 
-    if (map.getSource('cultural-items')) {
-      map.getSource('cultural-items').setData(geojsonData);
-      return;
-    }
-
-    map.addSource('cultural-items', {
-      type: 'geojson',
-      data: geojsonData,
-      cluster: true,
-      clusterMaxZoom: 14,
-      clusterRadius: 50,
-    });
-
-    map.addLayer({
-      id: 'clusters',
-      type: 'circle',
-      source: 'cultural-items',
-      filter: ['has', 'point_count'],
-      paint: {
-        'circle-color': [
-          'step',
-          ['get', 'point_count'],
-          '#f4a261',
-          10,
-          '#e76f51',
-          50,
-          '#264653'
-        ],
-        'circle-radius': [
-          'step',
-          ['get', 'point_count'],
-          15,
-          10,
-          20,
-          50,
-          25
-        ],
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#ffffff'
-      },
-    });
-
-    map.addLayer({
-      id: 'cluster-count',
-      type: 'symbol',
-      source: 'cultural-items',
-      filter: ['has', 'point_count'],
-      layout: {
-        'text-field': '{point_count_abbreviated}',
-        'text-size': 12,
-      },
-      paint: {
-        'text-color': '#ffffff'
+        el.addEventListener('click', () => {
+          showPopup(item);
+        });
       }
     });
-
-    map.addLayer({
-      id: 'unclustered-point',
-      type: 'circle',
-      source: 'cultural-items',
-      filter: ['!', ['has', 'point_count']],
-      paint: {
-        'circle-color': '#2a9d8f',
-        'circle-radius': 8,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#ffffff',
-      },
-    });
-
-    map.on('click', 'clusters', (e) => {
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: ['clusters'],
-      });
-      const clusterId = features[0].properties.cluster_id;
-      map.getSource('cultural-items').getClusterExpansionZoom(
-        clusterId,
-        (err, zoom) => {
-          if (err) return;
-
-          map.easeTo({
-            center: features[0].geometry.coordinates,
-            zoom: zoom,
-          });
-        }
-      );
-    });
-
-    map.on('click', 'unclustered-point', (e) => {
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const props = e.features[0].properties;
-
-      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-      }
-
-      const item = {
-        title: props.title,
-        description: props.description,
-        location: props.location,
-        tags: props.tags ? props.tags.split(',') : []
-      };
-      
-      map.flyTo({ center: coordinates, zoom: 15 });
-      showPopup(item);
-    });
-
-    map.on('mouseenter', 'clusters', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'clusters', () => {
-      map.getCanvas().style.cursor = '';
-    });
-
-    map.on('mouseenter', 'unclustered-point', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'unclustered-point', () => {
-      map.getCanvas().style.cursor = '';
-    });
-
   } catch (error) {
     console.error('Error loading cultural items:', error);
   }
@@ -770,122 +652,184 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-
-// --- Heritage Path Routing ---
-let routeMarkers = [];
-
-async function initRouting() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const pathId = urlParams.get('pathId');
-  if (!pathId) return;
+// ── Cinematic Flyover Logic ──────────────────────────────────────────────────
+async function checkFlyover() {
+  const params = new URLSearchParams(window.location.search);
+  const flyoverId = params.get('flyover');
+  if (!flyoverId) return;
 
   try {
-    const pathsRes = await fetch('/api/paths');
-    if (!pathsRes.ok) throw new Error('Failed to fetch paths');
-    const paths = await pathsRes.json();
-    const currentPath = paths.find(p => p.id === pathId);
+    const response = await fetch('/api/paths');
+    const paths = await response.json();
+    const targetPath = paths.find(p => p.id === flyoverId);
 
-    if (!currentPath || !currentPath.items || currentPath.items.length === 0) return;
-
-    const itemsRes = await fetch('/api/items');
-    if (!itemsRes.ok) throw new Error('Failed to fetch items');
-    const items = await itemsRes.json();
-
-    const pathItems = currentPath.items.map(id => items.find(i => i.id === id)).filter(i => i && i.coordinates);
-
-    if (pathItems.length < 2) {
-      console.warn('Not enough items with coordinates to draw a route.');
+    if (!targetPath || !targetPath.items || targetPath.items.length === 0) {
+      console.warn('Flyover path not found or empty');
       return;
     }
 
-    // Hide normal village markers
-    markers.forEach(m => m.marker.remove());
+    const itemsRes = await fetch('/api/items?limit=1000');
+    const itemsData = await itemsRes.json();
+    const allItems = itemsData.data || itemsData; // Support paginated response if backend uses it
 
-    drawRoute(pathItems, currentPath);
-    addClearRouteButton();
-  } catch (error) {
-    console.error('Routing error:', error);
+    flyoverCoordinates = targetPath.items.map(itemId => {
+      const item = allItems.find(i => i.id === itemId);
+      return item && item.coordinates && item.coordinates.length === 2 ? [item.coordinates[1], item.coordinates[0]] : null;
+    }).filter(c => c !== null);
+
+    if (flyoverCoordinates.length < 2) {
+      console.warn('Not enough coordinates for flyover');
+      return;
+    }
+
+    startFlyover();
+  } catch (err) {
+    console.error('Error starting flyover:', err);
   }
 }
 
-async function drawRoute(pathItems, pathInfo) {
-  // 1. Plot specific markers for the path
-  pathItems.forEach((item, index) => {
-    const el = document.createElement('div');
-    el.className = 'route-marker';
-    el.innerHTML = `<div style="background: #e76f51; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${index + 1}</div>`;
+function startFlyover() {
+  flyoverActive = true;
+  flyoverPaused = false;
+  flyoverIndex = 0;
 
-    const popupHTML = `<h3>${item.title || item.name?.en || 'Location'}</h3><p>${item.location || ''}</p>`;
-    const marker = new maplibregl.Marker(el)
-      .setLngLat([item.coordinates[1], item.coordinates[0]])
-      .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(popupHTML))
-      .addTo(map);
-      
-    routeMarkers.push(marker);
-  });
-
-  // 2. Fetch Route from OSRM
-  const coordinatesStr = pathItems.map(item => `${item.coordinates[1]},${item.coordinates[0]}`).join(';');
-  const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordinatesStr}?overview=full&geometries=geojson`;
-
-  try {
-    const res = await fetch(osrmUrl);
-    const data = await res.json();
-    if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) return;
-
-    const routeGeoJSON = data.routes[0].geometry;
-
-    // 3. Draw Line on Map
-    map.addSource('route', {
-      'type': 'geojson',
-      'data': {
-        'type': 'Feature',
-        'properties': {},
-        'geometry': routeGeoJSON
+  // Add route layer
+  if (!map.getSource('flyover-route')) {
+    map.addSource('flyover-route', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: flyoverCoordinates
+        }
       }
     });
 
     map.addLayer({
-      'id': 'route-line',
-      'type': 'line',
-      'source': 'route',
-      'layout': {
+      id: 'flyover-route-line',
+      type: 'line',
+      source: 'flyover-route',
+      layout: {
         'line-join': 'round',
         'line-cap': 'round'
       },
-      'paint': {
-        'line-color': '#e76f51',
-        'line-width': 5,
-        'line-opacity': 0.8
+      paint: {
+        'line-color': '#e53e3e',
+        'line-width': 4,
+        'line-dasharray': [2, 4]
       }
     });
+  }
 
-    // 4. Fit bounds
-    const coordinates = routeGeoJSON.coordinates;
-    const bounds = coordinates.reduce(function(bounds, coord) {
-      return bounds.extend(coord);
-    }, new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
+  // Show UI
+  const controls = document.getElementById('flyover-controls');
+  if (controls) controls.style.display = 'flex';
+  
+  const pauseBtn = document.getElementById('btn-flyover-pause');
+  const stopBtn = document.getElementById('btn-flyover-stop');
+  if (pauseBtn) {
+    pauseBtn.textContent = 'Pause';
+    pauseBtn.addEventListener('click', toggleFlyoverPause);
+  }
+  if (stopBtn) stopBtn.addEventListener('click', stopFlyover);
 
-    map.fitBounds(bounds, {
-      padding: 50
-    });
-  } catch (err) {
-    console.error('Error drawing route:', err);
+  flyToNextPoint();
+}
+
+function toggleFlyoverPause() {
+  flyoverPaused = !flyoverPaused;
+  const btn = document.getElementById('btn-flyover-pause');
+  if (flyoverPaused) {
+    if (btn) btn.textContent = 'Resume';
+    map.stop(); // Stop camera animation
+    if (flyoverTimeout) clearTimeout(flyoverTimeout);
+  } else {
+    if (btn) btn.textContent = 'Pause';
+    flyToNextPoint();
   }
 }
 
-function addClearRouteButton() {
-  const controlsDiv = document.querySelector('.map-controls');
-  if (controlsDiv) {
-    const clearBtn = document.createElement('button');
-    clearBtn.className = 'btn btn-secondary';
-    clearBtn.style.marginLeft = '1rem';
-    clearBtn.style.background = '#e76f51';
-    clearBtn.style.color = 'white';
-    clearBtn.textContent = '❌ Clear Route';
-    clearBtn.onclick = () => {
-      window.location.href = 'map.html'; // simplest way to reset the map state
-    };
-    controlsDiv.appendChild(clearBtn);
-  }
+function stopFlyover() {
+  flyoverActive = false;
+  if (flyoverTimeout) clearTimeout(flyoverTimeout);
+  map.stop();
+  map.easeTo({ pitch: 0, bearing: 0 });
+  
+  if (map.getLayer('flyover-route-line')) map.removeLayer('flyover-route-line');
+  if (map.getSource('flyover-route')) map.removeSource('flyover-route');
+  
+  const controls = document.getElementById('flyover-controls');
+  if (controls) controls.style.display = 'none';
+  
+  // Remove pause/stop event listeners to avoid duplicates if run again
+  const pauseBtn = document.getElementById('btn-flyover-pause');
+  const stopBtn = document.getElementById('btn-flyover-stop');
+  if (pauseBtn) pauseBtn.removeEventListener('click', toggleFlyoverPause);
+  if (stopBtn) stopBtn.removeEventListener('click', stopFlyover);
+  
+  // Remove flyover param from URL
+  const url = new URL(window.location);
+  url.searchParams.delete('flyover');
+  window.history.replaceState({}, '', url);
 }
+
+function flyToNextPoint() {
+  if (!flyoverActive || flyoverPaused) return;
+
+  if (flyoverIndex >= flyoverCoordinates.length) {
+    // End of route
+    stopFlyover();
+    return;
+  }
+
+  const target = flyoverCoordinates[flyoverIndex];
+  
+  // Calculate bearing to next point for cinematic effect
+  let bearing = 0;
+  if (flyoverIndex < flyoverCoordinates.length - 1) {
+    const next = flyoverCoordinates[flyoverIndex + 1];
+    bearing = calculateBearing(target[1], target[0], next[1], next[0]);
+  } else if (flyoverIndex > 0) {
+    const prev = flyoverCoordinates[flyoverIndex - 1];
+    bearing = calculateBearing(prev[1], prev[0], target[1], target[0]);
+  }
+
+  map.flyTo({
+    center: target,
+    zoom: 9,
+    pitch: 60,
+    bearing: bearing,
+    speed: 0.3, // slow cinematic speed
+    curve: 1,
+    essential: true
+  });
+
+  // When move ends, wait a bit and go to next
+  map.once('moveend', () => {
+    if (!flyoverActive || flyoverPaused) return;
+    
+    // Increment index and schedule next flight
+    flyoverIndex++;
+    flyoverTimeout = setTimeout(() => {
+      flyToNextPoint();
+    }, 3000); // 3 second pause at each point to let user look around
+  });
+}
+
+function calculateBearing(startLat, startLng, destLat, destLng) {
+  startLat = startLat * Math.PI / 180;
+  startLng = startLng * Math.PI / 180;
+  destLat = destLat * Math.PI / 180;
+  destLng = destLng * Math.PI / 180;
+
+  const y = Math.sin(destLng - startLng) * Math.cos(destLat);
+  const x = Math.cos(startLat) * Math.sin(destLat) -
+            Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+  
+  let brng = Math.atan2(y, x);
+  brng = brng * 180 / Math.PI;
+  return (brng + 360) % 360;
+}
+// --- Heritage Path Routing ---

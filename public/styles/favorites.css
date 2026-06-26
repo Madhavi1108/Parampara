@@ -284,3 +284,21 @@
     justify-content: center;
   }
 }
+
+/* Drag and Drop Styles */
+.gallery-item[draggable="true"] {
+  cursor: grab;
+}
+
+.gallery-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  transform: scale(0.98);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-item.drag-over {
+  border: 2px dashed var(--primary-color);
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
