@@ -43,6 +43,12 @@ const FavoritesManager = {
     }
   },
 
+  // Reorder favorites (overwrites the whole list)
+  reorderFavorites: function (newOrderArray) {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newOrderArray));
+    // No event dispatch needed here because this happens during/after UI reordering
+  },
+
   // Dispatch event so UI can update
   dispatchUpdateEvent: function () {
     const event = new CustomEvent('favoritesUpdated');
