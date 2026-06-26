@@ -387,6 +387,11 @@ function displayPathStep() {
   document.getElementById('prev-step').disabled = currentStepIndex === 0;
   document.getElementById('next-step').disabled =
     currentStepIndex === items.length - 1;
+
+  const audioPlayer = document.querySelector('#path-content .audio-player');
+  if (audioPlayer && typeof window.setupAudioVisualizer === 'function') {
+    window.setupAudioVisualizer(audioPlayer);
+  }
 }
 
 function escapeHtml(text) {
