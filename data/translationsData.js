@@ -247,7 +247,7 @@ const PARAMPARA_TRANSLATIONS = {
     revival_form_references: 'References',
     revival_form_references_placeholder: 'Books, elders, archives, or links...',
     revival_form_submit: 'Submit Contribution',
-    nav_risk: 'Risk Dashboard',
+    nav_risk: 'Risk',
     risk_title: 'Cultural Heritage Risk Monitoring Dashboard',
     risk_subtitle:
       'Identify, calculate, and display cultural traditions, crafts, and heritage items at risk of disappearing.',
