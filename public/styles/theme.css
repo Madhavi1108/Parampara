@@ -1939,3 +1939,124 @@ footer{
   color: var(--theme-footer-text) !important;
   opacity: .85;
 }
+
+/* ==========================================
+   BREADCRUMBS
+========================================== */
+
+.parampara-breadcrumb-container {
+  max-width: 1200px;
+  margin: 1rem auto 0;
+  padding: 0 2rem;
+}
+
+.parampara-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.95rem;
+  align-items: center;
+}
+
+.parampara-breadcrumb-item {
+  display: flex;
+  align-items: center;
+  color: var(--theme-text-secondary);
+}
+
+.parampara-breadcrumb-item a {
+  color: var(--theme-accent);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.parampara-breadcrumb-item a:hover {
+  color: var(--theme-accent-hover);
+  text-decoration: underline;
+}
+
+.parampara-breadcrumb-item + .parampara-breadcrumb-item::before {
+  content: "›";
+  margin: 0 0.5rem;
+  color: var(--theme-text-secondary);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.parampara-breadcrumb-item.active {
+  color: var(--theme-text);
+  font-weight: bold;
+}
+
+/* ==========================================
+   QUILL.JS RICH TEXT EDITOR
+========================================== */
+
+.ql-toolbar.ql-snow {
+  background: var(--theme-surface) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-bottom: none !important;
+  border-radius: 4px 4px 0 0;
+}
+
+.ql-container.ql-snow {
+  background: var(--theme-input-bg) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: 0 0 4px 4px;
+}
+
+.ql-editor {
+  color: var(--theme-text) !important;
+  font-family: inherit !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+.ql-editor.ql-blank::before {
+  color: var(--theme-text-secondary) !important;
+  font-style: italic;
+}
+
+.ql-snow .ql-stroke {
+  stroke: var(--theme-text) !important;
+}
+
+.ql-snow .ql-fill {
+  fill: var(--theme-text) !important;
+}
+
+.ql-snow .ql-picker {
+  color: var(--theme-text) !important;
+}
+
+.ql-snow .ql-picker-options {
+  background: var(--theme-surface) !important;
+  border-color: var(--theme-border) !important;
+}
+
+/* ==========================================
+   RATE LIMITING FEEDBACK
+========================================== */
+.chat-feedback {
+  color: #d9534f !important;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  text-align: right;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.btn-disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

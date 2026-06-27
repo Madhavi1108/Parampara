@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -13,11 +13,13 @@
     <link rel="stylesheet" href="styles/languageSelector.css" />
     <link rel="stylesheet" href="styles/theme.css" />
     <link rel="stylesheet" href="styles/shareModal.css" />
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
   </head>
   <body>
     <nav class="navbar">
       <div class="nav-container">
-        <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">ðŸŒ™</button>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">🌙</button>
         <div class="logo">
           <h1 data-i18n="brand_name">Parampara</h1>
           <p class="tagline" data-i18n="brand_tagline">Preserving Living Traditions</p>
@@ -92,11 +94,33 @@
       <div id="intersection-sentinel"></div>
     </main>
 
+    <!-- Gallery Lightbox Modal -->
+    <div id="gallery-lightbox" class="modal lightbox-modal">
+      <div class="lightbox-content">
+        <button class="close-btn" id="close-lightbox" data-i18n="btn_close">×</button>
+        <div class="lightbox-layout">
+          <div class="lightbox-image-container" id="lightbox-image-container">
+            <img id="lightbox-image" src="" alt="Gallery Image">
+            <div id="magnifier-lens" class="magnifier-lens"></div>
+          </div>
+          <div class="lightbox-info">
+            <span id="lightbox-type" class="gallery-item-type"></span>
+            <div class="gallery-item-location" style="margin-bottom: 0.5rem;">
+              <span class="gallery-item-location-marker">📍</span> <strong id="lightbox-location"></strong>
+            </div>
+            <h3 id="lightbox-title"></h3>
+            <div id="lightbox-desc" class="markdown-body" style="font-size: 0.95rem; margin-bottom: 1.5rem;"></div>
+            <div id="lightbox-tags" class="gallery-item-tags"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="add-item-modal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
           <h3 data-i18n="modal_add_title">Add New Cultural Item</h3>
-          <button class="close-btn" id="close-modal" data-i18n="btn_close">Ã—</button>
+          <button class="close-btn" id="close-modal" data-i18n="btn_close">×</button>
         </div>
         <form id="add-item-form" class="modal-form">
           <div class="form-group">
@@ -117,7 +141,8 @@
           </div>
           <div class="form-group">
             <label data-i18n="modal_label_desc">Description</label>
-            <textarea name="description" rows="4" required></textarea>
+            <div id="quill-editor" style="height: 150px; background: var(--theme-input-bg); color: var(--theme-text);"></div>
+            <input type="hidden" name="description" id="hidden-description" required>
           </div>
           <div class="form-group">
             <label data-i18n="modal_label_image_url">Image URL</label>
@@ -139,7 +164,7 @@
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-brand">
-          <h2 class="footer-logo">ðŸ›ï¸ Parampara</h2>
+          <h2 class="footer-logo">🏛️ Parampara</h2>
           <p>Preserving rural heritage, traditions, and stories for future generations.</p>
         </div>
         <div class="footer-links">
@@ -162,18 +187,20 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>Â© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
+        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
       </div>
     </footer>
     
-    <button id="backToTopBtn" aria-label="Back to top">â†‘</button>
+    <button id="backToTopBtn" aria-label="Back to top">↑</button>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script src="scripts/markdown.js"></script>
     <script src="scripts/favoritesManager.js"></script>
-<script src="scripts/utils.js"></script>
+    <script src="scripts/utils.js"></script>
     <script src="scripts/shareUtils.js"></script>
+    <!-- Quill Rich Text Editor -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script src="scripts/gallery.js"></script>
     <script src="scripts/cacheLayer.js"></script>
     <script src="scripts/languageSwitcher.js"></script>
@@ -181,6 +208,7 @@
     <script src="scripts/main.js"></script>
     <script src="scripts/theme.js"></script>
     <script src="scripts/sw-register.js"></script>
+<script src="scripts/breadcrumbs.js"></script>
 </body>
 </html>
 

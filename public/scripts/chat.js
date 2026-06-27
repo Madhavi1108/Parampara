@@ -1,6 +1,13 @@
 // Chat Page JavaScript
 
+let chatRateLimiter = null;
+let isProcessing = false;
+let rateLimitTimer = null;
+
 document.addEventListener('DOMContentLoaded', () => {
+  if (typeof RateLimiter !== 'undefined') {
+    chatRateLimiter = new RateLimiter(5, 10000); // 5 requests per 10 seconds
+  }
   setupEventListeners();
 });
 
@@ -26,11 +33,48 @@ function setupEventListeners() {
 }
 
 async function sendMessage() {
+  if (isProcessing) return;
+
   const chatInput = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('send-btn');
+  const feedbackDiv = document.getElementById('chat-feedback');
   const question = chatInput.value.trim();
 
   if (!question) return;
 
+  // Rate Limiter Check
+  if (chatRateLimiter) {
+    const status = chatRateLimiter.check();
+    if (!status.allowed) {
+      chatInput.disabled = true;
+      sendBtn.disabled = true;
+      sendBtn.classList.add('btn-disabled');
+      feedbackDiv.style.display = 'block';
+      
+      let remaining = Math.ceil(status.remainingMs / 1000);
+      feedbackDiv.textContent = `Rate limit exceeded. Please wait ${remaining}s...`;
+      
+      if (rateLimitTimer) clearInterval(rateLimitTimer);
+      rateLimitTimer = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(rateLimitTimer);
+          chatInput.disabled = false;
+          sendBtn.disabled = false;
+          sendBtn.classList.remove('btn-disabled');
+          feedbackDiv.style.display = 'none';
+        } else {
+          feedbackDiv.textContent = `Rate limit exceeded. Please wait ${remaining}s...`;
+        }
+      }, 1000);
+      return;
+    }
+  }
+
+  isProcessing = true;
+  chatInput.disabled = true;
+  sendBtn.disabled = true;
+  
   // Add user message to chat
   addMessage(question, 'user');
   chatInput.value = '';
@@ -61,6 +105,16 @@ async function sendMessage() {
       "I apologize, but I'm having trouble connecting right now. Please try again later.",
       'bot'
     );
+  } finally {
+    isProcessing = false;
+    
+    // Only re-enable if rate limiting hasn't blocked it in the background
+    const feedbackDiv = document.getElementById('chat-feedback');
+    if (feedbackDiv.style.display === 'none' || feedbackDiv.style.display === '') {
+      document.getElementById('chat-input').disabled = false;
+      document.getElementById('send-btn').disabled = false;
+      document.getElementById('chat-input').focus();
+    }
   }
 }
 

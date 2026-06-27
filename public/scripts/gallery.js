@@ -6,6 +6,7 @@ const limit = 10;
 let isLoading = false;
 let hasMore = true;
 let observer = null;
+let quillEditor = null;
 
 // SVG hearts (inline, no font dependency)
 const HEART_FILLED = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#e53e3e" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
@@ -17,6 +18,21 @@ document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
   setupFavDelegation();  // ← single listener handles ALL heart clicks
   setupShareDelegation();
+
+  if (typeof Quill !== 'undefined') {
+    quillEditor = new Quill('#quill-editor', {
+      theme: 'snow',
+      placeholder: 'Write the cultural story or pattern description here...',
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline'],
+          [{ 'header': [1, 2, 3, false] }],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['link']
+        ]
+      }
+    });
+  }
 });
 
 // ── Event delegation: one listener on the grid catches every heart-button click
@@ -83,7 +99,25 @@ function setupEventListeners() {
 
   document
     .getElementById('add-item-form')
-    .addEventListener('submit', handleAddItem);
+    .addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      
+      // Sync Quill editor content to hidden input
+      if (quillEditor) {
+        formData.set('description', quillEditor.root.innerHTML);
+      }
+      
+      await handleAddItem(e, formData);
+      
+      // Cleanup after submit
+      e.target.reset();
+      if (quillEditor) {
+        quillEditor.root.innerHTML = '';
+      }
+      document.getElementById('add-item-modal').classList.remove('active');
+    });
 
   const debouncedFilterItems = debounce(filterItems, 300);
 
@@ -318,6 +352,17 @@ async function handleAddItem(e) {
     .querySelectorAll('.input-error')
     .forEach((el) => el.classList.remove('input-error'));
 
+  // Sync Quill HTML to hidden input
+  const hiddenDesc = document.getElementById('hidden-description');
+  if (quillEditor && hiddenDesc) {
+    const quillHtml = quillEditor.root.innerHTML;
+    if (quillHtml === '<p><br></p>') {
+      hiddenDesc.value = '';
+    } else {
+      hiddenDesc.value = DOMPurify.sanitize(quillHtml);
+    }
+  }
+
   const formData = new FormData(e.target);
   const title = formData.get('title').trim();
   const type = formData.get('type');
@@ -374,6 +419,9 @@ async function handleAddItem(e) {
       hasMore = true;
       loadGalleryItems(1, false);
       e.target.reset();
+      if (quillEditor) {
+        quillEditor.root.innerHTML = '';
+      }
       document.getElementById('add-item-modal').classList.remove('active');
       alert(tGallery('gallery_item_added'));
     } else {
@@ -387,10 +435,103 @@ async function handleAddItem(e) {
 
 function viewItem(id) {
   const item = allItems.find((i) => i.id === id);
-  if (item) {
-    alert(`${tGallery('gallery_viewing')}: ${item.title}\n\n${item.description}`);
+  if (!item) return;
+
+  const lightbox = document.getElementById('gallery-lightbox');
+  const img = document.getElementById('lightbox-image');
+  
+  if (!lightbox) return; // Fallback if HTML is not loaded
+  
+  // Set Info
+  document.getElementById('lightbox-title').textContent = item.title;
+  document.getElementById('lightbox-location').textContent = item.location;
+  document.getElementById('lightbox-type').textContent = translateType(item.type);
+  document.getElementById('lightbox-desc').innerHTML = renderMarkdown(item.description, true);
+  
+  const tagsContainer = document.getElementById('lightbox-tags');
+  tagsContainer.innerHTML = item.tags ? item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('') : '';
+
+  // Handle Image or fallback
+  const lens = document.getElementById('magnifier-lens');
+  if (item.imageUrl) {
+    img.src = item.imageUrl;
+    img.style.display = 'block';
+    setupMagnifier(img, lens, item.imageUrl);
+  } else {
+    img.src = '';
+    img.style.display = 'none';
+    if(lens) lens.style.display = 'none';
   }
+
+  lightbox.classList.add('active');
 }
+
+function setupMagnifier(img, lens, imgUrl) {
+  // Disable if device supports touch/pointer is coarse
+  if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
+    return; 
+  }
+
+  const zoomLevel = 2.5;
+
+  // Cleanup old listeners if any exist by replacing the node
+  const newImg = img.cloneNode(true);
+  img.parentNode.replaceChild(newImg, img);
+  img = newImg;
+
+  if(!lens) return;
+
+  lens.style.backgroundImage = `url('${imgUrl}')`;
+
+  img.addEventListener("mouseenter", () => {
+    lens.style.display = "block";
+    lens.style.backgroundSize = `${img.width * zoomLevel}px ${img.height * zoomLevel}px`;
+  });
+
+  img.addEventListener("mousemove", (e) => {
+    e.preventDefault();
+    const pos = getCursorPos(e, img);
+    
+    // Lens position (following cursor)
+    lens.style.left = `${pos.x}px`;
+    lens.style.top = `${pos.y}px`;
+
+    // Calculate background position
+    const bgX = (pos.x * zoomLevel) - (lens.offsetWidth / 2);
+    const bgY = (pos.y * zoomLevel) - (lens.offsetHeight / 2);
+    
+    lens.style.backgroundPosition = `-${bgX}px -${bgY}px`;
+  });
+
+  img.addEventListener("mouseleave", () => {
+    lens.style.display = "none";
+  });
+}
+
+function getCursorPos(e, img) {
+  const rect = img.getBoundingClientRect();
+  let x = e.pageX - rect.left - window.pageXOffset;
+  let y = e.pageY - rect.top - window.pageYOffset;
+  return { x, y };
+}
+
+// Lightbox close logic
+document.addEventListener('DOMContentLoaded', () => {
+  const lightbox = document.getElementById('gallery-lightbox');
+  const closeBtn = document.getElementById('close-lightbox');
+  
+  if (closeBtn && lightbox) {
+    closeBtn.addEventListener('click', () => {
+      lightbox.classList.remove('active');
+    });
+    
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target.classList.contains('lightbox-layout') || e.target.classList.contains('lightbox-image-container')) {
+        lightbox.classList.remove('active');
+      }
+    });
+  }
+});
 
 function escapeHtml(text) {
   if (!text) return '';
