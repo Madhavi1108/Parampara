@@ -434,23 +434,22 @@ async function handleAddItem(e) {
 }
 
 function viewItem(id) {
-<<<<<<< HEAD
   const itemIndex = allItems.findIndex((i) => i.id === id);
-  if (itemIndex !== -1) {
-    if (window.webglLightbox) {
-      window.webglLightbox.open(allItems, itemIndex);
-    } else {
-      const item = allItems[itemIndex];
-      alert(`${tGallery('gallery_viewing')}: ${item.title}\n\n${item.description}`);
-    }
-=======
-  const item = allItems.find((i) => i.id === id);
-  if (!item) return;
+  if (itemIndex === -1) return;
 
+  if (window.webglLightbox) {
+    window.webglLightbox.open(allItems, itemIndex);
+    return;
+  }
+  
+  const item = allItems[itemIndex];
   const lightbox = document.getElementById('gallery-lightbox');
   const img = document.getElementById('lightbox-image');
   
-  if (!lightbox) return; // Fallback if HTML is not loaded
+  if (!lightbox) {
+    alert(`${tGallery('gallery_viewing')}: ${item.title}\n\n${item.description}`);
+    return;
+  }
   
   // Set Info
   document.getElementById('lightbox-title').textContent = item.title;
@@ -471,7 +470,7 @@ function viewItem(id) {
     img.src = '';
     img.style.display = 'none';
     if(lens) lens.style.display = 'none';
->>>>>>> upstream/main
+  }
   }
 
   lightbox.classList.add('active');
