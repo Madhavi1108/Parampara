@@ -16,6 +16,9 @@ const checkinRoutes = require('./routes/checkin.routes');
 const artisanRoutes = require('./routes/artisan.routes');
 const storyRoutes = require('./routes/story.routes');
 const auditRoutes = require('./routes/audit.routes');
+const csrfRoutes = require('./routes/csrf.routes');
+
+const { csrfProtection } = require('./middleware/csrf');
 
 const store = require('./data/store');
 
@@ -85,6 +88,12 @@ app.get('/api/language', (req, res) => {
 app.get('/api/translations', (req, res) => {
   res.json(translationsData);
 });
+
+// CSRF Token Route
+app.use('/api/csrf-token', csrfRoutes);
+
+// Apply CSRF protection globally for state-changing routes
+app.use(csrfProtection);
 
 // API Routes
 app.use('/api/items', itemRoutes);
