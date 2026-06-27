@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -17,7 +17,7 @@
     <nav class="navbar">
       <div class="nav-container">
         <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
-          ðŸŒ™
+          🌙
         </button>
         <div class="logo">
           <h1 data-i18n="brand_name">Parampara</h1>
@@ -102,7 +102,7 @@
       </div>
     </nav>
 
-    <!-- Full Width Nav Menu â€” BAHAR hai nav ke -->
+    <!-- Full Width Nav Menu — BAHAR hai nav ke -->
     <div class="nav-fullmenu" id="navFullMenu">
       <div class="nav-fullmenu-inner">
         <p class="nav-fullmenu-label">Navigation</p>
@@ -146,7 +146,7 @@
         </p>
       </div>
 
-      <!-- ── Filter & Sort Controls ─────────────────────────────────────── -->
+      <!-- -- Filter & Sort Controls --------------------------------------- -->
       <div class="paths-controls" id="paths-controls">
         <div class="control-group">
           <label for="theme-filter" data-i18n="paths_filter_theme_label">Filter by Theme</label>
@@ -166,8 +166,8 @@
         <div class="control-group">
           <label for="order-select" data-i18n="paths_order_label">Order</label>
           <select id="order-select" aria-label="Sort order">
-            <option value="desc" data-i18n="paths_order_desc">Most → Least</option>
-            <option value="asc" data-i18n="paths_order_asc">Least → Most</option>
+            <option value="desc" data-i18n="paths_order_desc">Most ? Least</option>
+            <option value="asc" data-i18n="paths_order_asc">Least ? Most</option>
           </select>
         </div>
 
@@ -207,7 +207,7 @@
             Heritage Path
           </h3>
           <button class="close-btn" id="close-player" data-i18n="btn_close">
-            Ã—
+            ×
           </button>
         </div>
         <div class="path-progress">
@@ -248,7 +248,7 @@
             id="close-create-modal"
             data-i18n="btn_close"
           >
-            Ã—
+            ×
           </button>
         </div>
         <form id="create-path-form" class="modal-form">
@@ -299,7 +299,7 @@
       <div class="footer-container">
         <!-- Brand Section -->
         <div class="footer-brand">
-          <h2 class="footer-logo">ðŸ›ï¸ Parampara</h2>
+          <h2 class="footer-logo">🏛️ Parampara</h2>
           <p>
             Preserving rural heritage, traditions, and stories for future
             generations.
@@ -356,12 +356,12 @@
       </div>
 
       <div class="footer-bottom">
-        <p>Â© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
+        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
       </div>
     </footer>
 
     <!--
-        CRITICAL LOAD ORDER â€” translations.js MUST come before paths.js
+        CRITICAL LOAD ORDER — translations.js MUST come before paths.js
         so PARAMPARA_TRANSLATIONS exists when paths.js calls tPath()
     -->
     <!-- Markdown Support -->
@@ -378,6 +378,7 @@
 
     <script src="scripts/sw-register.js"></script>
   <script src="scripts/audio-visualizer.js"></script>
+<script src="scripts/breadcrumbs.js"></script>
 </body>
 </html>
 
