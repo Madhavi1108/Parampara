@@ -94,6 +94,28 @@
       <div id="intersection-sentinel"></div>
     </main>
 
+    <!-- Gallery Lightbox Modal -->
+    <div id="gallery-lightbox" class="modal lightbox-modal">
+      <div class="lightbox-content">
+        <button class="close-btn" id="close-lightbox" data-i18n="btn_close">×</button>
+        <div class="lightbox-layout">
+          <div class="lightbox-image-container" id="lightbox-image-container">
+            <img id="lightbox-image" src="" alt="Gallery Image">
+            <div id="magnifier-lens" class="magnifier-lens"></div>
+          </div>
+          <div class="lightbox-info">
+            <span id="lightbox-type" class="gallery-item-type"></span>
+            <div class="gallery-item-location" style="margin-bottom: 0.5rem;">
+              <span class="gallery-item-location-marker">📍</span> <strong id="lightbox-location"></strong>
+            </div>
+            <h3 id="lightbox-title"></h3>
+            <div id="lightbox-desc" class="markdown-body" style="font-size: 0.95rem; margin-bottom: 1.5rem;"></div>
+            <div id="lightbox-tags" class="gallery-item-tags"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="add-item-modal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
