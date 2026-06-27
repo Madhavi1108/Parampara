@@ -231,6 +231,33 @@ app.use(errorHandler);
 
 
 // Start Server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`✨ Parampara server running on http://localhost:${PORT}`);
+});
+
+// Setup WebSocket server
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ server });
+
+app.set('wss', wss);
+
+wss.on('connection', (ws) => {
+  ws.isAlive = true;
+  ws.on('pong', () => { ws.isAlive = true; });
+  
+  // Keep connection open
+  ws.on('error', console.error);
+});
+
+// Heartbeat to prevent memory leaks from dead connections
+const interval = setInterval(() => {
+  wss.clients.forEach((ws) => {
+    if (ws.isAlive === false) return ws.terminate();
+    ws.isAlive = false;
+    ws.ping();
+  });
+}, 30000);
+
+wss.on('close', () => {
+  clearInterval(interval);
 });
