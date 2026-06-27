@@ -386,9 +386,14 @@ async function handleAddItem(e) {
 }
 
 function viewItem(id) {
-  const item = allItems.find((i) => i.id === id);
-  if (item) {
-    alert(`${tGallery('gallery_viewing')}: ${item.title}\n\n${item.description}`);
+  const itemIndex = allItems.findIndex((i) => i.id === id);
+  if (itemIndex !== -1) {
+    if (window.webglLightbox) {
+      window.webglLightbox.open(allItems, itemIndex);
+    } else {
+      const item = allItems[itemIndex];
+      alert(`${tGallery('gallery_viewing')}: ${item.title}\n\n${item.description}`);
+    }
   }
 }
 
