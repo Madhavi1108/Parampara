@@ -24,6 +24,7 @@ const store = require('./data/store');
 
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
+const SlidingWindowLimiter = require('./middleware/rateLimiter');
 
 const initializeSampleData = require('./config/sampleData');
 
@@ -94,6 +95,14 @@ app.use('/api/csrf-token', csrfRoutes);
 
 // Apply CSRF protection globally for state-changing routes
 app.use(csrfProtection);
+
+// Global API Rate Limiter (100 reqs / 1 min)
+const globalLimiter = new SlidingWindowLimiter({
+  windowMs: 60000,
+  max: 100,
+  message: 'Too many API requests from this IP, please try again after a minute.'
+});
+app.use('/api', globalLimiter.middleware());
 
 // API Routes
 app.use('/api/items', itemRoutes);
