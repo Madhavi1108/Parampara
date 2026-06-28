@@ -4,11 +4,68 @@ let chatRateLimiter = null;
 let isProcessing = false;
 let rateLimitTimer = null;
 
+let chatState = [
+  { id: 'welcome', type: 'bot', text: "Namaste! I'm a cultural curator who has learned from all the stories in our archive. Ask me about rural traditions, why people paint their doors blue, the meaning behind Kantha embroidery, or any village festival. What would you like to know?" }
+];
+let isTyping = false;
+let currentVTree = null;
+let chatMessagesNode = null;
+
+function renderChat() {
+  if (!window.vdom) return;
+  const { h, diff, render: vdomRender } = window.vdom;
+  
+  if (!chatMessagesNode) {
+    chatMessagesNode = document.getElementById('chat-messages');
+  }
+
+  const vNodes = chatState.map(msg => {
+    const avatar = msg.type === 'bot' ? '👴' : '👤';
+    return h('div', { class: `message ${msg.type}-message` },
+      h('div', { class: 'message-avatar' }, avatar),
+      h('div', { class: 'message-content' }, 
+        h('p', {}, msg.text)
+      )
+    );
+  });
+
+  if (isTyping) {
+    vNodes.push(
+      h('div', { class: 'message bot-message', id: 'typing-indicator' },
+        h('div', { class: 'message-avatar' }, '👴'),
+        h('div', { class: 'message-content' }, 
+          h('p', {}, 'Thinking...')
+        )
+      )
+    );
+  }
+
+  const newVTree = h('div', { id: 'chat-messages', class: 'chat-messages' }, ...vNodes);
+
+  if (!currentVTree) {
+    const newDOM = vdomRender(newVTree);
+    chatMessagesNode.replaceWith(newDOM);
+    chatMessagesNode = newDOM;
+  } else {
+    const patchFn = diff(currentVTree, newVTree);
+    
+    const start = performance.now();
+    chatMessagesNode = patchFn(chatMessagesNode);
+    const end = performance.now();
+    
+    console.log(`[VDOM] Patched in ${(end - start).toFixed(2)}ms`);
+  }
+  
+  currentVTree = newVTree;
+  chatMessagesNode.scrollTop = chatMessagesNode.scrollHeight;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof RateLimiter !== 'undefined') {
     chatRateLimiter = new RateLimiter(5, 10000); // 5 requests per 10 seconds
   }
   setupEventListeners();
+  renderChat();
 });
 
 function setupEventListeners() {
@@ -119,47 +176,19 @@ async function sendMessage() {
 }
 
 function addMessage(text, type) {
-  const messagesContainer = document.getElementById('chat-messages');
-  const messageDiv = document.createElement('div');
-  messageDiv.className = `message ${type}-message`;
-
-  const avatar = type === 'bot' ? '👴' : '👤';
-
-  messageDiv.innerHTML = `
-        <div class="message-avatar">${avatar}</div>
-        <div class="message-content">
-            <p>${escapeHtml(text)}</p>
-        </div>
-    `;
-
-  messagesContainer.appendChild(messageDiv);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  chatState.push({ id: Date.now().toString(), type, text });
+  renderChat();
 }
 
 function addTypingIndicator() {
-  const messagesContainer = document.getElementById('chat-messages');
-  const typingDiv = document.createElement('div');
-  typingDiv.className = 'message bot-message';
-  typingDiv.id = 'typing-indicator';
-
-  typingDiv.innerHTML = `
-        <div class="message-avatar">👴</div>
-        <div class="message-content">
-            <p>Thinking...</p>
-        </div>
-    `;
-
-  messagesContainer.appendChild(typingDiv);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
+  isTyping = true;
+  renderChat();
   return 'typing-indicator';
 }
 
 function removeTypingIndicator(id) {
-  const indicator = document.getElementById(id);
-  if (indicator) {
-    indicator.remove();
-  }
+  isTyping = false;
+  renderChat();
 }
 
 function escapeHtml(text) {
