@@ -2061,3 +2061,100 @@ footer {
   }
 }
 
+/* ==========================================
+   CUSTOM MARKDOWN EXTENSIONS
+
+.heritage-note {
+  background-color: var(--theme-card);
+  border-left: 4px solid var(--theme-accent);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.heritage-note strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--theme-accent);
+}
+
+.faq-section {
+  background-color: var(--theme-card);
+  border: 1px solid var(--theme-border);
+  border-radius: 4px;
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.faq-section summary {
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+}
+
+.faq-content {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--theme-border);
+}
+
+.custom-audio {
+  margin: 15px 0;
+}
+
+.custom-audio audio {
+  width: 100%;
+  max-width: 400px;
+  outline: none;
+}
+
+.location-card {
+  display: inline-block;
+  background-color: var(--theme-card-hover);
+  padding: 8px 12px;
+  border-radius: 20px;
+  margin: 10px 0;
+  font-size: 0.9em;
+}
+
+.location-card a {
+  text-decoration: none;
+  color: var(--theme-accent);
+}
+
+.inline-gallery {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+.inline-gallery-img {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.inline-gallery-img:hover {
+  transform: scale(1.05);
+}
+
+.markdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.markdown-table th, .markdown-table td {
+  border: 1px solid var(--theme-border);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.markdown-table th {
+  background-color: var(--theme-card-hover);
+}

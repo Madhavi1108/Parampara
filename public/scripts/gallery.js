@@ -6,8 +6,7 @@ const limit = 10;
 let isLoading = false;
 let hasMore = true;
 let observer = null;
-let quillEditor = null;
-
+let observer = null;
 // SVG hearts (inline, no font dependency)
 const HEART_FILLED = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#e53e3e" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
 const HEART_EMPTY = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
@@ -19,17 +18,34 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFavDelegation();  // ← single listener handles ALL heart clicks
   setupShareDelegation();
 
-  if (typeof Quill !== 'undefined') {
-    quillEditor = new Quill('#quill-editor', {
-      theme: 'snow',
-      placeholder: 'Write the cultural story or pattern description here...',
-      modules: {
-        toolbar: [
-          ['bold', 'italic', 'underline'],
-          [{ 'header': [1, 2, 3, false] }],
-          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-          ['link']
-        ]
+// Setup Markdown live preview
+const markdownInput = document.getElementById('markdown-input');
+const markdownPreview = document.getElementById('markdown-preview');
+
+if (markdownInput && markdownPreview) {
+  markdownInput.addEventListener('input', (e) => {
+    const markdown = e.target.value;
+    if (typeof window.renderMarkdown === 'function') {
+      markdownPreview.innerHTML = window.renderMarkdown(markdown);
+    }
+  });
+}
+
+// Initialize Quill editor
+if (typeof Quill !== 'undefined') {
+  quillEditor = new Quill('#quill-editor', {
+    theme: 'snow',
+    placeholder: 'Write the cultural story or pattern description here...',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ header: [1, 2, 3, false] }],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link']
+      ]
+    }
+  });
+}
       }
     });
   }
@@ -110,19 +126,16 @@ function setupEventListeners() {
       e.preventDefault();
 
       const formData = new FormData(e.target);
-
-      // Sync Quill editor content to hidden input
-      if (quillEditor) {
-        formData.set('description', quillEditor.root.innerHTML);
-      }
-
+// Sync Quill editor content to hidden input
+if (quillEditor) {
+  formData.set('description', quillEditor.root.innerHTML);
+}
       await handleAddItem(e, formData);
 
       // Cleanup after submit
       e.target.reset();
-      if (quillEditor) {
-        quillEditor.root.innerHTML = '';
-      }
+      const markdownPreview = document.getElementById('markdown-preview');
+      if (markdownPreview) markdownPreview.innerHTML = '';
       document.getElementById('add-item-modal').classList.remove('active');
     });
 
@@ -419,16 +432,9 @@ async function handleAddItem(e) {
     .querySelectorAll('.input-error')
     .forEach((el) => el.classList.remove('input-error'));
 
-  // Sync Quill HTML to hidden input
-  const hiddenDesc = document.getElementById('hidden-description');
-  if (quillEditor && hiddenDesc) {
-    const quillHtml = quillEditor.root.innerHTML;
-    if (quillHtml === '<p><br></p>') {
-      hiddenDesc.value = '';
-    } else {
-      hiddenDesc.value = DOMPurify.sanitize(quillHtml);
-    }
-  }
+  document
+    .querySelectorAll('.input-error')
+    .forEach((el) => el.classList.remove('input-error'));
 
   const formData = new FormData(e.target);
   const title = formData.get('title').trim();
@@ -490,9 +496,8 @@ async function handleAddItem(e) {
       const uiContainer = document.getElementById('image-optimization-ui');
       if (uiContainer) uiContainer.style.display = 'none';
       
-      if (quillEditor) {
-        quillEditor.root.innerHTML = '';
-      }
+      const markdownPreview = document.getElementById('markdown-preview');
+      if (markdownPreview) markdownPreview.innerHTML = '';
       document.getElementById('add-item-modal').classList.remove('active');
       window.SyncManager ? window.SyncManager.showToast(tGallery('gallery_item_added'), 'success') : alert(tGallery('gallery_item_added'));
     } else {
