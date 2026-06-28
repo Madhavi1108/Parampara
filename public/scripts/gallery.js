@@ -134,6 +134,58 @@ function setupEventListeners() {
   document
     .getElementById('type-filter')
     .addEventListener('change', filterItems);
+
+  // Setup Image Compression
+  const imageUpload = document.getElementById('image-upload');
+  const imageQuality = document.getElementById('image-quality');
+  
+  if (imageUpload) {
+    const handleImageCompression = async () => {
+      const file = imageUpload.files[0];
+      if (!file) return;
+
+      const uiContainer = document.getElementById('image-optimization-ui');
+      const origSizeEl = document.getElementById('orig-size');
+      const compSizeEl = document.getElementById('comp-size');
+      const savePercentEl = document.getElementById('save-percent');
+      const previewEl = document.getElementById('image-preview');
+      const urlInput = document.getElementById('image-url-input');
+      const quality = imageQuality ? imageQuality.value : 'medium';
+
+      uiContainer.style.display = 'block';
+      origSizeEl.textContent = 'Processing...';
+      
+      try {
+        if (!window.ImageOptimizer) {
+          throw new Error('ImageOptimizer not loaded');
+        }
+        
+        const stats = await window.ImageOptimizer.compressImage(file, quality);
+        
+        origSizeEl.textContent = window.ImageOptimizer.formatBytes(stats.originalSize);
+        compSizeEl.textContent = window.ImageOptimizer.formatBytes(stats.compressedSize);
+        savePercentEl.textContent = stats.savingsPercent + '%';
+        
+        previewEl.src = stats.dataUrl;
+        previewEl.style.display = 'inline-block';
+        
+        // Auto-fill the URL input with base64 data
+        if (urlInput) {
+          urlInput.value = stats.dataUrl;
+        }
+      } catch (err) {
+        console.error('Compression failed:', err);
+        origSizeEl.textContent = 'Error';
+        compSizeEl.textContent = '-';
+        savePercentEl.textContent = '-';
+      }
+    };
+
+    imageUpload.addEventListener('change', handleImageCompression);
+    if (imageQuality) {
+      imageQuality.addEventListener('change', handleImageCompression);
+    }
+  }
 }
 
 function setupIntersectionObserver() {
@@ -399,6 +451,7 @@ async function handleAddItem(e) {
   }
 
   function isValidUrl(str) {
+    if (str.startsWith('data:image/')) return true;
     try { new URL(str); return true; } catch { return false; }
   }
 
@@ -434,6 +487,9 @@ async function handleAddItem(e) {
       hasMore = true;
       loadGalleryItems(1, false);
       e.target.reset();
+      const uiContainer = document.getElementById('image-optimization-ui');
+      if (uiContainer) uiContainer.style.display = 'none';
+      
       if (quillEditor) {
         quillEditor.root.innerHTML = '';
       }

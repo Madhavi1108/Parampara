@@ -279,6 +279,260 @@
     0 6px 18px rgba(0, 0, 0, 0.25),
     0 0 12px rgba(205, 133, 63, 0.4);
 }
+/* ==========================
+   PREMIUM FOOTER
+========================== */
+.footer {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, 
+    rgba(20, 10, 5, 0.98) 0%, 
+    rgba(10, 4, 1, 0.99) 100%);
+  color: var(--warm-beige);
+  border-top: 2px solid rgba(205, 133, 63, 0.3);
+  position: relative;
+  overflow: hidden;
+  padding: 3rem 2rem 0;
+}
+
+/* Decorative top glow line */
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    #cd853f 20%, 
+    #f0e68c 50%, 
+    #cd853f 80%, 
+    transparent 100%);
+  opacity: 0.6;
+}
+
+/* Decorative background glow */
+.footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(205, 133, 63, 0.08), transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(240, 230, 140, 0.05), transparent 50%);
+  pointer-events: none;
+}
+
+.footer-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 4rem;
+  padding: 2rem 0 3rem;
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px solid rgba(205, 133, 63, 0.15);
+}
+
+/* Brand Section */
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.footer-logo {
+  color: #f0e68c;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 0 0 30px rgba(205, 133, 63, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-logo span {
+  font-size: 1.8rem;
+}
+
+.footer-brand p {
+  color: rgba(245, 222, 179, 0.7);
+  line-height: 1.8;
+  font-size: 1rem;
+  max-width: 400px;
+  font-weight: 300;
+}
+
+/* Links Section */
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  justify-content: center;
+}
+
+.footer-links h3 {
+  color: #f0e68c;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.footer-links h3::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #cd853f, #f0e68c);
+  border-radius: 2px;
+}
+
+.footer-links ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.footer-links ul li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(205, 133, 63, 0.08);
+  border: 1px solid rgba(205, 133, 63, 0.15);
+  transition: all 0.3s ease;
+}
+
+.footer-links ul li:hover {
+  background: rgba(205, 133, 63, 0.2);
+  border-color: rgba(205, 133, 63, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(205, 133, 63, 0.15);
+}
+
+.footer-links ul li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.footer-links ul li a img {
+  width: 22px;
+  height: 22px;
+  filter: brightness(0.7) saturate(0.5);
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.footer-links ul li:hover a img {
+  filter: brightness(1) saturate(1);
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 0;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-bottom p {
+  color: rgba(245, 222, 179, 0.5);
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .footer {
+    padding: 2rem 1rem 0;
+  }
+
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding: 1.5rem 0 2rem;
+  }
+
+  .footer-brand {
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-brand p {
+    max-width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .footer-links {
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-links h3::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .footer-links ul {
+    justify-content: center;
+  }
+
+  .footer-links ul li {
+    width: 40px;
+    height: 40px;
+  }
+
+  .footer-links ul li a img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .footer-bottom p {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-logo {
+    font-size: 1.8rem;
+  }
+
+  .footer-links ul {
+    gap: 0.7rem;
+  }
+
+  .footer-links ul li {
+    width: 36px;
+    height: 36px;
+  }
+
+  .footer-links ul li a img {
+    width: 18px;
+    height: 18px;
+  }
+}
 
 /* Loading Indicator */
 .loading-indicator {
@@ -309,106 +563,6 @@
   height: 1px;
   width: 100%;
 }
-/* WebGL Lightbox */
-.webgl-lightbox {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 10000;
-  background-color: #000;
-}
-
-#lightbox-canvas-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.lightbox-ui {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.lightbox-btn {
-  position: absolute;
-  background: rgba(45, 24, 16, 0.6);
-  color: var(--wheat-yellow);
-  border: 1px solid var(--mustard);
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5rem;
-  cursor: pointer;
-  pointer-events: auto;
-  backdrop-filter: blur(4px);
-  transition: all 0.3s ease;
-}
-
-.lightbox-btn:hover {
-  background: rgba(45, 24, 16, 0.9);
-  transform: scale(1.1);
-}
-
-.close-btn {
-  top: 20px;
-  right: 20px;
-}
-
-.nav-btn {
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.prev-btn {
-  left: 20px;
-}
-
-.next-btn {
-  right: 20px;
-}
-
-.lightbox-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 2rem 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-  color: #fff;
-  pointer-events: auto;
-}
-
-.lightbox-info h3 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: var(--mustard);
-}
-
-.lightbox-meta {
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #ccc;
-}
-
-.lightbox-desc {
-  max-width: 800px;
-  line-height: 1.6;
-}
-
 /* ==========================================
    GALLERY LIGHTBOX & MAGNIFIER
 ========================================== */
