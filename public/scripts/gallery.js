@@ -9,7 +9,7 @@ let observer = null;
 let observer = null;
 // SVG hearts (inline, no font dependency)
 const HEART_FILLED = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#e53e3e" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
-const HEART_EMPTY  = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+const HEART_EMPTY = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
 
 document.addEventListener('DOMContentLoaded', () => {
   setupIntersectionObserver();
@@ -18,23 +18,50 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFavDelegation();  // ← single listener handles ALL heart clicks
   setupShareDelegation();
 
-  // Setup Markdown live preview
-  const markdownInput = document.getElementById('markdown-input');
-  const markdownPreview = document.getElementById('markdown-preview');
-  if (markdownInput && markdownPreview) {
-    markdownInput.addEventListener('input', (e) => {
-      const markdown = e.target.value;
-      if (typeof window.renderMarkdown === 'function') {
-        markdownPreview.innerHTML = window.renderMarkdown(markdown);
+// Setup Markdown live preview
+const markdownInput = document.getElementById('markdown-input');
+const markdownPreview = document.getElementById('markdown-preview');
+
+if (markdownInput && markdownPreview) {
+  markdownInput.addEventListener('input', (e) => {
+    const markdown = e.target.value;
+    if (typeof window.renderMarkdown === 'function') {
+      markdownPreview.innerHTML = window.renderMarkdown(markdown);
+    }
+  });
+}
+
+// Initialize Quill editor
+if (typeof Quill !== 'undefined') {
+  quillEditor = new Quill('#quill-editor', {
+    theme: 'snow',
+    placeholder: 'Write the cultural story or pattern description here...',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ header: [1, 2, 3, false] }],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link']
+      ]
+    }
+  });
+}
       }
     });
   }
+
+  // Reload gallery if a sync completes
+  window.addEventListener('parampara:sync-complete', () => {
+    currentPage = 1;
+    hasMore = true;
+    loadGalleryItems(1, false);
+  });
 });
 
 // ── Event delegation: one listener on the grid catches every heart-button click
 function setupFavDelegation() {
   const grid = document.getElementById('gallery-grid');
-  grid.addEventListener('click', function(e) {
+  grid.addEventListener('click', function (e) {
     // Walk up from the clicked element to find a .favorite-btn
     const btn = e.target.closest('.favorite-btn');
     if (!btn) return;          // not a heart button click
@@ -61,7 +88,7 @@ function setupFavDelegation() {
 function setupShareDelegation() {
   const grid = document.getElementById('gallery-grid');
   if (!grid) return;
-  grid.addEventListener('click', function(e) {
+  grid.addEventListener('click', function (e) {
     const btn = e.target.closest('.share-card-btn');
     if (!btn) return;
     e.stopPropagation(); // prevent opening item card
@@ -97,11 +124,14 @@ function setupEventListeners() {
     .getElementById('add-item-form')
     .addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const formData = new FormData(e.target);
-      
+// Sync Quill editor content to hidden input
+if (quillEditor) {
+  formData.set('description', quillEditor.root.innerHTML);
+}
       await handleAddItem(e, formData);
-      
+
       // Cleanup after submit
       e.target.reset();
       const markdownPreview = document.getElementById('markdown-preview');
@@ -192,7 +222,7 @@ function setupIntersectionObserver() {
 
 async function loadGalleryItems(page = 1, append = false) {
   if (isLoading || !hasMore && append) return;
-  
+
   isLoading = true;
   const loadingIndicator = document.getElementById('loading-indicator');
   if (loadingIndicator && append) loadingIndicator.style.display = 'flex';
@@ -200,7 +230,7 @@ async function loadGalleryItems(page = 1, append = false) {
   try {
     const searchTerm = document.getElementById('search-input').value.trim();
     const typeFilter = document.getElementById('type-filter').value;
-    
+
     let url = `/api/items?page=${page}&limit=${limit}`;
     if (typeFilter !== 'all') url += `&type=${typeFilter}`;
     if (searchTerm) {
@@ -212,7 +242,7 @@ async function loadGalleryItems(page = 1, append = false) {
 
     const response = await fetch(url);
     const result = await response.json();
-    
+
     // Check if new format
     let items = [];
     if (result && result.data && result.meta) {
@@ -229,7 +259,7 @@ async function loadGalleryItems(page = 1, append = false) {
     } else {
       allItems = items;
     }
-    
+
     displayItems(allItems, append);
   } catch (error) {
     console.error('Error loading items:', error);
@@ -294,11 +324,10 @@ function displayItems(items, append = false) {
       return `
         <div class="gallery-item" data-item-id="${escapeHtml(item.id)}">
             <div class="gallery-item-image" style="position:relative;">
-                ${
-                  item.imageUrl
-                    ? `<img src="${item.imageUrl}" alt="${escapeHtml(item.title)}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded')" style="width:100%;height:100%;object-fit:cover;">`
-                    : `<span>${getTypeIcon(item.type)}</span>`
-                }
+                ${item.imageUrl
+          ? `<img src="${item.imageUrl}" alt="${escapeHtml(item.title)}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded')" style="width:100%;height:100%;object-fit:cover;">`
+          : `<span>${getTypeIcon(item.type)}</span>`
+        }
                 <button
                   class="share-card-btn"
                   data-item-id="${escapeHtml(item.id)}"
@@ -323,21 +352,20 @@ function displayItems(items, append = false) {
                 </div>
                 <h3>${escapeHtml(item.title)}</h3>
                 <div class="markdown-body" style="font-size:0.9rem; margin-bottom:1rem;">${renderMarkdown(item.description.substring(0, 100) + (item.description.length > 100 ? '...' : ''), true)}</div>
-                ${
-                  item.tags && item.tags.length > 0
-                    ? `
+                ${item.tags && item.tags.length > 0
+          ? `
                     <div class="gallery-item-tags">
                         ${item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
                     </div>
                 `
-                    : ''
-                }
+          : ''
+        }
             </div>
         </div>
     `;
     })
     .join('');
-    
+
   if (append) {
     // If appending and empty state was there, clear it first
     if (galleryGrid.innerHTML.includes('gallery_empty_title')) {
@@ -466,13 +494,39 @@ async function handleAddItem(e) {
       const markdownPreview = document.getElementById('markdown-preview');
       if (markdownPreview) markdownPreview.innerHTML = '';
       document.getElementById('add-item-modal').classList.remove('active');
-      alert(tGallery('gallery_item_added'));
+      window.SyncManager ? window.SyncManager.showToast(tGallery('gallery_item_added'), 'success') : alert(tGallery('gallery_item_added'));
     } else {
-      alert(tGallery('gallery_item_error'));
+      throw new Error(`Server returned status ${response.status}`);
     }
   } catch (error) {
     console.error('Error adding item:', error);
-    alert(tGallery('gallery_item_error'));
+
+    // Offline submission handling
+    const isNetworkError = !navigator.onLine ||
+      error.message.includes('Failed to fetch') ||
+      error.message.includes('NetworkError');
+
+    if (isNetworkError && window.SyncManager) {
+      try {
+        await window.SyncManager.enqueue('/api/items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        }, { title: data.title });
+
+        e.target.reset();
+        if (quillEditor) {
+          quillEditor.root.innerHTML = '';
+        }
+        document.getElementById('add-item-modal').classList.remove('active');
+        window.SyncManager.showToast('Network is unavailable. Your submission has been saved locally and will be synced automatically when online.', 'info');
+      } catch (syncErr) {
+        console.error('Failed to save to offline queue:', syncErr);
+        window.SyncManager.showToast(tGallery('gallery_item_error'), 'error');
+      }
+    } else {
+      window.SyncManager ? window.SyncManager.showToast(tGallery('gallery_item_error'), 'error') : alert(tGallery('gallery_item_error'));
+    }
   }
 }
 
@@ -485,25 +539,24 @@ function viewItem(id) {
     window.webglLightbox.open(allItems, itemIndex);
     return;
   }
-  
+
   const item = allItems[itemIndex];
   const lightbox = document.getElementById('gallery-lightbox');
   const img = document.getElementById('lightbox-image');
-  
+
   if (!lightbox) {
     if (window.Telemetry) window.Telemetry.track('item_view', { itemId: id });
     alert(`${tGallery('gallery_viewing')}: ${item.title}\n\n${item.description}`);
     return;
   }
-  
-  if (window.Telemetry) window.Telemetry.track('item_view', { itemId: id, title: item.title });
-  
+
+
   // Set Info
   document.getElementById('lightbox-title').textContent = item.title;
   document.getElementById('lightbox-location').textContent = item.location;
   document.getElementById('lightbox-type').textContent = translateType(item.type);
   document.getElementById('lightbox-desc').innerHTML = renderMarkdown(item.description, true);
-  
+
   const tagsContainer = document.getElementById('lightbox-tags');
   tagsContainer.innerHTML = item.tags ? item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('') : '';
 
@@ -516,17 +569,17 @@ function viewItem(id) {
   } else {
     img.src = '';
     img.style.display = 'none';
-    if(lens) lens.style.display = 'none';
+    if (lens) lens.style.display = 'none';
   }
-  }
-
-  lightbox.classList.add('active');
 }
+
+lightbox.classList.add('active');
+
 
 function setupMagnifier(img, lens, imgUrl) {
   // Disable if device supports touch/pointer is coarse
   if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
-    return; 
+    return;
   }
 
   const zoomLevel = 2.5;
@@ -536,7 +589,7 @@ function setupMagnifier(img, lens, imgUrl) {
   img.parentNode.replaceChild(newImg, img);
   img = newImg;
 
-  if(!lens) return;
+  if (!lens) return;
 
   lens.style.backgroundImage = `url('${imgUrl}')`;
 
@@ -548,7 +601,7 @@ function setupMagnifier(img, lens, imgUrl) {
   img.addEventListener("mousemove", (e) => {
     e.preventDefault();
     const pos = getCursorPos(e, img);
-    
+
     // Lens position (following cursor)
     lens.style.left = `${pos.x}px`;
     lens.style.top = `${pos.y}px`;
@@ -556,7 +609,7 @@ function setupMagnifier(img, lens, imgUrl) {
     // Calculate background position
     const bgX = (pos.x * zoomLevel) - (lens.offsetWidth / 2);
     const bgY = (pos.y * zoomLevel) - (lens.offsetHeight / 2);
-    
+
     lens.style.backgroundPosition = `-${bgX}px -${bgY}px`;
   });
 
@@ -576,12 +629,12 @@ function getCursorPos(e, img) {
 document.addEventListener('DOMContentLoaded', () => {
   const lightbox = document.getElementById('gallery-lightbox');
   const closeBtn = document.getElementById('close-lightbox');
-  
+
   if (closeBtn && lightbox) {
     closeBtn.addEventListener('click', () => {
       lightbox.classList.remove('active');
     });
-    
+
     lightbox.addEventListener('click', (e) => {
       if (e.target === lightbox || e.target.classList.contains('lightbox-layout') || e.target.classList.contains('lightbox-image-container')) {
         lightbox.classList.remove('active');
