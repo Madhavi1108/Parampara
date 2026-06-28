@@ -13,15 +13,19 @@
     <link rel="stylesheet" href="styles/map.css" />
     <link rel="stylesheet" href="styles/languageSelector.css" />
     <link rel="stylesheet" href="styles/theme.css" />
-      <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/main.css" />
     <link
       href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.css" type="text/css" />
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.css"
+      type="text/css"
+    />
     <link rel="stylesheet" href="styles/languageSelector.css" />
   </head>
-  <body>   
+  <body>
     <nav class="navbar">
       <div class="nav-container">
         <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
@@ -103,8 +107,10 @@
               <span data-i18n="nav_story_generator">AI Story Generator</span></a
             >
           </li>
-                  <li>
-            <a href="favorites.html"><i class="ti ti-heart"></i> My Favorites</a>
+          <li>
+            <a href="favorites.html"
+              ><i class="ti ti-heart"></i> My Favorites</a
+            >
           </li>
         </ul>
       </div>
@@ -115,10 +121,10 @@
       <div class="nav-fullmenu-inner">
         <p class="nav-fullmenu-label">Navigation</p>
         <div class="nav-fullmenu-grid">
-          <a href="index.html" 
-            ><i class="ti ti-home"></i> Home</a
+          <a href="index.html"><i class="ti ti-home"></i> Home</a>
+          <a href="map.html" class="active"
+            ><i class="ti ti-map-2"></i> Explore Map</a
           >
-          <a href="map.html" class="active"><i class="ti ti-map-2"></i> Explore Map</a>
           <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
           <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
           <a href="quest.html"><i class="ti ti-compass"></i> Discovery Quest</a>
@@ -129,8 +135,8 @@
             ><i class="ti ti-message-circle"></i> Talk to Elder</a
           >
           <a href="risk-dashboard.html"
-            ><i class="ti ti-alert-triangle"></i> Risk </a
-          >
+            ><i class="ti ti-alert-triangle"></i> Risk
+          </a>
           <a href="reputation.html"
             ><i class="ti ti-medal"></i> Contributor Reputation</a
           >
@@ -156,48 +162,72 @@
         </p>
         <div class="map-controls">
           <!-- language-switcher.js keeps this in sync with the global selector -->
-          <select id="language-selector" class="btn btn-secondary">
-            <option value="en">English</option>
-            <option value="hi">हिन्दी</option>
-            <option value="mr">मराठी</option>
-          </select>
+          <div class="map-control-panel">
+            <div class="primary-controls">
+              <select id="language-selector" class="btn btn-secondary">
+                <option value="en">English</option>
+                <option value="hi">हिन्दी</option>
+                <option value="mr">मराठी</option>
+              </select>
+              <button
+                id="toggle-heatmap"
+                class="btn btn-secondary"
+                data-i18n="map_toggle_heatmap"
+              >
+                Toggle Heatmap
+              </button>
+
+              <button
+                id="toggle-sound"
+                class="btn btn-secondary"
+                data-i18n="map_ambient_on"
+              >
+                Ambient Sounds : OFF
+              </button>
+            </div>
+
+            <div class="radius-search-control">
+              <select
+                id="radius-select"
+                class="btn btn-secondary"
+                aria-label="Select search radius"
+              >
+                <option value="5">5 km</option>
+                <option value="10">10 km</option>
+                <option value="25">25 km</option>
+                <option value="50">50 km</option>
+              </select>
+              <button id="btn-find-nearby" class="btn btn-primary">
+                <i class="ti ti-map-pin"></i> Find Nearby
+              </button>
+
+              <label class="heritage-toggle">
+                <span data-i18n="map_toggle_heritage"
+                  >Heritage Health View</span
+                >
+                <input type="checkbox" id="toggle-heritage-health" />
+              </label>
+            </div>
+          </div>
+          <div class="custom-route-controls">
+            <input
+              type="file"
+              id="import-route-input"
+              accept=".geojson, .json, application/geo+json"
+            />
             <button
-              id="toggle-heatmap"
+              id="btn-import-route"
               class="btn btn-secondary"
-              data-i18n="map_toggle_heatmap"
+              title="Import GeoJSON Route"
             >
-              Toggle Heatmap
-            </button>
-            <label class="heritage-toggle" style="margin-left:1rem;">
-              <input type="checkbox" id="toggle-heritage-health" />
-              <span data-i18n="map_toggle_heritage">Heritage Health View</span>
-            </label>
-          <button
-            id="toggle-sound"
-            class="btn btn-secondary"
-            data-i18n="map_ambient_on"
-          >
-          Ambient Sounds : OFF
-          </button>
-          <div class="custom-route-controls" style="display: flex; align-items: center; gap: 0.5rem; margin-left: 0.5rem;">
-            <button id="btn-export-route" class="btn btn-secondary" title="Export Route as GeoJSON">
-              <i class="ti ti-download"></i> Export
-            </button>
-            <input type="file" id="import-route-input" accept=".geojson, .json, application/geo+json" style="display: none;" />
-            <button id="btn-import-route" class="btn btn-secondary" title="Import GeoJSON Route">
               <i class="ti ti-upload"></i> Import
             </button>
-          </div>
-          
-          <div class="radius-search-control" style="display: flex; align-items: center; gap: 0.5rem; margin-left: auto;">
-            <select id="radius-select" class="btn btn-secondary" aria-label="Select search radius">
-              <option value="5">5 km</option>
-              <option value="10">10 km</option>
-              <option value="25">25 km</option>
-              <option value="50">50 km</option>
-            </select>
-            <button id="btn-find-nearby" class="btn btn-primary">
-              <i class="ti ti-map-pin"></i> Find Nearby
+            <button
+              id="btn-export-route"
+              class="btn btn-secondary"
+              title="Export Route as GeoJSON"
+            >
+              <i class="ti ti-download"></i> Export
             </button>
           </div>
         </div>
@@ -206,7 +236,11 @@
       <div id="map" class="map-view"></div>
 
       <!-- Custom Route Dashboard -->
-      <div id="custom-route-dashboard" class="route-dashboard" style="display: none;">
+      <div
+        id="custom-route-dashboard"
+        class="route-dashboard"
+        style="display: none"
+      >
         <div class="route-dashboard-header">
           <h4><i class="ti ti-route"></i> Route Statistics</h4>
         </div>
@@ -225,15 +259,19 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Flyover Controls -->
-      <div id="flyover-controls" class="flyover-controls" style="display: none;">
+      <div id="flyover-controls" class="flyover-controls" style="display: none">
         <div class="flyover-header">
           <h4 id="flyover-title">Cinematic Flyover</h4>
         </div>
         <div class="flyover-actions">
-          <button id="btn-flyover-pause" class="btn btn-secondary">Pause</button>
-          <button id="btn-flyover-stop" class="btn btn-primary">Stop Flyover</button>
+          <button id="btn-flyover-pause" class="btn btn-secondary">
+            Pause
+          </button>
+          <button id="btn-flyover-stop" class="btn btn-primary">
+            Stop Flyover
+          </button>
         </div>
       </div>
 
@@ -271,7 +309,8 @@
           <ul>
             <li>
               <a href=""
-                ><img loading="lazy"
+                ><img
+                  loading="lazy"
                   src="./assets/logos/instagram-svgrepo-com.svg"
                   alt="insta-logo"
               /></a>
@@ -279,33 +318,40 @@
 
             <li>
               <a href=""
-                ><img loading="lazy"
+                ><img
+                  loading="lazy"
                   src="./assets/logos/facebook-svgrepo-com.svg"
                   alt="facebook-logo"
               /></a>
             </li>
             <li>
               <a href=""
-                ><img loading="lazy" src="./assets/logos/twitter-svgrepo-com.svg" alt="X-logo"
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/twitter-svgrepo-com.svg"
+                  alt="X-logo"
               /></a>
             </li>
             <li>
               <a href=""
-                ><img loading="lazy"
+                ><img
+                  loading="lazy"
                   src="./assets/logos/reddit-fill-svgrepo-com.svg"
                   alt="reddit-logo"
               /></a>
             </li>
             <li>
               <a href=""
-                ><img loading="lazy"
+                ><img
+                  loading="lazy"
                   src="./assets/logos/github-142-svgrepo-com.svg"
                   alt="git-logo"
               /></a>
             </li>
             <li>
               <a href=""
-                ><img loading="lazy"
+                ><img
+                  loading="lazy"
                   src="./assets/logos/youtube-svgrepo-com.svg"
                   alt="yt-logo"
               /></a>
@@ -335,14 +381,10 @@
     <script src="scripts/map.js"></script>
     <script src="scripts/languageSwitcher.js"></script>
     <script src="scripts/navbar.js"></script>
-     <script src="scripts/theme.js"></script>
-     <script src="scripts/main.js"></script>
+    <script src="scripts/theme.js"></script>
+    <script src="scripts/main.js"></script>
     <script src="scripts/sw-register.js"></script>
-<script src="scripts/breadcrumbs.js"></script>
-<script src="scripts/telemetry.js"></script>
-</body>
+    <script src="scripts/breadcrumbs.js"></script>
+    <script src="scripts/telemetry.js"></script>
+  </body>
 </html>
- 
-
-
-
