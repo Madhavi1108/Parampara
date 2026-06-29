@@ -166,7 +166,15 @@
           placeholder="Search by title, village, elder, or description..."
           aria-label="Search knowledge entries"
         />
-
+        <div class="sort-container">
+  <label for="vault-sort">Sort By:</label>
+  <select id="vault-sort" class="sort-select">
+    <option value="default">Default</option>
+    <option value="az">Alphabetical (A–Z)</option>
+    <option value="za">Alphabetical (Z–A)</option>
+    <option value="recent">Recently Added</option>
+  </select>
+</div>
         <div
           class="vault-filter-chips"
           id="category-filters"

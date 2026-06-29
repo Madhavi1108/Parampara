@@ -308,7 +308,13 @@ function setupEventListeners() {
       renderKnowledgeCards(await getFilteredKnowledge());
     });
   }
+const sortSelect = document.getElementById('vault-sort');
 
+if (sortSelect) {
+  sortSelect.addEventListener('change', async () => {
+    renderKnowledgeCards(await getFilteredKnowledge());
+  });
+}
   const closeBtn = document.getElementById('close-knowledge-modal');
   const modal = document.getElementById('knowledge-modal');
 
@@ -363,7 +369,24 @@ async function getFilteredKnowledge() {
     });
   }
 }
+function sortKnowledge(entries) {
+  const sortValue = document.getElementById('vault-sort')?.value || 'default';
 
+  switch (sortValue) {
+    case 'az':
+      return [...entries].sort((a, b) => a.title.localeCompare(b.title));
+
+    case 'za':
+      return [...entries].sort((a, b) => b.title.localeCompare(a.title));
+
+    case 'recent':
+      // Since there is no timestamp, use reverse insertion order
+      return [...entries].reverse();
+
+    default:
+      return entries;
+  }
+}
 function updateStatistics(entries) {
   const villages = new Set(entries.map((e) => e.village.toLowerCase()));
   const elders = new Set(entries.map((e) => e.elderName.toLowerCase()));
@@ -381,6 +404,7 @@ function setStatValue(id, value) {
 }
 
 function renderKnowledgeCards(entries) {
+  entries = sortKnowledge(entries);
   const grid = document.getElementById('knowledge-grid');
   const resultsCount = document.getElementById('results-count');
   if (!grid) return;
