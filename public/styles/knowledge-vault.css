@@ -161,7 +161,35 @@
   border-color: var(--terracotta);
   box-shadow: 0 0 0 3px rgba(201, 125, 96, 0.25);
 }
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
 
+.sort-container label {
+  color: var(--warm-beige);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sort-select {
+  padding: 0.7rem 1rem;
+  border: 2px solid var(--accent-color);
+  border-radius: var(--border-radius);
+  background: rgba(255, 248, 220, 0.92);
+  color: var(--primary-color);
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--terracotta);
+  box-shadow: 0 0 0 3px rgba(201, 125, 96, 0.25);
+}
 .vault-filter-chips {
   display: flex;
   flex-wrap: wrap;

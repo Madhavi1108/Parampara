@@ -523,3 +523,80 @@ main.paths-container {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   FIX: Modal Label Visibility (Issue #350)
+   ============================================ */
+
+
+#create-path-modal .form-group label,
+#create-path-modal label {
+    color: #f0e6d8 !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    display: block !important;
+    margin-bottom: 0.4rem !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
+    letter-spacing: 0.03em;
+}
+
+/* Form inputs inside modal */
+#create-path-modal .form-group input,
+#create-path-modal .form-group textarea {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    font-size: 1rem !important;
+    transition: border-color 0.3s, background 0.3s;
+}
+
+#create-path-modal .form-group input:focus,
+#create-path-modal .form-group textarea:focus {
+    border-color: var(--terracotta, #b25a3e) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(178, 90, 62, 0.2);
+} 
+
+/* Placeholder text */
+#create-path-modal .form-group input::placeholder,
+#create-path-modal .form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-weight: 300;
+}
+
+/* Items selector */
+#create-path-modal .items-selector {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 2px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 8px !important;
+    padding: 1rem !important;
+    min-height: 80px;
+    color: #e8ddd0;
+}
+
+/* Modal header */
+#create-path-modal .modal-header h3 {
+    color: #f5f0eb !important;
+}
+
+#create-path-modal .close-btn {
+    color: #f5f0eb !important;
+}
+
+/* Create Path button */
+#create-path-modal .btn-primary {
+    background: var(--terracotta, #b25a3e) !important;
+    border: none !important;
+    padding: 0.75rem 2rem !important;
+    font-weight: 600 !important;
+    margin-top: 0.5rem;
+}
+
+#create-path-modal .btn-primary:hover {
+    background: #9a4d33 !important;
+    transform: translateY(-2px);
+}  
