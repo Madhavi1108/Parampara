@@ -66,3 +66,54 @@ class WorkerManager {
 
 // Instantiate a global worker manager
 window.dataWorker = new WorkerManager();
+
+// --- CSRF Fetch Interceptor ---
+(function() {
+  const originalFetch = window.fetch;
+  let cachedCsrfToken = null;
+  let isFetchingToken = false;
+  let tokenPromise = null;
+
+  async function getCsrfToken() {
+    if (cachedCsrfToken) return cachedCsrfToken;
+    if (isFetchingToken) return tokenPromise;
+    
+    isFetchingToken = true;
+    tokenPromise = originalFetch('/api/csrf-token')
+      .then(res => res.json())
+      .then(data => {
+        cachedCsrfToken = data.csrfToken;
+        isFetchingToken = false;
+        return cachedCsrfToken;
+      })
+      .catch(err => {
+        console.error('Failed to fetch CSRF token', err);
+        isFetchingToken = false;
+        return null;
+      });
+      
+    return tokenPromise;
+  }
+
+  window.fetch = async function() {
+    const url = arguments[0];
+    const options = arguments[1] || {};
+    const method = (options.method || 'GET').toUpperCase();
+    
+    // Only intercept state-changing methods going to our API
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && typeof url === 'string' && url.startsWith('/api/')) {
+      const token = await getCsrfToken();
+      if (token) {
+        options.headers = options.headers || {};
+        if (options.headers instanceof Headers) {
+          options.headers.set('X-CSRF-Token', token);
+        } else {
+          options.headers['X-CSRF-Token'] = token;
+        }
+        arguments[1] = options;
+      }
+    }
+    
+    return originalFetch.apply(this, arguments);
+  };
+})();

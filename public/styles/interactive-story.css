@@ -1,0 +1,207 @@
+/* Interactive Story Engine Styles */
+
+.story-engine-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .story-engine-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Header & Progress */
+.story-header {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.story-header h2 {
+  font-size: 2.5rem;
+  color: var(--theme-primary, #3b82f6);
+  margin-bottom: 0.5rem;
+}
+
+.story-header p {
+  color: var(--text-muted, #6b7280);
+  font-size: 1.1rem;
+}
+
+.progress-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 1rem auto 0;
+  background: var(--theme-border, #e5e7eb);
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--theme-primary, #3b82f6);
+  width: 0%;
+  transition: width 0.5s ease-in-out;
+}
+
+/* Main Story Area */
+.story-main {
+  background: var(--theme-bg, #fff);
+  border: 1px solid var(--theme-border, #e5e7eb);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.story-text-container {
+  flex-grow: 1;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--theme-text, #111827);
+  margin-bottom: 2rem;
+}
+
+.story-text-container p {
+  margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp 0.6s ease forwards;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Choice Cards */
+.choices-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.choice-card {
+  background: var(--theme-input-bg, #f9fafb);
+  border: 2px solid var(--theme-border, #e5e7eb);
+  border-radius: 10px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  font-weight: 500;
+  color: var(--theme-primary, #3b82f6);
+}
+
+.choice-card:hover {
+  border-color: var(--theme-primary, #3b82f6);
+  background: var(--theme-primary-light, #eff6ff);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.choice-card.ending-card {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.choice-card.ending-card:hover {
+  background: #ecfdf5;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+/* Sidebar History */
+.story-sidebar {
+  background: var(--theme-bg, #fff);
+  border: 1px solid var(--theme-border, #e5e7eb);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+.story-sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--theme-text, #111827);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.history-item {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.history-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--theme-primary, #3b82f6);
+}
+
+.history-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 15px;
+  width: 2px;
+  height: calc(100% + 5px);
+  background: var(--theme-border, #e5e7eb);
+}
+
+.history-action {
+  font-weight: 600;
+  color: var(--theme-text, #111827);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.reset-btn {
+  width: 100%;
+  margin-top: 1rem;
+  background: none;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reset-btn:hover {
+  background: #ef4444;
+  color: white;
+}

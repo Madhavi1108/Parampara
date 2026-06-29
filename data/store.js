@@ -13,6 +13,11 @@ const store = {
   timelineEvents: createAuditProxy('timelineEvents', new LRUCache(500), auditLog),
   storySourceData: createAuditProxy('storySourceData', new LRUCache(500), auditLog),
   artisans: createAuditProxy('artisans', new LRUCache(500), auditLog),
+  analytics: {
+    pageViews: {},
+    events: [],
+    interactions: {}
+  }
 };
 
 module.exports = store;

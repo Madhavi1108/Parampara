@@ -22,9 +22,10 @@
     lang = lang || getCurrentLang();
     var dict =
       PARAMPARA_TRANSLATIONS[lang] || PARAMPARA_TRANSLATIONS[DEFAULT_LANG];
-    return dict[key] !== undefined
-      ? dict[key]
-      : PARAMPARA_TRANSLATIONS[DEFAULT_LANG][key] || key;
+      console.log("Current language:", lang);
+console.log("Translations:", PARAMPARA_TRANSLATIONS);
+console.log("Current dict:", dict);
+    return dict[key] !== undefined ? dict[key] : PARAMPARA_TRANSLATIONS[DEFAULT_LANG][key] || key;
   }
 
   // ── Apply all translations to the page ────────────────────────────────────
@@ -167,7 +168,8 @@
   // ── Boot ──────────────────────────────────────────────────────────────────
   async function boot() {
     try {
-      window.PARAMPARA_TRANSLATIONS = await window.CacheManager.get('/api/translations');
+      const data = await window.CacheManager.get('/api/translations');
+      window.PARAMPARA_TRANSLATIONS = data.PARAMPARA_TRANSLATIONS ?? data;
     } catch (error) {
       console.error('Parampara: failed to load translations', error);
       return;
