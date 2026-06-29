@@ -905,12 +905,7 @@ body > * {
 .footer-links {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
-.footer-links ul{
-  display: flex;
-  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 .footer-links h3 {
@@ -935,17 +930,16 @@ body > * {
 }
 
 .footer-links ul {
+  width: fit-content;
+  height: fit-content;
   list-style: none;
   display: flex;
+  gap: 15px;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .footer-links ul li{
-  width: 120px;
-  display: flex;
-  flex-direction: column;
-  justify-items: start ;
+  width: fit-content;
   transition: transform 0.3s ease;
 }
 
@@ -955,6 +949,8 @@ body > * {
 
 .footer-links ul li a{
   text-decoration: none;
+  height: 32px;
+  width: 32px;
 }
 
 
