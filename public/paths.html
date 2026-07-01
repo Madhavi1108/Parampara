@@ -95,8 +95,10 @@
               <span data-i18n="nav_story_generator">AI Story Generator</span></a
             >
           </li>
-                  <li>
-            <a href="favorites.html"><i class="ti ti-heart"></i> My Favorites</a>
+          <li>
+            <a href="favorites.html"
+              ><i class="ti ti-heart"></i> My Favorites</a
+            >
           </li>
         </ul>
       </div>
@@ -107,12 +109,12 @@
       <div class="nav-fullmenu-inner">
         <p class="nav-fullmenu-label">Navigation</p>
         <div class="nav-fullmenu-grid">
-          <a href="index.html"
-            ><i class="ti ti-home"></i> Home</a
-          >
+          <a href="index.html"><i class="ti ti-home"></i> Home</a>
           <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
           <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
-          <a href="paths.html" class="active"><i class="ti ti-route"></i> Heritage Paths</a>
+          <a href="paths.html" class="active"
+            ><i class="ti ti-route"></i> Heritage Paths</a
+          >
           <a href="quest.html"><i class="ti ti-compass"></i> Discovery Quest</a>
           <a href="trails.html"
             ><i class="ti ti-trail-sign"></i> Heritage Trails</a
@@ -121,8 +123,8 @@
             ><i class="ti ti-message-circle"></i> Talk to Elder</a
           >
           <a href="risk-dashboard.html"
-            ><i class="ti ti-alert-triangle"></i> Risk </a
-          >
+            ><i class="ti ti-alert-triangle"></i> Risk
+          </a>
           <a href="reputation.html"
             ><i class="ti ti-medal"></i> Contributor Reputation</a
           >
@@ -149,9 +151,13 @@
       <!-- -- Filter & Sort Controls --------------------------------------- -->
       <div class="paths-controls" id="paths-controls">
         <div class="control-group">
-          <label for="theme-filter" data-i18n="paths_filter_theme_label">Filter by Theme</label>
+          <label for="theme-filter" data-i18n="paths_filter_theme_label"
+            >Filter by Theme</label
+          >
           <select id="theme-filter" aria-label="Filter heritage paths by theme">
-            <option value="" data-i18n="paths_filter_all_themes">All Themes</option>
+            <option value="" data-i18n="paths_filter_all_themes">
+              All Themes
+            </option>
           </select>
         </div>
 
@@ -159,20 +165,30 @@
           <label for="sort-select" data-i18n="paths_sort_label">Sort by</label>
           <select id="sort-select" aria-label="Sort heritage paths">
             <option value="" data-i18n="paths_sort_default">Default</option>
-            <option value="itemCount" data-i18n="paths_sort_item_count">Number of Items</option>
+            <option value="itemCount" data-i18n="paths_sort_item_count">
+              Number of Items
+            </option>
           </select>
         </div>
 
         <div class="control-group">
           <label for="order-select" data-i18n="paths_order_label">Order</label>
           <select id="order-select" aria-label="Sort order">
-            <option value="desc" data-i18n="paths_order_desc">Most ? Least</option>
-            <option value="asc" data-i18n="paths_order_asc">Least ? Most</option>
+            <option value="desc" data-i18n="paths_order_desc">
+              Most ? Least
+            </option>
+            <option value="asc" data-i18n="paths_order_asc">
+              Least ? Most
+            </option>
           </select>
         </div>
 
         <div class="controls-actions">
-          <div id="active-filters" class="active-filters" aria-live="polite"></div>
+          <div
+            id="active-filters"
+            class="active-filters"
+            aria-live="polite"
+          ></div>
           <button
             id="clear-filters-btn"
             class="btn btn-ghost"
@@ -185,7 +201,11 @@
       </div>
 
       <!-- Results count indicator -->
-      <p id="paths-results-count" class="paths-results-count" aria-live="polite"></p>
+      <p
+        id="paths-results-count"
+        class="paths-results-count"
+        aria-live="polite"
+      ></p>
 
       <div id="paths-list" class="paths-list">
         <!-- Paths will be loaded dynamically -->
@@ -295,71 +315,82 @@
       </div>
     </div>
 
-    <footer class="footer">
-      <div class="footer-container">
-        <!-- Brand Section -->
-        <div class="footer-brand">
-          <h2 class="footer-logo">🏛️ Parampara</h2>
+    <div>
+      <footer class="footer">
+        <div class="footer-container">
+          <!-- Brand Section -->
+          <div class="footer-brand">
+            <h2 class="footer-logo">🏛️ Parampara</h2>
+            <p>
+              Preserving rural heritage, traditions, and stories for future
+              generations.
+            </p>
+          </div>
+
+          <!-- Social media links -->
+          <div class="footer-links">
+            <h3>More about Parampara</h3>
+            <ul>
+              <li>
+                <a href=""
+                  ><img
+                    loading="lazy"
+                    src="./assets/logos/instagram-svgrepo-com.svg"
+                    alt="insta-logo"
+                /></a>
+              </li>
+
+              <li>
+                <a href=""
+                  ><img
+                    loading="lazy"
+                    src="./assets/logos/facebook-svgrepo-com.svg"
+                    alt="facebook-logo"
+                /></a>
+              </li>
+              <li>
+                <a href=""
+                  ><img
+                    loading="lazy"
+                    src="./assets/logos/twitter-svgrepo-com.svg"
+                    alt="X-logo"
+                /></a>
+              </li>
+              <li>
+                <a href=""
+                  ><img
+                    loading="lazy"
+                    src="./assets/logos/reddit-fill-svgrepo-com.svg"
+                    alt="reddit-logo"
+                /></a>
+              </li>
+              <li>
+                <a href=""
+                  ><img
+                    loading="lazy"
+                    src="./assets/logos/github-142-svgrepo-com.svg"
+                    alt="git-logo"
+                /></a>
+              </li>
+              <li>
+                <a href=""
+                  ><img
+                    loading="lazy"
+                    src="./assets/logos/youtube-svgrepo-com.svg"
+                    alt="yt-logo"
+                /></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
           <p>
-            Preserving rural heritage, traditions, and stories for future
-            generations.
+            © 2026 Parampara. Preserving rural heritage, one story at a time.
           </p>
         </div>
-
-        <!-- Quick Links -->
-        <div class="footer-links">
-          <h3>More about Parampara</h3>
-          <ul>
-            <li>
-              <a href=""
-                ><img loading="lazy"
-                  src="./assets/logos/instagram-svgrepo-com.svg"
-                  alt="insta-logo"
-              /></a>
-            </li>
-
-            <li>
-              <a href=""
-                ><img loading="lazy"
-                  src="./assets/logos/facebook-svgrepo-com.svg"
-                  alt="facebook-logo"
-              /></a>
-            </li>
-            <li>
-              <a href=""
-                ><img loading="lazy" src="./assets/logos/twitter-svgrepo-com.svg" alt="X-logo"
-              /></a>
-            </li>
-            <li>
-              <a href=""
-                ><img loading="lazy"
-                  src="./assets/logos/reddit-fill-svgrepo-com.svg"
-                  alt="reddit-logo"
-              /></a>
-            </li>
-            <li>
-              <a href=""
-                ><img loading="lazy"
-                  src="./assets/logos/github-142-svgrepo-com.svg"
-                  alt="git-logo"
-              /></a>
-            </li>
-            <li>
-              <a href=""
-                ><img loading="lazy"
-                  src="./assets/logos/youtube-svgrepo-com.svg"
-                  alt="yt-logo"
-              /></a>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
-      </div>
-    </footer>
-
+      </footer>
+    </div>
     <!--
         CRITICAL LOAD ORDER — translations.js MUST come before paths.js
         so PARAMPARA_TRANSLATIONS exists when paths.js calls tPath()
@@ -374,15 +405,11 @@
     <script src="scripts/languageSwitcher.js"></script>
     <script src="scripts/navbar.js"></script>
     <script src="scripts/theme.js"></script>
-        <script src="scripts/main.js"></script>
+    <script src="scripts/main.js"></script>
 
     <script src="scripts/sw-register.js"></script>
-  <script src="scripts/audio-visualizer.js"></script>
-<script src="scripts/breadcrumbs.js"></script>
-<script src="scripts/telemetry.js"></script>
-</body>
+    <script src="scripts/audio-visualizer.js"></script>
+    <script src="scripts/breadcrumbs.js"></script>
+    <script src="scripts/telemetry.js"></script>
+  </body>
 </html>
-
-
-
-
