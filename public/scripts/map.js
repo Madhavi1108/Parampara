@@ -246,7 +246,7 @@ function updateMapUnavailableNotice() {
 
 async function initializeMap() {
   try {
-    const response = await fetch('/api/map-style');
+    const response = await fetch('/api/map-style?t=' + Date.now());
     const data = await response.json();
 
     if (!response.ok || data.configured === false) {
@@ -267,6 +267,11 @@ async function initializeMap() {
     map.on('load', async () => {
       setMapLanguage(currentLanguage);
       addVillageMarkers();
+      
+      // Update clusters on zoom and move
+      map.on('zoomend', () => addVillageMarkers());
+      map.on('moveend', () => addVillageMarkers());
+      
       await loadCulturalItems();
       checkFlyover();
       initRouting();
@@ -337,7 +342,7 @@ function addVillageMarker(village) {
       <div class="markdown-body">${renderMarkdown(village.description[currentLanguage])}</div>
   `);
 
-  const marker = new maplibregl.Marker(el)
+  const marker = new maplibregl.Marker({ element: el })
     .setLngLat([village.coordinates[1], village.coordinates[0]])
     .setPopup(popup)
     .addTo(map);
@@ -400,14 +405,69 @@ if (heritageToggle) {
 }
 
 
-function addVillageMarkers() {
+function addVillageMarkers(filteredVillages = sampleVillages) {
   if (!map) return;
 
-  markers.forEach((marker) => marker.remove());
+  markers.forEach((m) => {
+    if (m.marker) m.marker.remove();
+    else m.remove();
+  });
   markers = [];
 
-  sampleVillages.forEach((village) => {
-    addVillageMarker(village);
+  if (!window.clusterEngine) {
+    window.clusterEngine = new window.ClusterEngine({ radius: 50 });
+  }
+
+  window.clusterEngine.load(filteredVillages);
+  
+  const bounds = map.getBounds();
+  const zoom = map.getZoom();
+  
+  const clusters = window.clusterEngine.getClusters(bounds, zoom);
+  
+  clusters.forEach((cluster) => {
+    if (cluster.isCluster) {
+      addClusterMarker(cluster);
+    } else {
+      addVillageMarker(cluster.data);
+    }
+  });
+}
+
+function addClusterMarker(cluster) {
+  const el = document.createElement('div');
+  el.className = 'cluster-marker';
+  el.style.width = '35px';
+  el.style.height = '35px';
+  el.style.borderRadius = '50%';
+  el.style.background = '#e76f51';
+  el.style.color = 'white';
+  el.style.display = 'flex';
+  el.style.alignItems = 'center';
+  el.style.justifyContent = 'center';
+  el.style.fontWeight = 'bold';
+  el.style.cursor = 'pointer';
+  el.style.border = '2px solid white';
+  el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+  el.innerText = cluster.count;
+  el.style.pointerEvents = 'auto';
+  
+  const marker = new maplibregl.Marker({ element: el })
+    .setLngLat([cluster.coordinates[1], cluster.coordinates[0]])
+    .addTo(map);
+    
+  marker.getElement().addEventListener('click', (e) => {
+    e.stopPropagation();
+    map.fitBounds([
+      [cluster.bounds.minLng, cluster.bounds.minLat],
+      [cluster.bounds.maxLng, cluster.bounds.maxLat]
+    ], { padding: 50 });
+  });
+  
+  markers.push({
+    isCluster: true,
+    marker,
+    element: el
   });
 }
 
@@ -515,9 +575,7 @@ function setupSpatialSearch() {
       });
       
       // Update markers
-      markers.forEach(marker => marker.remove());
-      markers = [];
-      nearbyVillages.forEach(village => addVillageMarker(village));
+      addVillageMarkers(nearbyVillages);
       
       // Fly to user location
       if (map) {
