@@ -10,19 +10,14 @@ const getItems = (req, res) => {
     const type = req.query.type;
     const search = req.query.search;
 
+    if (search) {
+      // Use the TF-IDF search engine for full-text search
+      items = store.searchEngine.search(search, 'culturalItem');
+    }
+
     // Apply filtering
     if (type && type !== 'all') {
       items = items.filter(item => item.type === type);
-    }
-    
-    if (search) {
-      const lowerSearch = search.toLowerCase();
-      items = items.filter(item => 
-        item.title.toLowerCase().includes(lowerSearch) ||
-        item.description.toLowerCase().includes(lowerSearch) ||
-        item.location.toLowerCase().includes(lowerSearch) ||
-        (item.tags && item.tags.some(tag => tag.toLowerCase().includes(lowerSearch)))
-      );
     }
 
     // Pagination

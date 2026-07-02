@@ -17,13 +17,16 @@ const artisanRoutes = require('./routes/artisan.routes');
 const storyRoutes = require('./routes/story.routes');
 const auditRoutes = require('./routes/audit.routes');
 const csrfRoutes = require('./routes/csrf.routes');
-
+const cacheRoutes = require('./routes/cache.routes');
+const analyticsRoutes = require('./routes/analytics.routes');
+const searchRoutes = require('./routes/search.routes');
 const { csrfProtection } = require('./middleware/csrf');
 
 const store = require('./data/store');
 
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
+const SlidingWindowLimiter = require('./middleware/rateLimiter');
 
 const initializeSampleData = require('./config/sampleData');
 
@@ -95,6 +98,14 @@ app.use('/api/csrf-token', csrfRoutes);
 // Apply CSRF protection globally for state-changing routes
 app.use(csrfProtection);
 
+// Global API Rate Limiter (100 reqs / 1 min)
+const globalLimiter = new SlidingWindowLimiter({
+  windowMs: 60000,
+  max: 100,
+  message: 'Too many API requests from this IP, please try again after a minute.'
+});
+app.use('/api', globalLimiter.middleware());
+
 // API Routes
 app.use('/api/items', itemRoutes);
 
@@ -116,7 +127,9 @@ app.use('/api/checkin', checkinRoutes);
 app.use('/api/story-generator', storyRoutes);
 app.use('/api/artisans', artisanRoutes);
 app.use('/api/audit', auditRoutes);
-
+app.use('/api/cache', cacheRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/search', searchRoutes);
 app.get('/api/reputation', (req, res, next) => {
   try {
     const contributors = store.contributors || [];

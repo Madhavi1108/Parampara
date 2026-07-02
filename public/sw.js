@@ -72,3 +72,63 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-offline-queue') {
+    console.log('[ServiceWorker] Background sync triggered for offline queue');
+    event.waitUntil(syncOfflineQueue());
+  }
+});
+
+async function syncOfflineQueue() {
+  try {
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open('ParamparaSyncDB', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+
+    const queue = await new Promise((resolve, reject) => {
+      const tx = db.transaction(['sync-queue'], 'readonly');
+      const store = tx.objectStore('sync-queue');
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+
+    if (queue.length === 0) return;
+
+    for (const item of queue) {
+      if (item.status === 'failed') continue;
+
+      try {
+        const response = await fetch(item.url, {
+          method: item.method,
+          headers: item.headers,
+          body: item.body
+        });
+
+        if (response.ok || response.status === 400 || response.status === 422) {
+          // Success or non-retryable error -> remove from queue
+          await new Promise((resolve, reject) => {
+            const tx = db.transaction(['sync-queue'], 'readwrite');
+            const store = tx.objectStore('sync-queue');
+            const req = store.delete(item.id);
+            req.onsuccess = resolve;
+            req.onerror = reject;
+          });
+        } else {
+           // If we hit a 5xx, we might want to let the main thread handle the backoff logic.
+           // Background sync itself has its own backoff mechanism provided by the browser.
+           throw new Error(`Server returned ${response.status}`);
+        }
+      } catch (err) {
+        console.error('[ServiceWorker] Sync failed for item', item.id, err);
+        throw err; // Let the browser background sync know it failed, so it can retry later
+      }
+    }
+  } catch (err) {
+    console.error('[ServiceWorker] IndexedDB access failed', err);
+  }
+}
+
