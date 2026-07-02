@@ -1,7 +1,12 @@
 const store = require('../data/store');
+const sseManager = require('../utils/sseManager');
 
 const getPosts = (req, res) => {
   res.json(typeof store.villagePosts.values === 'function' ? store.villagePosts.values() : store.villagePosts);
+};
+
+const streamPosts = (req, res) => {
+  sseManager.addClient(req, res);
 };
 
 const createPost = (req, res) => {
@@ -21,27 +26,18 @@ const createPost = (req, res) => {
     timestamp: new Date().toISOString(),
   };
 
-  store.villagePosts.push(newPost);
-
-  // Broadcast to all connected WebSocket clients
-  const wss = req.app.get('wss');
-  if (wss) {
-    const message = JSON.stringify({
-      type: 'NEW_POST',
-      payload: newPost
-    });
-    wss.clients.forEach((client) => {
-      // ws.OPEN is 1
-      if (client.readyState === 1) {
-        client.send(message);
-      }
-    });
+  if (typeof store.villagePosts.push === 'function') {
+    store.villagePosts.push(newPost);
   }
+
+  // Broadcast to all connected SSE clients
+  sseManager.broadcast('NEW_POST', newPost);
 
   res.status(201).json(newPost);
 };
 
 module.exports = {
   getPosts,
+  streamPosts,
   createPost,
 };
