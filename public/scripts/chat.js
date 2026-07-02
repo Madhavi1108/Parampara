@@ -42,14 +42,18 @@
   };
 
   /**
-   * Thinking/Typing Indicator Component
+   * Thinking/Typing Indicator Component (Animated Dots)
    */
   const ChatTypingIndicator = () => {
     const { h } = window.vdom;
-    return h('div', { class: 'message bot-message', id: 'typing-indicator', key: 'typing_bubble' },
+    return h('div', { class: 'message bot-message typing-indicator-active', id: 'typing-indicator', key: 'typing_bubble' },
       h('div', { class: 'message-avatar' }, '👴'),
-      h('div', { class: 'message-content' }, 
-        h('p', {}, 'Thinking...')
+      h('div', { class: 'message-content typing-content' }, 
+        h('div', { class: 'typing-indicator-dots' },
+          h('span', { class: 'dot' }),
+          h('span', { class: 'dot' }),
+          h('span', { class: 'dot' })
+        )
       )
     );
   };
@@ -105,8 +109,34 @@
       }
       
       lastVirtualTree = currentVirtualTree;
-      chatViewportNode.scrollTop = chatViewportNode.scrollHeight;
+      scrollToActiveContent();
     });
+  }
+
+  // --- Scrolling Pipeline ---
+
+  /**
+   * Smoothly scrolls the chat history panel to show the latest messages.
+   * If a user clicks a suggestion chip, it also aligns the chatbox in the window.
+   */
+  function scrollToActiveContent() {
+    if (!chatViewportNode) return;
+    
+    // 1. Scroll chat message inner viewport to show the new message
+    chatViewportNode.scrollTo({
+      top: chatViewportNode.scrollHeight,
+      behavior: 'smooth'
+    });
+
+    // 2. Scroll the window to center the chat window for better view focus
+    const chatInterface = document.querySelector('.chat-interface');
+    if (chatInterface) {
+      chatInterface.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest'
+      });
+    }
   }
 
   // --- Core Action & Event Handlers ---
@@ -165,6 +195,9 @@
     // Show typing bubble
     const typingIndicatorToken = activateTypingState();
 
+    // Scroll window/chat view to focus immediately on typing state
+    setTimeout(scrollToActiveContent, 50);
+
     try {
       const serverResponse = await fetch('/api/chat', {
         method: 'POST',
@@ -181,6 +214,9 @@
 
       // Append chat message response
       appendMessageToHistory(responsePayload.response, 'bot');
+      
+      // Auto scroll to response
+      setTimeout(scrollToActiveContent, 50);
     } catch (fetchError) {
       console.error('[Parampara Chat] Network communication failure:', fetchError);
       deactivateTypingState(typingIndicatorToken);
@@ -188,6 +224,7 @@
         "I apologize, but I'm having trouble connecting right now. Please try again later.",
         'bot'
       );
+      setTimeout(scrollToActiveContent, 50);
     } finally {
       isSendingMessage = false;
       
