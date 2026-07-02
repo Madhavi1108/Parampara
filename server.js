@@ -130,6 +130,10 @@ app.use('/api/audit', auditRoutes);
 app.use('/api/cache', cacheRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/search', searchRoutes);
+
+const exportRoutes = require('./routes/export.routes');
+app.use('/api/export', exportRoutes);
+
 app.get('/api/reputation', (req, res, next) => {
   try {
     const contributors = store.contributors || [];
