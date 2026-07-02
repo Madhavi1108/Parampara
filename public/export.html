@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Export offline archives of rural cultural heritage"
+    />
+    <title>Offline Archive Export - Parampara</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link rel="stylesheet" href="styles/theme.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+    <style>
+      .export-container {
+        max-width: 800px;
+        margin: 100px auto 50px auto;
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        color: var(--text-color);
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+      .export-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .export-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .export-header p {
+        font-size: 1.1rem;
+        color: var(--text-color);
+        opacity: 0.8;
+      }
+      .export-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .export-section {
+        background: rgba(var(--primary-rgb), 0.05);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid rgba(var(--primary-rgb), 0.1);
+      }
+      .export-section h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 1.05rem;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: background 0.2s;
+      }
+      .checkbox-label:hover {
+        background: rgba(var(--primary-rgb), 0.1);
+      }
+      .checkbox-label input[type="checkbox"] {
+        width: 1.2rem;
+        height: 1.2rem;
+        cursor: pointer;
+      }
+      .export-btn {
+        margin-top: 1rem;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(var(--primary-rgb), 0.4);
+      }
+      .export-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      .loading-spinner {
+        display: none;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      .export-status {
+        text-align: center;
+        margin-top: 1rem;
+        font-weight: bold;
+        min-height: 1.5rem;
+      }
+      .status-success { color: #2ecc71; }
+      .status-error { color: #e74c3c; }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
+          🌙
+        </button>
+        <div class="logo">
+          <h1 data-i18n="brand_name">Parampara</h1>
+          <p class="tagline" data-i18n="brand_tagline">
+            Preserving Living Traditions
+          </p>
+        </div>
+        <button
+          class="hamburger"
+          id="hamburgerBtn"
+          aria-label="Toggle navigation"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html"><i class="ti ti-home"></i> Home</a></li>
+          <li><a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a></li>
+          <li><a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a></li>
+          <li><a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a></li>
+          <li><a href="timeline.html"><i class="ti ti-history"></i> Historical Timeline</a></li>
+          <li><a href="export.html" class="active"><i class="ti ti-download"></i> Data Export</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Full Width Nav Menu -->
+    <div class="nav-fullmenu" id="navFullMenu">
+      <div class="nav-fullmenu-inner">
+        <p class="nav-fullmenu-label">Navigation</p>
+        <div class="nav-fullmenu-grid">
+          <a href="index.html"><i class="ti ti-home"></i> Home</a>
+          <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
+          <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
+          <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
+          <a href="timeline.html"><i class="ti ti-history"></i> Historical Timeline</a>
+          <a href="export.html" class="active"><i class="ti ti-download"></i> Data Export</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <main class="container">
+      <div class="export-container">
+        <div class="export-header">
+          <h2><i class="ti ti-archive"></i> Offline Heritage Archive</h2>
+          <p>Download a compressed `.zip` bundle containing structured metadata, offline JSON records, and associated media files for field research and long-term preservation.</p>
+        </div>
+
+        <form id="exportForm" class="export-form">
+          <div class="export-section">
+            <h3><i class="ti ti-database"></i> Select Collections to Export</h3>
+            <div class="checkbox-grid">
+              <label class="checkbox-label">
+                <input type="checkbox" name="collections" value="culturalItems" checked>
+                Cultural Items
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="collections" value="heritagePaths" checked>
+                Heritage Paths
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="collections" value="artisans" checked>
+                Artisans & Media
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="collections" value="timelineEvents" checked>
+                Timeline Events
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="collections" value="storySourceData" checked>
+                Story Source Data
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" id="exportBtn" class="export-btn">
+            <span class="btn-text"><i class="ti ti-cloud-download"></i> Generate Offline Archive</span>
+            <div class="loading-spinner" id="exportSpinner"></div>
+          </button>
+          
+          <div id="exportStatus" class="export-status"></div>
+        </form>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <h2 class="footer-logo">🏛️ Parampara</h2>
+          <p>Preserving rural heritage, traditions, and stories for future generations.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
+      </div>
+    </footer>
+
+    <script src="scripts/navbar.js"></script>
+    <script src="scripts/theme.js"></script>
+    <script src="scripts/export.js"></script>
+  </body>
+</html>

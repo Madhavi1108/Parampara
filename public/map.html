@@ -231,6 +231,19 @@
             </button>
           </div>
         </div>
+        <div class="route-finder-control" style="margin-top: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; align-items: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto;">
+          <strong><i class="ti ti-route"></i> Route Finder:</strong>
+          <select id="route-start" class="btn btn-secondary" style="max-width: 150px;">
+            <option value="">Start Location...</option>
+          </select>
+          <select id="route-end" class="btn btn-secondary" style="max-width: 150px;">
+            <option value="">End Location...</option>
+          </select>
+          <select id="route-theme" class="btn btn-secondary" style="max-width: 120px;">
+            <option value="">Any Theme</option>
+          </select>
+          <button id="btn-find-route" class="btn btn-primary">Find Route</button>
+        </div>
       </div>
 
       <div id="map" class="map-view"></div>
@@ -378,7 +391,9 @@
     <script src="scripts/cacheLayer.js"></script>
     <script src="scripts/spatial.js"></script>
     <script src="scripts/heritageScoreUtil.js"></script>
-    <script src="scripts/map.js"></script>
+    <script src="scripts/clusterEngine.js?v=4"></script>
+    <script src="scripts/routeFinder.js"></script>
+    <script src="scripts/map.js?v=4"></script>
     <script src="scripts/languageSwitcher.js"></script>
     <script src="scripts/navbar.js"></script>
     <script src="scripts/theme.js"></script>

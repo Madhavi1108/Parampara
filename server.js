@@ -19,6 +19,7 @@ const auditRoutes = require('./routes/audit.routes');
 const csrfRoutes = require('./routes/csrf.routes');
 const cacheRoutes = require('./routes/cache.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
+const searchRoutes = require('./routes/search.routes');
 const { csrfProtection } = require('./middleware/csrf');
 
 const store = require('./data/store');
@@ -128,6 +129,11 @@ app.use('/api/artisans', artisanRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/cache', cacheRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/search', searchRoutes);
+
+const exportRoutes = require('./routes/export.routes');
+app.use('/api/export', exportRoutes);
+
 app.get('/api/reputation', (req, res, next) => {
   try {
     const contributors = store.contributors || [];
@@ -214,10 +220,26 @@ app.get('/api/risk-dashboard', (req, res, next) => {
 
 app.get('/api/map-style', async (req, res) => {
   if (!process.env.MAPTILER_KEY) {
-    return res.status(503).json({
-      configured: false,
-      message:
-        'Map tiles require a MapTiler API key. Please add MAPTILER_KEY to your .env file.',
+    // FALLBACK TO OSM IF KEY IS MISSING (Return raw style object like MapTiler does)
+    return res.json({
+      version: 8,
+      sources: {
+        'osm': {
+          type: 'raster',
+          tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+          tileSize: 256,
+          attribution: '&copy; OpenStreetMap Contributors',
+        },
+      },
+      layers: [
+        {
+          id: 'osm-layer',
+          type: 'raster',
+          source: 'osm',
+          minzoom: 0,
+          maxzoom: 19,
+        },
+      ],
     });
   }
 
@@ -255,31 +277,4 @@ app.use(errorHandler);
 // Start Server
 const server = app.listen(PORT, () => {
   console.log(`✨ Parampara server running on http://localhost:${PORT}`);
-});
-
-// Setup WebSocket server
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ server });
-
-app.set('wss', wss);
-
-wss.on('connection', (ws) => {
-  ws.isAlive = true;
-  ws.on('pong', () => { ws.isAlive = true; });
-  
-  // Keep connection open
-  ws.on('error', console.error);
-});
-
-// Heartbeat to prevent memory leaks from dead connections
-const interval = setInterval(() => {
-  wss.clients.forEach((ws) => {
-    if (ws.isAlive === false) return ws.terminate();
-    ws.isAlive = false;
-    ws.ping();
-  });
-}, 30000);
-
-wss.on('close', () => {
-  clearInterval(interval);
 });

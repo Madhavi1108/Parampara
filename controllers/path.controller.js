@@ -140,8 +140,42 @@ const createPath = (req, res, next) => {
   }
 };
 
+/**
+ * GET /api/paths/route
+ * Query params: start (id), end (id), theme (optional)
+ * Computes shortest path using GraphEngine
+ */
+const getOptimizedRoute = (req, res, next) => {
+  try {
+    const { start, end, theme } = req.query;
+    
+    if (!start || !end) {
+      return res.status(400).json({ error: 'Missing required query parameters: start and end.' });
+    }
+
+    const GraphEngine = require('../utils/GraphEngine');
+    const engine = new GraphEngine(store.culturalItems, store.heritagePaths);
+
+    try {
+      const route = engine.findShortestPath(start, end, { theme });
+      if (!route) {
+        return res.status(404).json({ error: 'No valid route found between the specified locations.' });
+      }
+      res.json(route);
+    } catch (err) {
+      if (err.message === 'Invalid start or end location.') {
+        return res.status(400).json({ error: err.message });
+      }
+      throw err;
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getPaths,
   getPathThemes,
   createPath,
+  getOptimizedRoute,
 };

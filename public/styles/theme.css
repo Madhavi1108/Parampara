@@ -2159,3 +2159,36 @@ footer {
 .markdown-table th {
   background-color: var(--theme-card-hover);
 }
+
+/* ==========================================
+   OFFLINE TOAST NOTIFICATIONS
+========================================== */
+.offline-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 10000;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  animation: slideUpToast 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.offline-toast.warning {
+  background: var(--theme-accent);
+  color: #fff;
+}
+
+.offline-toast.success {
+  background: #2e7d32;
+  color: #fff;
+}
+
+@keyframes slideUpToast {
+  from { bottom: -50px; opacity: 0; }
+  to { bottom: 20px; opacity: 1; }
+}
