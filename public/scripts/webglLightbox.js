@@ -3,9 +3,9 @@ class WebGLLightbox {
   constructor() {
     this.container = document.getElementById('webgl-lightbox');
     this.canvasContainer = document.getElementById('lightbox-canvas-container');
-    this.titleEl = document.getElementById('lightbox-title');
-    this.locationEl = document.getElementById('lightbox-location');
-    this.descEl = document.getElementById('lightbox-desc');
+    this.titleEl = document.getElementById('webgl-lightbox-title');
+    this.locationEl = document.getElementById('webgl-lightbox-location');
+    this.descEl = document.getElementById('webgl-lightbox-desc');
     
     this.closeBtn = document.getElementById('lightbox-close');
     this.nextBtn = document.getElementById('lightbox-next');
@@ -36,9 +36,9 @@ class WebGLLightbox {
       this.container = document.getElementById('webgl-lightbox');
       if(this.container) {
           this.canvasContainer = document.getElementById('lightbox-canvas-container');
-          this.titleEl = document.getElementById('lightbox-title');
-          this.locationEl = document.getElementById('lightbox-location');
-          this.descEl = document.getElementById('lightbox-desc');
+          this.titleEl = document.getElementById('webgl-lightbox-title');
+          this.locationEl = document.getElementById('webgl-lightbox-location');
+          this.descEl = document.getElementById('webgl-lightbox-desc');
           this.closeBtn = document.getElementById('lightbox-close');
           this.nextBtn = document.getElementById('lightbox-next');
           this.prevBtn = document.getElementById('lightbox-prev');
