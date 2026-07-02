@@ -10,7 +10,7 @@ let quillEditor = null;
 
 // SVG hearts (inline, no font dependency)
 const HEART_FILLED = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#e53e3e" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
-const HEART_EMPTY  = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+const HEART_EMPTY = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
 
 document.addEventListener('DOMContentLoaded', () => {
   setupIntersectionObserver();
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         toolbar: [
           ['bold', 'italic', 'underline'],
           [{ 'header': [1, 2, 3, false] }],
-          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
           ['link']
         ]
       }
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── Event delegation: one listener on the grid catches every heart-button click
 function setupFavDelegation() {
   const grid = document.getElementById('gallery-grid');
-  grid.addEventListener('click', function(e) {
+  grid.addEventListener('click', function (e) {
     // Walk up from the clicked element to find a .favorite-btn
     const btn = e.target.closest('.favorite-btn');
     if (!btn) return;          // not a heart button click
@@ -65,7 +65,7 @@ function setupFavDelegation() {
 function setupShareDelegation() {
   const grid = document.getElementById('gallery-grid');
   if (!grid) return;
-  grid.addEventListener('click', function(e) {
+  grid.addEventListener('click', function (e) {
     const btn = e.target.closest('.share-card-btn');
     if (!btn) return;
     e.stopPropagation(); // prevent opening item card
@@ -101,16 +101,16 @@ function setupEventListeners() {
     .getElementById('add-item-form')
     .addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const formData = new FormData(e.target);
-      
+
       // Sync Quill editor content to hidden input
       if (quillEditor) {
         formData.set('description', quillEditor.root.innerHTML);
       }
-      
+
       await handleAddItem(e, formData);
-      
+
       // Cleanup after submit
       e.target.reset();
       if (quillEditor) {
@@ -150,7 +150,7 @@ function setupIntersectionObserver() {
 
 async function loadGalleryItems(page = 1, append = false) {
   if (isLoading || !hasMore && append) return;
-  
+
   isLoading = true;
   const loadingIndicator = document.getElementById('loading-indicator');
   if (loadingIndicator && append) loadingIndicator.style.display = 'flex';
@@ -158,14 +158,14 @@ async function loadGalleryItems(page = 1, append = false) {
   try {
     const searchTerm = document.getElementById('search-input').value.trim();
     const typeFilter = document.getElementById('type-filter').value;
-    
+
     let url = `/api/items?page=${page}&limit=${limit}`;
     if (typeFilter !== 'all') url += `&type=${typeFilter}`;
     if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
 
     const response = await fetch(url);
     const result = await response.json();
-    
+
     // Check if new format
     let items = [];
     if (result && result.data && result.meta) {
@@ -182,7 +182,7 @@ async function loadGalleryItems(page = 1, append = false) {
     } else {
       allItems = items;
     }
-    
+
     displayItems(allItems, append);
   } catch (error) {
     console.error('Error loading items:', error);
@@ -247,11 +247,10 @@ function displayItems(items, append = false) {
       return `
         <div class="gallery-item" data-item-id="${escapeHtml(item.id)}">
             <div class="gallery-item-image" style="position:relative;">
-                ${
-                  item.imageUrl
-                    ? `<img src="${item.imageUrl}" alt="${escapeHtml(item.title)}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded')" style="width:100%;height:100%;object-fit:cover;">`
-                    : `<span>${getTypeIcon(item.type)}</span>`
-                }
+                ${item.imageUrl
+          ? `<img src="${item.imageUrl}" alt="${escapeHtml(item.title)}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded')" style="width:100%;height:100%;object-fit:cover;">`
+          : `<span>${getTypeIcon(item.type)}</span>`
+        }
                 <button
                   class="share-card-btn"
                   data-item-id="${escapeHtml(item.id)}"
@@ -276,21 +275,20 @@ function displayItems(items, append = false) {
                 </div>
                 <h3>${escapeHtml(item.title)}</h3>
                 <div class="markdown-body" style="font-size:0.9rem; margin-bottom:1rem;">${renderMarkdown(item.description.substring(0, 100) + (item.description.length > 100 ? '...' : ''), true)}</div>
-                ${
-                  item.tags && item.tags.length > 0
-                    ? `
+                ${item.tags && item.tags.length > 0
+          ? `
                     <div class="gallery-item-tags">
                         ${item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
                     </div>
                 `
-                    : ''
-                }
+          : ''
+        }
             </div>
         </div>
     `;
     })
     .join('');
-    
+
   if (append) {
     // If appending and empty state was there, clear it first
     if (galleryGrid.innerHTML.includes('gallery_empty_title')) {
@@ -441,22 +439,22 @@ function viewItem(id) {
     window.webglLightbox.open(allItems, itemIndex);
     return;
   }
-  
+
   const item = allItems[itemIndex];
   const lightbox = document.getElementById('gallery-lightbox');
   const img = document.getElementById('lightbox-image');
-  
+
   if (!lightbox) {
     alert(`${tGallery('gallery_viewing')}: ${item.title}\n\n${item.description}`);
     return;
   }
-  
+
   // Set Info
   document.getElementById('lightbox-title').textContent = item.title;
   document.getElementById('lightbox-location').textContent = item.location;
   document.getElementById('lightbox-type').textContent = translateType(item.type);
   document.getElementById('lightbox-desc').innerHTML = renderMarkdown(item.description, true);
-  
+
   const tagsContainer = document.getElementById('lightbox-tags');
   tagsContainer.innerHTML = item.tags ? item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('') : '';
 
@@ -469,17 +467,16 @@ function viewItem(id) {
   } else {
     img.src = '';
     img.style.display = 'none';
-    if(lens) lens.style.display = 'none';
-  }
   }
 
   lightbox.classList.add('active');
 }
 
+
 function setupMagnifier(img, lens, imgUrl) {
   // Disable if device supports touch/pointer is coarse
   if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
-    return; 
+    return;
   }
 
   const zoomLevel = 2.5;
@@ -489,7 +486,7 @@ function setupMagnifier(img, lens, imgUrl) {
   img.parentNode.replaceChild(newImg, img);
   img = newImg;
 
-  if(!lens) return;
+  if (!lens) return;
 
   lens.style.backgroundImage = `url('${imgUrl}')`;
 
@@ -501,7 +498,7 @@ function setupMagnifier(img, lens, imgUrl) {
   img.addEventListener("mousemove", (e) => {
     e.preventDefault();
     const pos = getCursorPos(e, img);
-    
+
     // Lens position (following cursor)
     lens.style.left = `${pos.x}px`;
     lens.style.top = `${pos.y}px`;
@@ -509,7 +506,7 @@ function setupMagnifier(img, lens, imgUrl) {
     // Calculate background position
     const bgX = (pos.x * zoomLevel) - (lens.offsetWidth / 2);
     const bgY = (pos.y * zoomLevel) - (lens.offsetHeight / 2);
-    
+
     lens.style.backgroundPosition = `-${bgX}px -${bgY}px`;
   });
 
@@ -529,12 +526,12 @@ function getCursorPos(e, img) {
 document.addEventListener('DOMContentLoaded', () => {
   const lightbox = document.getElementById('gallery-lightbox');
   const closeBtn = document.getElementById('close-lightbox');
-  
+
   if (closeBtn && lightbox) {
     closeBtn.addEventListener('click', () => {
       lightbox.classList.remove('active');
     });
-    
+
     lightbox.addEventListener('click', (e) => {
       if (e.target === lightbox || e.target.classList.contains('lightbox-layout') || e.target.classList.contains('lightbox-image-container')) {
         lightbox.classList.remove('active');

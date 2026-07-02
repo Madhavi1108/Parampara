@@ -337,51 +337,6 @@ SMOOTH TRANSITIONS
   }
 
 /* ==========================================
-   GALLERY OVERRIDES
-========================================== */
-
-.gallery-item {
-  background: var(--theme-card) !important;
-  border: 1px solid var(--theme-border) !important;
-  color: var(--theme-text) !important;
-}
-
-.gallery-item h3 {
-  color: var(--theme-text) !important;
-}
-
-.gallery-item p,
-.gallery-item-location {
-  color: var(--theme-text-secondary) !important;
-}
-
-.gallery-item-type {
-  background: var(--theme-accent) !important;
-  color: var(--theme-btn-text) !important;
-  border: none !important;
-}
-
-.tag {
-  background: var(--theme-surface) !important;
-  color: var(--theme-text) !important;
-  border: 1px solid var(--theme-border) !important;
-}
-
-.search-input,
-.filter-select {
-  background: var(--theme-input-bg) !important;
-  color: var(--theme-text) !important;
-  border: 1px solid var(--theme-border) !important;
-}
-
-.gallery-header h2,
-.gallery-header p {
-  color: var(--theme-text) !important;
-  text-shadow: none !important;
-}
-
-
-/* ==========================================
    DISCOVERY QUEST PAGE OVERRIDES
 ========================================== */
 
