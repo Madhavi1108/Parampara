@@ -11,9 +11,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    initVillagePostsWebSocket();
+    initVillagePostsSSE();
   } catch (err) {
-    console.error("Failed to initialize WebSocket:", err);
+    console.error("Failed to initialize SSE:", err);
   }
 });
 
@@ -140,27 +140,28 @@ window.addEventListener("parampara:langchange", () => {
   loadVillagePosts();
 });
 
-// --- Real-Time WebSocket Logic ---
+// --- Real-Time SSE Logic ---
 const receivedPostIds = new Set();
-let wsReconnectDelay = 1000;
+let sseReconnectDelay = 1000;
 
-function initVillagePostsWebSocket() {
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const wsUrl = `${protocol}//${window.location.host}`;
-  const ws = new WebSocket(wsUrl);
+function initVillagePostsSSE() {
+  const sseUrl = '/api/posts/stream';
+  const eventSource = new EventSource(sseUrl);
 
-  ws.onmessage = (event) => {
+  eventSource.addEventListener('NEW_POST', (event) => {
     try {
-      const data = JSON.parse(event.data);
-      if (data.type === 'NEW_POST' && data.payload) {
-        handleNewVillagePost(data.payload);
+      const payload = JSON.parse(event.data);
+      if (payload) {
+        handleNewVillagePost(payload);
       }
-    } catch (err) { console.error("Error parsing WS message:", err); }
-  };
+    } catch (err) {
+      console.error("Error parsing SSE message:", err);
+    }
+  });
 
-  ws.onclose = () => {
-    setTimeout(initVillagePostsWebSocket, wsReconnectDelay);
-    wsReconnectDelay = Math.min(wsReconnectDelay * 2, 30000);
+  eventSource.onerror = (err) => {
+    console.error("EventSource failed:", err);
+    // EventSource auto-reconnects natively, but we can log errors.
   };
 }
 
