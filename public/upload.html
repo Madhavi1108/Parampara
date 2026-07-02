@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parampara - Secure Heritage Upload</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/watermark.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="glass-nav">
+    <div class="nav-brand">
+      <a href="/">🏺 Parampara</a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="paths.html">Heritage Paths</a></li>
+      <li><a href="upload.html" class="active">Secure Upload</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <header class="page-header">
+      <h1>Preserve & Protect</h1>
+      <p>Upload heritage photographs and automatically apply an attribution watermark before submitting to the archive.</p>
+    </header>
+
+    <div class="upload-container card glass-card">
+      
+      <!-- Drop Zone -->
+      <div id="drop-zone" class="drop-zone">
+        <svg xmlns="http://www.w3.org/.svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="upload-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <p>Drag & Drop a Heritage Image or Click to Browse</p>
+        <input type="file" id="file-input" accept="image/jpeg, image/png, image/webp" hidden>
+      </div>
+
+      <!-- Processing Workspace -->
+      <div id="workspace" class="workspace" style="display: none;">
+        <div class="workspace-grid">
+          
+          <!-- Left: Preview -->
+          <div class="preview-panel">
+            <img id="preview-img" src="" alt="Watermark Preview" class="preview-img">
+          </div>
+
+          <!-- Right: Controls -->
+          <div class="controls-panel">
+            <h3>Watermark Settings</h3>
+            
+            <div class="control-group">
+              <label for="watermark-text">Custom Text</label>
+              <input type="text" id="watermark-text" class="form-input" value="© Parampara Digital Archive">
+            </div>
+
+            <div class="control-group">
+              <label for="watermark-opacity">Opacity: <span id="opacity-val">40%</span></label>
+              <input type="range" id="watermark-opacity" min="0.1" max="1.0" step="0.1" value="0.4" class="slider">
+            </div>
+
+            <div class="control-group checkbox-group">
+              <input type="checkbox" id="watermark-tiled" checked>
+              <label for="watermark-tiled">Tiled Pattern (Recommended for protection)</label>
+            </div>
+
+            <div class="actions-group">
+              <button id="download-btn" class="btn secondary">Download Copy</button>
+              <button id="upload-btn" class="btn primary">Upload to Archive</button>
+            </div>
+            
+            <p class="meta-note">💡 Original EXIF data is preserved and a Copyright tag is injected securely into the binary.</p>
+          </div>
+          
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="scripts/watermark-engine.js"></script>
+  <script src="scripts/image-uploader-ui.js"></script>
+</body>
+</html>
