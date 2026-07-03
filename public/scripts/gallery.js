@@ -141,10 +141,12 @@ function setupEventListeners() {
       e.preventDefault();
 
       const formData = new FormData(e.target);
+
       // Sync Quill editor content to hidden input
       if (quillEditor) {
         formData.set('description', quillEditor.root.innerHTML);
       }
+
       await handleAddItem(e, formData);
 
       // Cleanup after submit
@@ -239,8 +241,18 @@ async function loadGalleryItems(page = 1, append = false) {
   if (isLoading || !hasMore && append) return;
 
   isLoading = true;
+  const galleryGrid = document.getElementById('gallery-grid');
   const loadingIndicator = document.getElementById('loading-indicator');
-  if (loadingIndicator && append) loadingIndicator.style.display = 'flex';
+  
+  if (window.SkeletonEngine) {
+    if (append) {
+      window.SkeletonEngine.show(galleryGrid, 'card', limit, true);
+    } else {
+      window.SkeletonEngine.show(galleryGrid, 'card', limit, false);
+    }
+  } else {
+    if (loadingIndicator && append) loadingIndicator.style.display = 'flex';
+  }
 
   try {
     const searchTerm = document.getElementById('search-input').value.trim();
@@ -278,9 +290,15 @@ async function loadGalleryItems(page = 1, append = false) {
       allItems = items;
     }
 
+    if (window.SkeletonEngine) {
+      window.SkeletonEngine.hide(galleryGrid);
+    }
     displayItems(allItems, append);
   } catch (error) {
     console.error('Error loading items:', error);
+    if (window.SkeletonEngine) {
+      window.SkeletonEngine.hide(galleryGrid);
+    }
     if (!append) {
       allItems = getSampleItems();
       displayItems(allItems, false);
@@ -602,6 +620,7 @@ function viewItem(id) {
 
   lightbox.classList.add('active');
 }
+
 
 function setupMagnifier(img, lens, imgUrl) {
   // Disable if device supports touch/pointer is coarse

@@ -132,19 +132,32 @@ async function applyFilters() {
 
   try {
     const container = document.getElementById('events-container');
-    if (container) container.style.opacity = '0.5';
+    if (container && window.SkeletonEngine) {
+      window.SkeletonEngine.show(container, 'timeline', 4, false);
+    }
+    
+    // Simulate delay for skeleton preview
+    const delay = new Promise(resolve => setTimeout(resolve, 300));
+    const [result] = await Promise.all([
+      window.dataWorker.runJob('filterTimelineEvents', {
+        items: allTimelineEvents,
+        search: searchQuery,
+        category
+      }),
+      delay
+    ]);
+    
+    filteredTimelineEvents = result;
 
-    filteredTimelineEvents = await window.dataWorker.runJob('filterTimelineEvents', {
-      items: allTimelineEvents,
-      search: searchQuery,
-      category
-    });
-
-    if (container) container.style.opacity = '1';
+    if (container && window.SkeletonEngine) {
+      window.SkeletonEngine.hide(container);
+    }
   } catch (error) {
     console.error('Worker filter error:', error);
     const container = document.getElementById('events-container');
-    if (container) container.style.opacity = '1';
+    if (container && window.SkeletonEngine) {
+      window.SkeletonEngine.hide(container);
+    }
 
     filteredTimelineEvents = allTimelineEvents.filter((event) => {
       const matchesSearch =
