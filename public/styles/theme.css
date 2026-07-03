@@ -1011,12 +1011,15 @@ body > * {
   border: 1px solid rgba(205, 133, 63, 0.2);
   border-radius: 12px;
   backdrop-filter: blur(10px);
+  transition: transform 2s ease-out;
 }
 
 .stat {
   display: flex;
   flex-direction: column;
   align-items: center;
+      padding: 5px 10px;
+    border-radius: 25px;
 }
 
 .stat-num {
