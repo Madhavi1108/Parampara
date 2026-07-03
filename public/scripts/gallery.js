@@ -12,6 +12,25 @@ const HEART_EMPTY = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="
 
 document.addEventListener('DOMContentLoaded', () => {
   setupIntersectionObserver();
+  
+  window.galleryTimeMachine = new TimeMachineEngine({
+    containerId: 'gallery-time-machine-container',
+    eras: ['All', '1950', '1980', '2000', '2025']
+  });
+
+  window.addEventListener('parampara:timemachine:change', (e) => {
+    // Only respond to our own slider if we have multiple, but here we can just read the current era
+    const selectedEra = window.galleryTimeMachine.getCurrentEra();
+    if (window.galleryActiveEra !== selectedEra) {
+      window.galleryActiveEra = selectedEra;
+      currentPage = 1;
+      hasMore = true;
+      loadGalleryItems(1, false);
+    }
+  });
+
+  window.galleryActiveEra = 'All';
+
   loadGalleryItems(1, false);
   setupEventListeners();
   setupFavDelegation();  // ← single listener handles ALL heart clicks
@@ -241,6 +260,9 @@ async function loadGalleryItems(page = 1, append = false) {
 
     let url = `/api/items?page=${page}&limit=${limit}`;
     if (typeFilter !== 'all') url += `&type=${typeFilter}`;
+    if (window.galleryActiveEra && window.galleryActiveEra !== 'All') {
+      url += `&year=${window.galleryActiveEra}`;
+    }
     if (searchTerm) {
       url += `&search=${encodeURIComponent(searchTerm)}`;
       if (window.Telemetry) {

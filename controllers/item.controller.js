@@ -39,6 +39,13 @@ const getItems = (req, res) =>
             });
         }
 
+        var yearFilter = req.query.year;
+        if (yearFilter && yearFilter !== 'All') {
+            culturalAssets = culturalAssets.filter(function(asset) {
+                return asset.year && asset.year.toString() === yearFilter.toString();
+            });
+        }
+
         // Calculate metadata limits for pagination offset boundaries
         var totalMatchedItems = culturalAssets.length;
         var totalPagesCount = Math.ceil(totalMatchedItems / itemsPerPageLimit);
