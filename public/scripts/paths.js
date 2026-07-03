@@ -156,6 +156,11 @@ async function applyFiltersAndSort() {
   saveFiltersToURL({ theme, sort, order });
   renderActiveFilterBadges({ theme, sort, order });
 
+  const pathsList = document.getElementById('paths-list');
+  if (window.SkeletonEngine) {
+    window.SkeletonEngine.show(pathsList, 'list', 5, false);
+  }
+
   try {
     const qs = params.toString();
     const res = await fetch(`/api/paths${qs ? '?' + qs : ''}`);
@@ -165,6 +170,10 @@ async function applyFiltersAndSort() {
   } catch (err) {
     console.error('Error loading paths, falling back to sample data:', err);
     allPaths = getSamplePaths();
+  }
+  
+  if (window.SkeletonEngine) {
+    window.SkeletonEngine.hide(pathsList);
   }
 
   totalPaths = allPaths.length;

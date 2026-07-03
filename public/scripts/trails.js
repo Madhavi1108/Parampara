@@ -104,8 +104,13 @@ function setupEventListeners() {
 
 function displayTrails() {
   const trailsList = document.getElementById('trails-list');
+  
+  if (window.SkeletonEngine) {
+    window.SkeletonEngine.show(trailsList, 'card', 3, false);
+  }
 
-  trailsList.innerHTML = sampleTrails
+  setTimeout(() => {
+    trailsList.innerHTML = sampleTrails
     .map(
       (trail) => `
     <div class="trail-item">
@@ -142,6 +147,7 @@ function displayTrails() {
 `
     )
     .join('');
+  }, 500); // Simulate network load
 }
 
 function showTrailDetails(trailId) {
