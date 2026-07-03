@@ -1,4 +1,4 @@
-// server.js - Main Express Server with WebSocket Integration
+// server.js - Main Express Server with WebSocket & Recommendation Engine Integration
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -119,6 +119,17 @@ app.get('/trails', (req, res) => {
 // Chat Route
 app.get('/chat', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'chat.html'));
+});
+
+// ==================== RECOMMENDATION ENGINE ROUTES ====================
+
+// Import recommendation routes
+const recommendationRoutes = require('./routes/recommendation.routes');
+app.use('/api/recommendations', recommendationRoutes);
+
+// Recommendations Page Route
+app.get('/recommendations', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'recommendations.html'));
 });
 
 // ==================== API ROUTES ====================
@@ -357,6 +368,30 @@ app.get('/api/ws/stats', (req, res) => {
   });
 });
 
+// ==================== RECOMMENDATION ENGINE HEALTH CHECK ====================
+
+// Recommendation engine status endpoint
+app.get('/api/recommendations/health', async (req, res) => {
+  try {
+    const RecommendationEngine = require('./services/recommendationEngine');
+    const engine = new RecommendationEngine();
+    const stats = engine.getModelStats();
+    
+    res.json({
+      status: 'healthy',
+      engine: 'recommendation',
+      ...stats,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // ==================== ERROR HANDLING ====================
 
 // 404 Middleware
@@ -375,8 +410,10 @@ server.listen(PORT, () => {
   console.log(`✨ Parampara server running on http://localhost:${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🗺️  Collaborative Map: http://localhost:${PORT}/collaborative-map`);
+  console.log(`📚 Recommendations: http://localhost:${PORT}/recommendations`);
   console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
   console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}`);
+  console.log(`🤖 Recommendation Engine: http://localhost:${PORT}/api/recommendations/stats`);
 });
 
 // ==================== GRACEFUL SHUTDOWN ====================
