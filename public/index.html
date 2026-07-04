@@ -8,7 +8,7 @@
       content="A community-driven digital archive preserving rural cultural heritage through stories, crafts, maps, and responsible tourism"
     />
     <title>Parampara - Preserving Rural Heritage</title>
-    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/main.css?v=2.0" />
     <link rel="stylesheet" href="styles/languageSelector.css" />
     <link rel="stylesheet" href="styles/theme.css" />
     <link
@@ -25,6 +25,10 @@
     />
   </head>
   <body>
+    <!-- Floating Background Decorative Glow Orbs -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
     <!-- Navigation -->
     <!-- Navigation -->
     <nav class="navbar">
@@ -174,7 +178,7 @@
       <div class="hero-content">
         <!-- Left: Text Panel -->
         <div class="hero-texts">
-          <div class="hero-badge">🏛️ Cultural Heritage Archive</div>
+          <div class="hero-badge"><span class="badge-dot"></span> 🏛️ Cultural Heritage Archive</div>
           <h2 class="hero-title" data-i18n="hero_title">
             Preserving the Stories That Matter
           </h2>
@@ -298,7 +302,27 @@
           Live from the Village
         </h2>
         <div id="village-posts" class="posts-grid">
-          <!-- Posts will be loaded dynamically -->
+          <div class="post-card-skeleton">
+            <div class="shimmer-line title-shimmer"></div>
+            <div class="shimmer-line meta-shimmer"></div>
+            <div class="shimmer-line content-shimmer-1"></div>
+            <div class="shimmer-line content-shimmer-2"></div>
+            <div class="shimmer-line badge-shimmer"></div>
+          </div>
+          <div class="post-card-skeleton">
+            <div class="shimmer-line title-shimmer"></div>
+            <div class="shimmer-line meta-shimmer"></div>
+            <div class="shimmer-line content-shimmer-1"></div>
+            <div class="shimmer-line content-shimmer-2"></div>
+            <div class="shimmer-line badge-shimmer"></div>
+          </div>
+          <div class="post-card-skeleton">
+            <div class="shimmer-line title-shimmer"></div>
+            <div class="shimmer-line meta-shimmer"></div>
+            <div class="shimmer-line content-shimmer-1"></div>
+            <div class="shimmer-line content-shimmer-2"></div>
+            <div class="shimmer-line badge-shimmer"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -404,9 +428,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script src="scripts/markdown.js"></script>
     <script src="scripts/translationsData.js"></script>
-    <script src="scripts/languageSwitcher.js"></script>
-    <script src="scripts/main.js"></script>
     <script src="scripts/cacheLayer.js"></script>
+    <script src="scripts/languageSwitcher.js?v=2.0"></script>
+    <script src="scripts/main.js?v=2.0"></script>
     <script src="scripts/navbar.js"></script>
     <script src="scripts/theme.js"></script>
     <script src="scripts/sw-register.js"></script>

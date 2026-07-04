@@ -46,14 +46,12 @@
    */
   const ChatTypingIndicator = () => {
     const { h } = window.vdom;
-    return h('div', { class: 'message bot-message typing-indicator-active', id: 'typing-indicator', key: 'typing_bubble' },
-      h('div', { class: 'message-avatar' }, '👴'),
-      h('div', { class: 'message-content typing-content' }, 
-        h('div', { class: 'typing-indicator-dots' },
-          h('span', { class: 'dot' }),
-          h('span', { class: 'dot' }),
-          h('span', { class: 'dot' })
-        )
+    return h('div', { class: 'skeleton-chat-bubble skeleton-root-element skeleton-delay-1 anim-shimmer', id: 'typing-indicator', key: 'typing_bubble' },
+      h('div', { class: 'skeleton skeleton-avatar-small' }, ''),
+      h('div', { class: 'skeleton-chat-content' }, 
+        h('div', { class: 'skeleton skeleton-text', style: 'width: 80%' }, ''),
+        h('div', { class: 'skeleton skeleton-text', style: 'width: 60%' }, ''),
+        h('div', { class: 'skeleton skeleton-text', style: 'width: 40%' }, '')
       )
     );
   };

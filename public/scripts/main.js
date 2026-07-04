@@ -56,12 +56,72 @@ function initNavbar() {
 
 async function loadVillagePosts() {
   const DUMMY_POSTS = [
-    { titleKey: "post1_title", villageKey: "post1_village", contentKey: "post1_content", typeKey: "post1_type", timestamp: new Date().toISOString() },
-    { titleKey: "post2_title", villageKey: "post2_village", contentKey: "post2_content", typeKey: "post2_type", timestamp: new Date(Date.now() - 86400000).toISOString() },
-    { titleKey: "post3_title", villageKey: "post3_village", contentKey: "post3_content", typeKey: "post3_type", timestamp: new Date(Date.now() - 2 * 86400000).toISOString() },
-    { titleKey: "post4_title", villageKey: "post4_village", contentKey: "post4_content", typeKey: "post4_type", timestamp: new Date(Date.now() - 3 * 86400000).toISOString() },
-    { titleKey: "post5_title", villageKey: "post5_village", contentKey: "post5_content", typeKey: "post5_type", timestamp: new Date(Date.now() - 4 * 86400000).toISOString() },
-    { titleKey: "post6_title", villageKey: "post6_village", contentKey: "post6_content", typeKey: "post6_type", timestamp: new Date(Date.now() - 5 * 86400000).toISOString() },
+    {
+      titleKey: "post1_title",
+      title: "Warli Festival Begins in Palghar",
+      villageKey: "post1_village",
+      village: "Palghar, Maharashtra",
+      contentKey: "post1_content",
+      content: "The annual **Warli** harvest festival kicked off with traditional dance and painting ceremonies.\n\n* Over 200 villagers participated.\n* Features live art demonstrations.",
+      typeKey: "post1_type",
+      type: "Festival",
+      timestamp: new Date().toISOString()
+    },
+    {
+      titleKey: "post2_title",
+      title: "New Pottery Workshop Opens",
+      villageKey: "post2_village",
+      village: "Khurja, Uttar Pradesh",
+      contentKey: "post2_content",
+      content: "Local artisan _Ramesh Kumhar_ has opened a free pottery workshop for village youth, teaching **traditional blue pottery** techniques.",
+      typeKey: "post2_type",
+      type: "Craft",
+      timestamp: new Date(Date.now() - 86400000).toISOString()
+    },
+    {
+      titleKey: "post3_title",
+      title: "Elder Storytelling Session Recorded",
+      villageKey: "post3_village",
+      village: "Bishnoi, Rajasthan",
+      contentKey: "post3_content",
+      content: "90-year-old Dadi Kamla shared tales of the Bishnoi conservation movement — now archived in 3 languages.",
+      typeKey: "post3_type",
+      type: "Story",
+      timestamp: new Date(Date.now() - 2 * 86400000).toISOString()
+    },
+    {
+      titleKey: "post4_title",
+      title: "Heritage Bamboo Bridge Restored",
+      villageKey: "post4_village",
+      village: "Majuli, Assam",
+      contentKey: "post4_content",
+      content: "Community volunteers restored the 80-year-old bamboo bridge using traditional Mising tribe construction methods.",
+      typeKey: "post4_type",
+      type: "Restoration",
+      timestamp: new Date(Date.now() - 3 * 86400000).toISOString()
+    },
+    {
+      titleKey: "post5_title",
+      title: "Phad Painting Exhibition Next Week",
+      villageKey: "post5_village",
+      village: "Shahpura, Rajasthan",
+      contentKey: "post5_content",
+      content: "Local Bhopa community is hosting a live Phad painting demo — a 700-year-old narrative scroll art tradition.",
+      typeKey: "post5_type",
+      type: "Art",
+      timestamp: new Date(Date.now() - 4 * 86400000).toISOString()
+    },
+    {
+      titleKey: "post6_title",
+      title: "Tribal Music Archive — 50 Songs Added",
+      villageKey: "post6_village",
+      village: "Bastar, Chhattisgarh",
+      contentKey: "post6_content",
+      content: "Gond tribal musicians contributed 50 rare folk songs to the archive, many never recorded before.",
+      typeKey: "post6_type",
+      type: "Music",
+      timestamp: new Date(Date.now() - 5 * 86400000).toISOString()
+    }
   ];
 
   try {
@@ -87,25 +147,28 @@ async function loadVillagePosts() {
 
 function renderPosts(container, posts, isDummy) {
   const lang = localStorage.getItem("parampara_lang") || "en";
-  
-  if (typeof translations === 'undefined' || !translations[lang]) {
-    console.warn("Translations not loaded yet, skipping renderPosts");
-    return;
-  }
-  const tr = translations[lang];
+  const activeTranslations = window.translations;
+  const tr = activeTranslations ? activeTranslations[lang] : null;
 
   container.innerHTML = posts
     .map(
-      (post) => `
-    <div class="post-card">
-        <h4>${tr[post.titleKey]}</h4>
-        <p class="post-meta">📍 ${tr[post.villageKey]} · 📅 ${formatDate(post.timestamp)}</p>
-        <div class="post-content markdown-body">${renderMarkdown(tr[post.contentKey] || '')}</div>
-        <span style="display:inline-block;padding:0.25rem 0.75rem;background:var(--primary-color);border-radius:20px;font-size:0.85rem;margin-top:1rem;color:white">
-            ${tr[post.typeKey]}
-        </span>
-    </div>
-`,
+      (post) => {
+        const title = (tr && post.titleKey && tr[post.titleKey]) || post.title || "Post";
+        const village = (tr && post.villageKey && tr[post.villageKey]) || post.village || "Unknown Village";
+        const content = (tr && post.contentKey && tr[post.contentKey]) || post.content || "";
+        const type = (tr && post.typeKey && tr[post.typeKey]) || post.type || "Update";
+
+        return `
+          <div class="post-card">
+              <h4>${title}</h4>
+              <p class="post-meta">📍 ${village} · 📅 ${formatDate(post.timestamp)}</p>
+              <div class="post-content markdown-body">${renderMarkdown(content)}</div>
+              <span class="post-card-badge">
+                  ${type}
+              </span>
+          </div>
+        `;
+      }
     )
     .join("");
 
@@ -173,19 +236,21 @@ function handleNewVillagePost(post) {
   if (!postsGrid) return;
 
   const lang = localStorage.getItem("parampara_lang") || "en";
-  
-  if (typeof translations === 'undefined' || !translations[lang]) {
-    return;
-  }
-  const tr = translations[lang];
+  const activeTranslations = window.translations;
+  const tr = activeTranslations ? activeTranslations[lang] : null;
+
+  const title = (tr && post.titleKey && tr[post.titleKey]) || post.title || "New Post";
+  const village = (tr && post.villageKey && tr[post.villageKey]) || post.village || "Unknown Village";
+  const content = (tr && post.contentKey && tr[post.contentKey]) || post.content || "";
+  const type = (tr && post.typeKey && tr[post.typeKey]) || post.type || "Update";
   
   const postHtml = `
     <div class="post-card new-post" style="opacity: 0; transform: translateY(-20px); transition: all 0.5s ease;">
-        <h4>${tr[post.titleKey] || post.title || "New Post"}</h4>
-        <p class="post-meta">${tr[post.villageKey] || post.village || "Unknown Village"} • ${formatDate(post.timestamp)}</p>
-        <div class="post-content markdown-body">${renderMarkdown(tr[post.contentKey] || post.content || "")}</div>
-        <span style="display:inline-block;padding:0.25rem 0.75rem;background:var(--primary-color);border-radius:20px;font-size:0.85rem;margin-top:1rem;color:white">
-            ${tr[post.typeKey] || post.type || "Update"}
+        <h4>${title}</h4>
+        <p class="post-meta">${village} • ${formatDate(post.timestamp)}</p>
+        <div class="post-content markdown-body">${renderMarkdown(content)}</div>
+        <span class="post-card-badge">
+            ${type}
         </span>
     </div>
   `;
@@ -244,3 +309,7 @@ function handleNewVillagePost(post) {
     }
   });
 })();
+
+
+const heroStats = document.querySelector(".hero-stats")
+heroStats.style.transform = "rotateX(3600deg)"

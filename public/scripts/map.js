@@ -7,7 +7,7 @@ let ambientSoundEnabled = true;
 let currentSound = null;
 let heatmapMarkers = [];
 let draw = null;
-
+let culturalMarkers = []; // Track cultural item markers to allow clearing
 let currentLanguage = localStorage.getItem('language') || 'en';
 
 // Flyover state
@@ -44,6 +44,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     translatePage();
+  });
+
+  window.mapTimeMachine = new TimeMachineEngine({
+    containerId: 'map-time-machine-container',
+    eras: ['All', '1950', '1980', '2000', '2025']
+  });
+
+  window.mapActiveEra = 'All';
+
+  window.addEventListener('parampara:timemachine:change', (e) => {
+    const selectedEra = window.mapTimeMachine.getCurrentEra();
+    if (window.mapActiveEra !== selectedEra) {
+      window.mapActiveEra = selectedEra;
+      // Re-load cultural items based on the new era
+      loadCulturalItems();
+    }
   });
 
   initializeMap();
@@ -668,7 +684,16 @@ async function loadCulturalItems() {
   }
 
   try {
-    const response = await fetch('/api/items?limit=1000');
+    // Clear existing cultural markers
+    culturalMarkers.forEach(m => m.remove());
+    culturalMarkers = [];
+
+    let url = '/api/items?limit=1000';
+    if (window.mapActiveEra && window.mapActiveEra !== 'All') {
+      url += `&year=${window.mapActiveEra}`;
+    }
+
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error('Failed to load cultural items');
@@ -682,11 +707,13 @@ async function loadCulturalItems() {
         const el = document.createElement('div');
         el.className = 'cultural-marker';
 
-        new maplibregl.Marker({
+        const marker = new maplibregl.Marker({
           element: el,
         })
           .setLngLat([item.coordinates[1], item.coordinates[0]])
           .addTo(map);
+
+        culturalMarkers.push(marker);
 
         el.addEventListener('click', () => {
           showPopup(item);

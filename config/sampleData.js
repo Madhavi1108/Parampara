@@ -10,6 +10,7 @@ function initializeSampleData() {
     description:
       'Traditional Kantha embroidery using running stitch on layered vintage saris.',
     tags: ['embroidery', 'textile'],
+    year: 1950,
     timestamp: new Date().toISOString(),
     artisans: 12,
     records: 15,
@@ -26,6 +27,7 @@ function initializeSampleData() {
     description:
       'Ancient non-ferrous metal casting using the lost-wax method, practiced for over 4,000 years.',
     tags: ['metalwork', 'craft'],
+    year: 1980,
     timestamp: new Date().toISOString(),
     artisans: 3,
     records: 5,
@@ -42,6 +44,7 @@ function initializeSampleData() {
     description:
       'Intricate paintings displaying mythological themes and nature scenes, made with fingers, twigs, and natural dyes.',
     tags: ['painting', 'art'],
+    year: 2000,
     timestamp: new Date().toISOString(),
     artisans: 25,
     records: 30,
@@ -58,6 +61,7 @@ function initializeSampleData() {
     description:
       'Weaving of wild golden Sikki grass into baskets, toys, and boxes, a traditional craft under-threat.',
     tags: ['weaving', 'grasscraft'],
+    year: 2025,
     timestamp: new Date().toISOString(),
     artisans: 4,
     records: 2,
@@ -74,6 +78,7 @@ function initializeSampleData() {
     description:
       'Traditional string puppetry and narrative storytelling, requiring specialized woodwork and performance skills.',
     tags: ['puppetry', 'performance'],
+    year: 1950,
     timestamp: new Date().toISOString(),
     artisans: 2,
     records: 1,

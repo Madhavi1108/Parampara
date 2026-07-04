@@ -337,15 +337,24 @@ async function getFilteredKnowledge() {
 
   try {
     const grid = document.getElementById('knowledge-grid');
-    if (grid) grid.style.opacity = '0.5';
+    if (grid && window.SkeletonEngine) {
+      window.SkeletonEngine.show(grid, 'card', 6, false);
+    }
     
-    const filtered = await window.dataWorker.runJob('filterKnowledgeVault', {
-      items: allKnowledge,
-      activeCategory,
-      search
-    });
+    // Simulate slight network/worker delay for UX skeleton viewing
+    const delay = new Promise(resolve => setTimeout(resolve, 300));
+    const [filtered] = await Promise.all([
+      window.dataWorker.runJob('filterKnowledgeVault', {
+        items: allKnowledge,
+        activeCategory,
+        search
+      }),
+      delay
+    ]);
     
-    if (grid) grid.style.opacity = '1';
+    if (grid && window.SkeletonEngine) {
+      window.SkeletonEngine.hide(grid);
+    }
     return filtered;
   } catch (error) {
     console.error('Worker filter error:', error);
