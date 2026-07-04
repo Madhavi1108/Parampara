@@ -1,12 +1,14 @@
-// import dotenv from "dotenv";
+// server.js - Main Express Server with WebSocket Integration
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
+const http = require('http');
 
 const app = express();
 
+// Import routes
 const itemRoutes = require('./routes/item.routes');
 const pathRoutes = require('./routes/path.routes');
 const progressRoutes = require('./routes/progress.routes');
@@ -31,8 +33,9 @@ const SlidingWindowLimiter = require('./middleware/rateLimiter');
 const initializeSampleData = require('./config/sampleData');
 
 const PORT = process.env.PORT || 3000;
+const WS_PORT = process.env.WS_PORT || 8080;
 
-// Middleware
+// ==================== MIDDLEWARE ====================
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -50,7 +53,7 @@ app.use(
           'https://encrypted-tbn0.gstatic.com',
           'https://cdn.shopify.com',
         ],
-        connectSrc: ["'self'", 'https://api.maptiler.com'],
+        connectSrc: ["'self'", 'https://api.maptiler.com', `ws://localhost:${WS_PORT}`, `wss://*.onrender.com`],
         workerSrc: ["'self'", 'blob:'],
         childSrc: ["'self'", 'blob:'],
         objectSrc: ["'none'"],
@@ -61,24 +64,65 @@ app.use(
 );
 
 app.use(cors());
-
 app.use(express.json());
-
 app.use(
   express.urlencoded({
     extended: true,
   })
 );
 
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+// Serve collaborative scripts
+app.use('/scripts/collaborative', express.static(path.join(__dirname, 'public/scripts/collaborative')));
 
 // Initialize Data
 initializeSampleData();
+
+// ==================== FRONTEND ROUTES ====================
 
 // Home Route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+// Collaborative Map Route
+app.get('/collaborative-map', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'collaborative-map.html'));
+});
+
+// Map Route
+app.get('/map', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'map.html'));
+});
+
+// Gallery Route
+app.get('/gallery', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'gallery.html'));
+});
+
+// Paths Route
+app.get('/paths', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'paths.html'));
+});
+
+// Quest Route
+app.get('/quest', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'quest.html'));
+});
+
+// Trails Route
+app.get('/trails', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'trails.html'));
+});
+
+// Chat Route
+app.get('/chat', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'chat.html'));
+});
+
+// ==================== API ROUTES ====================
+
 const translationsData = require('./data/translationsData');
 
 app.get('/api/language', (req, res) => {
@@ -113,17 +157,11 @@ app.use('/api/items', itemRoutes);
 const heritageScoreRoutes = require('./routes/heritageScore.routes');
 app.use('/api/heritage-score', heritageScoreRoutes);
 
-
 app.use('/api/paths', pathRoutes);
-
 app.use('/api/progress', progressRoutes);
-
 app.use('/api/posts', postRoutes);
-
 app.use('/api/chat', chatRoutes);
-
 app.use('/api/checkin', checkinRoutes);
-
 app.use('/api/story-generator', storyRoutes);
 app.use('/api/artisans', artisanRoutes);
 app.use('/api/audit', auditRoutes);
@@ -133,6 +171,8 @@ app.use('/api/search', searchRoutes);
 
 const exportRoutes = require('./routes/export.routes');
 app.use('/api/export', exportRoutes);
+
+// ==================== ADDITIONAL API ENDPOINTS ====================
 
 app.get('/api/reputation', (req, res, next) => {
   try {
@@ -168,9 +208,7 @@ app.get('/api/reputation', (req, res, next) => {
       };
     });
 
-    // Sort by score descending
     calculated.sort((a, b) => b.score - a.score);
-
     res.json(calculated);
   } catch (error) {
     next(error);
@@ -220,7 +258,6 @@ app.get('/api/risk-dashboard', (req, res, next) => {
 
 app.get('/api/map-style', async (req, res) => {
   if (!process.env.MAPTILER_KEY) {
-    // FALLBACK TO OSM IF KEY IS MISSING (Return raw style object like MapTiler does)
     return res.json({
       version: 8,
       sources: {
@@ -251,8 +288,7 @@ app.get('/api/map-style', async (req, res) => {
     if (!response.ok) {
       return res.status(502).json({
         configured: false,
-        message:
-          'Unable to load map tiles. Please verify your MAPTILER_KEY is valid.',
+        message: 'Unable to load map tiles. Please verify your MAPTILER_KEY is valid.',
       });
     }
 
@@ -266,15 +302,109 @@ app.get('/api/map-style', async (req, res) => {
   }
 });
 
+// ==================== WEBSOCKET SERVER INTEGRATION ====================
+
+// Import WebSocket server
+const CollaborativeMapServer = require('./server/websocket');
+
+// Start WebSocket server
+let wsServer;
+try {
+  wsServer = new CollaborativeMapServer(WS_PORT);
+  console.log(`🔌 WebSocket server running on port ${WS_PORT}`);
+} catch (error) {
+  console.error('❌ Failed to start WebSocket server:', error.message);
+  // Continue without WebSocket - app will still work
+}
+
+// Health check endpoint that includes WebSocket status
+app.get('/api/health', (req, res) => {
+  const wsStatus = wsServer ? {
+    status: 'running',
+    port: WS_PORT,
+    clients: wsServer.clients ? wsServer.clients.size : 0,
+    markers: wsServer.markers ? wsServer.markers.size : 0
+  } : {
+    status: 'stopped',
+    port: WS_PORT
+  };
+
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: '1.0.0',
+    websocket: wsStatus,
+    memory: process.memoryUsage()
+  });
+});
+
+// WebSocket stats endpoint
+app.get('/api/ws/stats', (req, res) => {
+  if (!wsServer) {
+    return res.status(503).json({
+      error: 'WebSocket server not running',
+      status: 'unavailable'
+    });
+  }
+
+  res.json({
+    status: 'running',
+    clients: wsServer.clients ? wsServer.clients.size : 0,
+    markers: wsServer.markers ? wsServer.markers.size : 0,
+    rooms: wsServer.rooms ? wsServer.rooms.size : 0,
+    history: wsServer.operationHistory ? wsServer.operationHistory.length : 0
+  });
+});
+
+// ==================== ERROR HANDLING ====================
+
 // 404 Middleware
 app.use(notFound);
 
 // Error Middleware
 app.use(errorHandler);
 
+// ==================== START SERVER ====================
 
+// Create HTTP server
+const server = http.createServer(app);
 
-// Start Server
-const server = app.listen(PORT, () => {
+// Start server
+server.listen(PORT, () => {
   console.log(`✨ Parampara server running on http://localhost:${PORT}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🗺️  Collaborative Map: http://localhost:${PORT}/collaborative-map`);
+  console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
+  console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}`);
 });
+
+// ==================== GRACEFUL SHUTDOWN ====================
+
+const shutdown = () => {
+  console.log('🛑 Shutting down gracefully...');
+  
+  // Close WebSocket server
+  if (wsServer && wsServer.wss) {
+    wsServer.wss.close(() => {
+      console.log('🔌 WebSocket server closed');
+    });
+  }
+
+  // Close HTTP server
+  server.close(() => {
+    console.log('✨ Server closed');
+    process.exit(0);
+  });
+
+  // Force close after 10 seconds
+  setTimeout(() => {
+    console.error('⚠️ Force closing after timeout');
+    process.exit(1);
+  }, 10000);
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
+module.exports = { app, server, wsServer };
