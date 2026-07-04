@@ -121,6 +121,11 @@ app.get('/chat', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'chat.html'));
 });
 
+// Serve Trivia Game Page
+app.get('/trivia', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'trivia.html'));
+});
+
 // ==================== RECOMMENDATION ENGINE ROUTES ====================
 
 // Import recommendation routes
@@ -410,6 +415,7 @@ server.listen(PORT, () => {
   console.log(`✨ Parampara server running on http://localhost:${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🗺️  Collaborative Map: http://localhost:${PORT}/collaborative-map`);
+  console.log(`🎮 Trivia Game: http://localhost:${PORT}/trivia`);
   console.log(`📚 Recommendations: http://localhost:${PORT}/recommendations`);
   console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
   console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}`);
