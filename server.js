@@ -28,7 +28,7 @@ const store = require('./data/store');
 
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
-const SlidingWindowLimiter = require('./middleware/rateLimiter');
+const TokenBucketLimiter = require('./middleware/rateLimiter');
 
 const initializeSampleData = require('./config/sampleData');
 
@@ -154,7 +154,7 @@ app.use('/api/csrf-token', csrfRoutes);
 app.use(csrfProtection);
 
 // Global API Rate Limiter (100 reqs / 1 min)
-const globalLimiter = new SlidingWindowLimiter({
+const globalLimiter = new TokenBucketLimiter({
   windowMs: 60000,
   max: 100,
   message: 'Too many API requests from this IP, please try again after a minute.'
