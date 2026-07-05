@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const sampleVillages = [
   {
+    id: '6',
     name: {
       en: 'Sundarbans Village',
       hi: 'सुंदरबन गांव',
@@ -107,6 +108,7 @@ const sampleVillages = [
   },
 
   {
+    id: '1',
     name: {
       en: 'Kantha Village, Bengal',
       hi: 'कांथा गांव, बंगाल',
@@ -137,6 +139,7 @@ const sampleVillages = [
   },
 
   {
+    id: '3',
     name: {
       en: 'Madhubani Village, Bihar',
       hi: 'मधुबनी गांव, बिहार',
@@ -145,7 +148,7 @@ const sampleVillages = [
     coordinates: [26.3537, 86.0719],
     traditions: {
       en: ['Madhubani painting', 'Mithila art', 'Folk songs'],
-      hi: ['मधुबनी चित्रकला', 'मिथिला कला', 'लोकगीत'],
+      hi: ['मधुबनी चित्रकला', 'मिथिला कला', 'लोक गीत'],
       mr: ['मधुबनी चित्रकला', 'मिथिला कला', 'लोकगीते'],
     },
     festivals: {
@@ -155,8 +158,8 @@ const sampleVillages = [
     },
     crafts: {
       en: ['Madhubani paintings', 'Traditional pottery'],
-      hi: ['मधुबनी पेंटिंग', 'मिट्टी के बर्तन'],
-      mr: ['मधुबनी चित्रे', 'मातीची भांडी'],
+      hi: ['मधुबनी चित्रकारी', 'पारंपरिक मिट्टी के बर्तन'],
+      mr: ['मधुबनी चित्रे', 'पारंपरिक मातीची भांडी'],
     },
     description: {
       en: 'Home to the world-famous Madhubani paintings.',
@@ -197,8 +200,11 @@ const sampleVillages = [
   },
 ];
 
+window.sampleVillages = sampleVillages;
+
 function getTranslation() {
-  return translations[currentLanguage];
+  const activeTranslations = window.translations || {};
+  return activeTranslations[currentLanguage] || {};
 }
 
 function translatePage() {
@@ -208,23 +214,23 @@ function translatePage() {
   const subtitle = document.querySelector('.map-header p');
   const villageName = document.getElementById('village-name');
 
-  if (title) title.textContent = t.mapTitle;
-  if (subtitle) subtitle.textContent = t.mapDescription;
-  if (villageName) villageName.textContent = t.selectVillage;
-  document.getElementById('info-content').innerHTML =
-    `<p>${t.clickVillage}</p>`;
-
-  const heatmapBtn = document.getElementById('toggle-heatmap');
-
-  if (heatmapLayer) {
-    heatmapBtn.textContent = t.hideHeatmap;
-  } else {
-    heatmapBtn.textContent = t.toggleHeatmap;
+  if (title && t.mapTitle) title.textContent = t.mapTitle;
+  if (subtitle && t.mapDescription) subtitle.textContent = t.mapDescription;
+  if (villageName && t.selectVillage) villageName.textContent = t.selectVillage;
+  
+  const infoContent = document.getElementById('info-content');
+  if (infoContent && t.clickVillage) {
+    infoContent.innerHTML = `<p>${t.clickVillage}</p>`;
   }
 
-  // document.getElementById('toggle-sound').textContent = ambientSoundEnabled
-  //   ? t.soundOn
-  //   : t.soundOff;
+  const heatmapBtn = document.getElementById('toggle-heatmap');
+  if (heatmapBtn) {
+    if (heatmapLayer) {
+      heatmapBtn.textContent = t.hideHeatmap || 'Hide Heatmap';
+    } else {
+      heatmapBtn.textContent = t.toggleHeatmap || 'Toggle Heatmap';
+    }
+  }
 
   updateMapUnavailableNotice();
 }
