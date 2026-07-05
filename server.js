@@ -391,7 +391,14 @@ app.get('/api/recommendations/health', async (req, res) => {
     });
   }
 });
+// Add search engine routes
+const searchEngineRoutes = require('./routes/searchEngine.routes');
+app.use('/api/search', searchEngineRoutes);
 
+// Search page
+app.get('/search', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'search.html'));
+});
 // Add gamification routes
 const gamificationRoutes = require('./routes/gamification.routes');
 app.use('/api/gamification', gamificationRoutes);
