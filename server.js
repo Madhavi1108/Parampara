@@ -399,7 +399,14 @@ app.use(notFound);
 
 // Error Middleware
 app.use(errorHandler);
+// Add moderation routes
+const moderationRoutes = require('./routes/moderation.routes');
+app.use('/api/moderation', moderationRoutes);
 
+// Moderation dashboard page
+app.get('/moderation', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'moderation.html'));
+});
 // ==================== START SERVER ====================
 
 // Create HTTP server
