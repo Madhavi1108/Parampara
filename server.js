@@ -52,6 +52,8 @@ app.use(
           'https://cdn.sanity.io',
           'https://encrypted-tbn0.gstatic.com',
           'https://cdn.shopify.com',
+          'https://images.unsplash.com',
+          'https://tile.openstreetmap.org'
         ],
         connectSrc: ["'self'", 'https://api.maptiler.com', `ws://localhost:${WS_PORT}`, `wss://*.onrender.com`],
         workerSrc: ["'self'", 'blob:'],

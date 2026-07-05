@@ -26,7 +26,8 @@ const getStoryData = (req, res, next) => {
       festivals: matchedItem.festivals,
       landmarks: matchedItem.landmarks,
       culturalSignificance: matchedItem.culturalSignificance,
-      notableFacts: matchedItem.notableFacts
+      notableFacts: matchedItem.notableFacts,
+      chapters: matchedItem.chapters || []
     });
   } catch (error) {
     console.error('Failed to get story data:', error);
