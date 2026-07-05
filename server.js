@@ -20,6 +20,7 @@ const csrfRoutes = require('./routes/csrf.routes');
 const cacheRoutes = require('./routes/cache.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
 const searchRoutes = require('./routes/search.routes');
+const galleryRoutes = require('./routes/gallery.routes');
 const { csrfProtection } = require('./middleware/csrf');
 
 const store = require('./data/store');
@@ -38,7 +39,12 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", 'https://unpkg.com', 'https://cdn.jsdelivr.net', 'https://cdnjs.cloudflare.com'],
+        scriptSrc: [
+          "'self'",
+          'https://unpkg.com',
+          'https://cdn.jsdelivr.net',
+          'https://cdnjs.cloudflare.com',
+        ],
         styleSrc: ["'self'", "'unsafe-inline'", 'https://unpkg.com'],
         imgSrc: [
           "'self'",
@@ -102,17 +108,18 @@ app.use(csrfProtection);
 const globalLimiter = new SlidingWindowLimiter({
   windowMs: 60000,
   max: 100,
-  message: 'Too many API requests from this IP, please try again after a minute.'
+  message:
+    'Too many API requests from this IP, please try again after a minute.',
 });
 app.use('/api', globalLimiter.middleware());
 
 // API Routes
 app.use('/api/items', itemRoutes);
+app.use('/api/gallery', galleryRoutes);
 
 // Heritage Score API
 const heritageScoreRoutes = require('./routes/heritageScore.routes');
 app.use('/api/heritage-score', heritageScoreRoutes);
-
 
 app.use('/api/paths', pathRoutes);
 
@@ -224,7 +231,7 @@ app.get('/api/map-style', async (req, res) => {
     return res.json({
       version: 8,
       sources: {
-        'osm': {
+        osm: {
           type: 'raster',
           tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
           tileSize: 256,
@@ -271,8 +278,6 @@ app.use(notFound);
 
 // Error Middleware
 app.use(errorHandler);
-
-
 
 // Start Server
 const server = app.listen(PORT, () => {
