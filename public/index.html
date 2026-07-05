@@ -14,7 +14,7 @@
   <body>
 
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar navbar-home">
   <div class="nav-container">
     <div class="logo">
       <h1 data-i18n="brand_name">Parampara</h1>
@@ -32,11 +32,16 @@
       <li><a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a></li>
       <li><a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a></li>
       <li><a href="quest.html"><i class="ti ti-compass"></i> Discovery Quest</a></li>
-      <li><a href="trails.html"><i class="ti ti-trail-sign"></i> Heritage Trails</a></li>
-      <li><a href="timeline.html">Timeline</a></li>
-<li><a href="chat.html"><i class="ti ti-message-circle"></i> Talk to Elder</a></li>
-<li><a href="sync.html"><i class="ti ti-wifi-off"></i> Local Sync</a></li>
-<li><a href="challenges.html"><i class="ti ti-flag"></i> Challenges</a></li>
+      <li class="nav-dropdown">
+        <a href="javascript:void(0)" class="dropdown-trigger">More <i class="ti ti-chevron-down"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="trails.html"><i class="ti ti-trail-sign"></i> Heritage Trails</a></li>
+          <li><a href="timeline.html"><i class="ti ti-history"></i> Timeline</a></li>
+          <li><a href="chat.html"><i class="ti ti-message-circle"></i> Talk to Elder</a></li>
+          <li><a href="sync.html"><i class="ti ti-wifi-off"></i> Local Sync</a></li>
+          <li><a href="challenges.html"><i class="ti ti-flag"></i> Challenges</a></li>
+        </ul>
+      </li>
       <li id="notificationBellItem" class="notification-bell">
         <a href="javascript:void(0)">
           <i class="ti ti-bell"></i> Notifications
@@ -154,6 +159,26 @@
 
     <!-- Back To Top Button -->
     <button id="backToTopBtn" aria-label="Back to top">↑</button>
+
+    <!-- Full Width Nav Menu Overlay -->
+    <div class="nav-fullmenu" id="navFullMenu">
+      <div class="nav-fullmenu-inner">
+        <p class="nav-fullmenu-label">Navigation</p>
+        <div class="nav-fullmenu-grid">
+          <a href="index.html" class="active"><i class="ti ti-home"></i> Home</a>
+          <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
+          <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
+          <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
+          <a href="quest.html"><i class="ti ti-compass"></i> Discovery Quest</a>
+          <a href="trails.html"><i class="ti ti-trail-sign"></i> Heritage Trails</a>
+          <a href="chat.html"><i class="ti ti-message-circle"></i> Talk to Elder</a>
+          <a href="sync.html"><i class="ti ti-wifi-off"></i> Local Sync</a>
+          <a href="challenges.html"><i class="ti ti-flag"></i> Challenges</a>
+          <a href="timeline.html"><i class="ti ti-history"></i> Historical Timeline</a>
+        </div>
+      </div>
+    </div>
+    <div class="nav-overlay" id="navOverlay"></div>
 
     <div id="toast-container"></div>
 

@@ -2489,3 +2489,77 @@ body > * {
         color: #333;
     }
 }
+
+/* ==========================================
+   HOME PAGE NAVBAR DROPDOWN REDESIGN
+   ========================================== */
+.navbar-home .nav-dropdown {
+    position: relative;
+}
+
+.navbar-home .dropdown-trigger {
+    cursor: pointer;
+}
+
+.navbar-home .dropdown-trigger i {
+    font-size: 0.8rem;
+    margin-left: 2px;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar-home .nav-dropdown:hover .dropdown-trigger i {
+    transform: rotate(180deg);
+}
+
+.navbar-home .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    min-width: 200px;
+    background: rgba(30, 15, 8, 0.98);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(205, 133, 63, 0.25);
+    border-radius: 12px;
+    padding: 0.5rem 0;
+    list-style: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    z-index: 1000;
+}
+
+.navbar-home .nav-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.navbar-home .dropdown-menu li {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-home .dropdown-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.7rem 1.2rem;
+    color: rgba(245, 222, 179, 0.85);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.navbar-home .dropdown-menu li a:hover {
+    background: rgba(205, 133, 63, 0.15);
+    color: #ffffff;
+    padding-left: 1.5rem;
+}
