@@ -28,7 +28,7 @@ const store = require('./data/store');
 
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
-const SlidingWindowLimiter = require('./middleware/rateLimiter');
+const TokenBucketLimiter = require('./middleware/rateLimiter');
 
 const initializeSampleData = require('./config/sampleData');
 
@@ -121,11 +121,16 @@ app.get('/chat', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'chat.html'));
 });
 
+// Serve Trivia Game Page
+app.get('/trivia', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'trivia.html'));
+});
+
 // ==================== RECOMMENDATION ENGINE ROUTES ====================
 
 // Import recommendation routes
-const recommendationRoutes = require('./routes/recommendation.routes');
-app.use('/api/recommendations', recommendationRoutes);
+// const recommendationRoutes = require('./routes/recommendation.routes');
+// app.use('/api/recommendations', recommendationRoutes);
 
 // Recommendations Page Route
 app.get('/recommendations', (req, res) => {
@@ -154,7 +159,7 @@ app.use('/api/csrf-token', csrfRoutes);
 app.use(csrfProtection);
 
 // Global API Rate Limiter (100 reqs / 1 min)
-const globalLimiter = new SlidingWindowLimiter({
+const globalLimiter = new TokenBucketLimiter({
   windowMs: 60000,
   max: 100,
   message: 'Too many API requests from this IP, please try again after a minute.'
@@ -182,6 +187,9 @@ app.use('/api/search', searchRoutes);
 
 const exportRoutes = require('./routes/export.routes');
 app.use('/api/export', exportRoutes);
+
+const moderationRoutes = require('./routes/moderation.routes');
+app.use('/api/moderation', moderationRoutes);
 
 // ==================== ADDITIONAL API ENDPOINTS ====================
 
@@ -417,6 +425,7 @@ server.listen(PORT, () => {
   console.log(`✨ Parampara server running on http://localhost:${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🗺️  Collaborative Map: http://localhost:${PORT}/collaborative-map`);
+  console.log(`🎮 Trivia Game: http://localhost:${PORT}/trivia`);
   console.log(`📚 Recommendations: http://localhost:${PORT}/recommendations`);
   console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
   console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}`);

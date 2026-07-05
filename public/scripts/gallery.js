@@ -127,6 +127,41 @@ function setupShareDelegation() {
 }
 
 function setupEventListeners() {
+  const grid = document.getElementById('gallery-grid');
+  if (grid) {
+    grid.addEventListener('click', function(e) {
+      const reportBtn = e.target.closest('.report-card-btn');
+      if (!reportBtn) return;
+      e.stopPropagation();
+
+      const itemId = reportBtn.dataset.itemId;
+      if (!itemId) return;
+
+      if (confirm('Are you sure you want to report this item for inappropriate content?')) {
+        fetch('/api/moderation/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: itemId, type: 'culturalItem' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert('Item reported successfully. Thank you for keeping our community safe.');
+            if (data.isHidden) {
+              // Reload gallery to remove hidden item
+              currentPage = 1;
+              hasMore = true;
+              loadGalleryItems(1, false);
+            }
+          } else {
+            alert(data.error || 'Failed to report item');
+          }
+        })
+        .catch(err => console.error('Error reporting item:', err));
+      }
+    });
+  }
+
   document.getElementById('add-item-btn').addEventListener('click', () => {
     document.getElementById('add-item-modal').classList.add('active');
   });
@@ -330,99 +365,151 @@ function translateType(type) {
   return tGallery(keyMap[type] || type);
 }
 
-function getEmptyStateHtml() {
-  return `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
-            <p style="font-size: 1.2rem; margin-bottom: 1rem;">${tGallery('gallery_empty_title')}</p>
-            <p>${tGallery('gallery_empty_desc')}</p>
-        </div>
-    `;
-}
+// --- VDOM State ---
+let lastGalleryVirtualTree = null;
+let galleryViewportNode = null;
 
 // Re-render on language change
 window.addEventListener('parampara:langchange', async () => {
   displayItems(await getCurrentFilteredItems());
 });
 
-function displayItems(items, append = false) {
-  const galleryGrid = document.getElementById('gallery-grid');
+const GalleryItemComponent = ({ item }) => {
+  if (!window.vdom) return null;
+  const { h } = window.vdom;
+  
+  const isFav = !!(window.FavoritesManager && window.FavoritesManager.isFavorite(item.id));
+  const heartSvg = isFav ? HEART_FILLED : HEART_EMPTY;
 
-  if (!items || items.length === 0) {
-    galleryGrid.innerHTML = getEmptyStateHtml();
+  let mediaNode;
+  if (item.imageUrl) {
+    mediaNode = h('img', {
+      src: item.imageUrl,
+      alt: escapeHtml(item.title),
+      loading: 'lazy',
+      class: 'lazy-img',
+      onload: function() { this.classList.add('loaded'); },
+      style: 'width:100%;height:100%;object-fit:cover;'
+    });
+  } else {
+    mediaNode = h('span', {}, getTypeIcon(item.type));
+  }
+
+  const shareBtn = h('button', {
+    class: 'share-card-btn',
+    'data-item-id': escapeHtml(item.id),
+    'aria-label': 'Share this item',
+    title: 'Share this item',
+    innerHTML: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>'
+  });
+
+  const favBtn = h('button', {
+    class: `favorite-btn${isFav ? ' favorited' : ''}`,
+    'data-item-id': escapeHtml(item.id),
+    'aria-label': isFav ? 'Remove from favorites' : 'Add to favorites',
+    title: isFav ? 'Remove from favorites' : 'Add to favorites',
+    innerHTML: heartSvg
+  });
+
+  const reportBtn = h('button', {
+    class: 'report-card-btn',
+    'data-item-id': escapeHtml(item.id),
+    'aria-label': 'Report inappropriate content',
+    title: 'Report inappropriate content',
+    innerHTML: '🚩',
+    style: 'position:absolute; top:10px; left:10px; background:rgba(255,255,255,0.8); border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; font-size:16px; z-index:2; box-shadow:0 2px 5px rgba(0,0,0,0.2);'
+  });
+
+  let panoramaBtn = null;
+  if (item.panoramaUrl) {
+    panoramaBtn = h('button', {
+      class: 'panorama-view-btn',
+      onclick: (e) => { 
+        if (window.panoramaViewer) { window.panoramaViewer.open(item); }
+        e.stopPropagation(); 
+      },
+      title: 'View in 360',
+      style: 'position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.7); color:#fff; border:none; padding:5px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem; z-index:2; backdrop-filter: blur(4px);'
+    }, '👁️ View 360°');
+  }
+
+  const imageWrapper = h('div', { class: 'gallery-item-image', style: 'position:relative;' }, 
+    mediaNode, shareBtn, favBtn, reportBtn, panoramaBtn
+  );
+
+  let tagsNode = null;
+  if (item.tags && item.tags.length > 0) {
+    const tagElements = item.tags.map(tag => h('span', { class: 'tag' }, escapeHtml(tag)));
+    tagsNode = h('div', { class: 'gallery-item-tags' }, ...tagElements);
+  }
+
+  const descHtml = renderMarkdown(item.description.substring(0, 100) + (item.description.length > 100 ? '...' : ''), true);
+
+  const contentWrapper = h('div', { 
+    class: 'gallery-item-content', 
+    onclick: (e) => { viewItem(item.id); e.stopPropagation(); },
+    style: 'cursor:pointer;'
+  },
+    h('span', { class: 'gallery-item-type' }, translateType(item.type)),
+    h('div', { class: 'gallery-item-location' },
+      h('span', { class: 'gallery-item-location-marker' }, '📍'),
+      h('strong', {}, escapeHtml(item.location))
+    ),
+    h('h3', {}, escapeHtml(item.title)),
+    h('div', { class: 'markdown-body', style: 'font-size:0.9rem; margin-bottom:1rem;', innerHTML: descHtml }),
+    tagsNode
+  );
+
+  return h('div', { class: 'gallery-item', 'data-item-id': escapeHtml(item.id), key: item.id },
+    imageWrapper, contentWrapper
+  );
+};
+
+function displayItems(items, append = false) {
+  if (!window.vdom) {
+    console.warn('[Parampara Gallery] VDOM engine not loaded. Check script imports.');
     return;
   }
+  
+  const { h, diff, scheduleUpdate, render: vdomRender } = window.vdom;
 
-  const itemsHtml = items
-    .map((item) => {
-      const isFav = !!(window.FavoritesManager && window.FavoritesManager.isFavorite(item.id));
-      const heartSvg = isFav ? HEART_FILLED : HEART_EMPTY;
-
-      return `
-        <div class="gallery-item" data-item-id="${escapeHtml(item.id)}">
-            <div class="gallery-item-image" style="position:relative;">
-                ${item.imageUrl
-          ? `<img src="${item.imageUrl}" alt="${escapeHtml(item.title)}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded')" style="width:100%;height:100%;object-fit:cover;">`
-          : `<span>${getTypeIcon(item.type)}</span>`
-        }
-                <button
-                  class="share-card-btn"
-                  data-item-id="${escapeHtml(item.id)}"
-                  aria-label="Share this item"
-                  title="Share this item"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-                </button>
-                <button
-                  class="favorite-btn${isFav ? ' favorited' : ''}"
-                  data-item-id="${escapeHtml(item.id)}"
-                  aria-label="${isFav ? 'Remove from favorites' : 'Add to favorites'}"
-                  title="${isFav ? 'Remove from favorites' : 'Add to favorites'}"
-                >
-                    ${heartSvg}
-                </button>
-                ${item.panoramaUrl ? `
-                <button
-                  class="panorama-view-btn"
-                  onclick="if(window.panoramaViewer) { window.panoramaViewer.open(${JSON.stringify(item).replace(/"/g, '&quot;')}); event.stopPropagation(); }"
-                  title="View in 360"
-                  style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.7); color:#fff; border:none; padding:5px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem; z-index:2; backdrop-filter: blur(4px);"
-                >
-                  👁️ View 360°
-                </button>
-                ` : ''}
-            </div>
-            <div class="gallery-item-content" onclick="viewItem('${escapeHtml(item.id)}'); event.stopPropagation();" style="cursor:pointer;">
-                <span class="gallery-item-type">${translateType(item.type)}</span>
-                <div class="gallery-item-location">
-                    <span class="gallery-item-location-marker">📍</span> <strong>${escapeHtml(item.location)}</strong>
-                </div>
-                <h3>${escapeHtml(item.title)}</h3>
-                <div class="markdown-body" style="font-size:0.9rem; margin-bottom:1rem;">${renderMarkdown(item.description.substring(0, 100) + (item.description.length > 100 ? '...' : ''), true)}</div>
-                ${item.tags && item.tags.length > 0
-          ? `
-                    <div class="gallery-item-tags">
-                        ${item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
-                    </div>
-                `
-          : ''
-        }
-            </div>
-        </div>
-    `;
-    })
-    .join('');
-
-  if (append) {
-    // If appending and empty state was there, clear it first
-    if (galleryGrid.innerHTML.includes('gallery_empty_title')) {
-      galleryGrid.innerHTML = itemsHtml;
-    } else {
-      // Append without breaking existing elements
-      galleryGrid.insertAdjacentHTML('beforeend', itemsHtml);
-    }
-  } else {
-    galleryGrid.innerHTML = itemsHtml;
+  if (!galleryViewportNode) {
+    galleryViewportNode = document.getElementById('gallery-grid');
   }
+
+  scheduleUpdate(() => {
+    let currentVirtualTree;
+
+    if (!items || items.length === 0) {
+      currentVirtualTree = h('div', { id: 'gallery-grid', class: 'gallery-grid', key: 'gallery-grid' },
+        h('div', { style: 'grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);', key: 'empty-state' },
+          h('p', { style: 'font-size: 1.2rem; margin-bottom: 1rem;' }, tGallery('gallery_empty_title')),
+          h('p', {}, tGallery('gallery_empty_desc'))
+        )
+      );
+    } else {
+      const itemNodes = items.map(item => h(GalleryItemComponent, { item, key: item.id }));
+      currentVirtualTree = h('div', { id: 'gallery-grid', class: 'gallery-grid', key: 'gallery-grid' }, ...itemNodes);
+    }
+
+    if (!lastGalleryVirtualTree) {
+      // Trick VDOM into diffing the children instead of destroying the root node,
+      // which preserves event delegation (setupFavDelegation & setupShareDelegation).
+      lastGalleryVirtualTree = h('div', { id: 'gallery-grid', class: 'gallery-grid', key: 'gallery-grid' });
+      // Clear out the original server-rendered or previous innerHTML empty state safely
+      galleryViewportNode.innerHTML = '';
+    }
+
+    const renderStart = performance.now();
+    const updatedDOM = diff(galleryViewportNode, lastGalleryVirtualTree, currentVirtualTree);
+    if (updatedDOM) {
+      galleryViewportNode = updatedDOM;
+    }
+    const renderEnd = performance.now();
+    console.log(`[Gallery VDOM Patch] Completed diff in ${(renderEnd - renderStart).toFixed(2)}ms`);
+
+    lastGalleryVirtualTree = currentVirtualTree;
+  });
 }
 
 function getTypeIcon(type) {
