@@ -1,5 +1,6 @@
 const store = require('../data/store');
 const sseManager = require('../utils/sseManager');
+const { apiCache } = require('../middleware/lruCache');
 
 const getPosts = (req, res) => {
   let posts = typeof store.villagePosts.values === 'function' ? store.villagePosts.values() : store.villagePosts;
@@ -34,6 +35,10 @@ const createPost = (req, res) => {
 
   // Broadcast to all connected SSE clients
   sseManager.broadcast('NEW_POST', newPost);
+
+  // Invalidate caches
+  apiCache.invalidateByPrefix('/api/posts');
+  apiCache.invalidateByPrefix('/api/search');
 
   res.status(201).json(newPost);
 };

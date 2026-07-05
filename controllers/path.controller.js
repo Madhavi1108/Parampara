@@ -1,4 +1,5 @@
 const store = require('../data/store');
+const { apiCache } = require('../middleware/lruCache');
 
 // Allowed values for query params (whitelist approach)
 const ALLOWED_SORT_FIELDS = new Set(['itemCount']);
@@ -133,6 +134,10 @@ const createPath = (req, res, next) => {
     };
 
     store.heritagePaths.push(newPath);
+
+    // Invalidate caches
+    apiCache.invalidateByPrefix('/api/paths');
+    apiCache.invalidateByPrefix('/api/search');
 
     res.status(201).json(newPath);
   } catch (error) {

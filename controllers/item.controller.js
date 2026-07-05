@@ -5,6 +5,7 @@
  */
 
 const store = require('../data/store');
+const { apiCache } = require('../middleware/lruCache');
 
 /**
  * Retrieves a list of cultural items with optional search, category filters, and pagination.
@@ -117,6 +118,10 @@ const createItem = (req, res) =>
 
         // Store in memory database
         store.culturalItems.push(createdAsset);
+
+        // Invalidate caches
+        apiCache.invalidateByPrefix('/api/items');
+        apiCache.invalidateByPrefix('/api/search');
 
         // Return the newly created asset
         res.status(201).json(createdAsset);
