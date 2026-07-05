@@ -1,8 +1,41 @@
+const LRUCache = require('../server/utils/lruCache');
+const { createAuditProxy } = require('../server/services/auditService');
+const { SearchEngine, createSearchProxy } = require('../utils/searchEngine');
+
+const auditLog = new LRUCache(5000);
+const searchEngine = new SearchEngine();
+
 const store = {
-  culturalItems: [],
-  heritagePaths: [],
-  userProgress: {},
-  villagePosts: [],
+  searchEngine,
+  auditLog,
+  culturalItems: createSearchProxy(
+    searchEngine, 'culturalItem', ['title', 'description', 'location', 'tags'],
+    createAuditProxy('culturalItems', new LRUCache(2000), auditLog)
+  ),
+  heritagePaths: createSearchProxy(
+    searchEngine, 'heritagePath', ['title', 'theme', 'description'],
+    createAuditProxy('heritagePaths', new LRUCache(1000), auditLog)
+  ),
+  userProgress: {}, // Keep as object for fast lookup by userId
+  villagePosts: createSearchProxy(
+    searchEngine, 'villagePost', ['title', 'village', 'content', 'type'],
+    createAuditProxy('villagePosts', new LRUCache(1000), auditLog)
+  ),
+  contributors: createAuditProxy('contributors', new LRUCache(500), auditLog),
+  timelineEvents: createSearchProxy(
+    searchEngine, 'timelineEvent', ['item', 'type', 'description'],
+    createAuditProxy('timelineEvents', new LRUCache(500), auditLog)
+  ),
+  storySourceData: createAuditProxy('storySourceData', new LRUCache(500), auditLog),
+  artisans: createSearchProxy(
+    searchEngine, 'artisan', ['name', 'craft', 'village', 'bio'],
+    createAuditProxy('artisans', new LRUCache(500), auditLog)
+  ),
+  analytics: {
+    pageViews: {},
+    events: [],
+    interactions: {}
+  }
 };
 
 module.exports = store;

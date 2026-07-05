@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Grandmother's Knowledge Vault — preserving indigenous wisdom, traditional recipes, farming knowledge, and oral heritage from rural communities across India."
+    />
+    <title>Grandmother's Knowledge Vault - Parampara</title>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/knowledge-vault.css" />
+    <link rel="stylesheet" href="styles/skeleton.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar" aria-label="Main navigation">
+      <div class="nav-container">
+        <div class="logo">
+          <h1>Parampara</h1>
+          <p class="tagline">Preserving Living Traditions</p>
+        </div>
+        <button
+          class="hamburger"
+          id="hamburgerBtn"
+          aria-label="Toggle navigation"
+          aria-expanded="false"
+          aria-controls="navMenu"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        <ul class="nav-menu" id="navMenu">
+          <li>
+            <a href="index.html"><i class="ti ti-home" aria-hidden="true"></i> Home</a>
+          </li>
+          <li>
+            <a href="map.html"><i class="ti ti-map-2" aria-hidden="true"></i> Explore Map</a>
+          </li>
+          <li>
+            <a href="gallery.html"><i class="ti ti-photo" aria-hidden="true"></i> Gallery</a>
+          </li>
+          <li>
+            <a href="paths.html"><i class="ti ti-route" aria-hidden="true"></i> Heritage Paths</a>
+          </li>
+          <li>
+            <a href="quest.html"
+              ><i class="ti ti-compass" aria-hidden="true"></i> Discovery Quest</a
+            >
+          </li>
+          <li>
+            <a href="trails.html"
+              ><i class="ti ti-trail-sign" aria-hidden="true"></i> Heritage Trails</a
+            >
+          </li>
+          <li>
+            <a href="chat.html"
+              ><i class="ti ti-message-circle" aria-hidden="true"></i> Talk to Elder</a
+            >
+          </li>
+          <li>
+            <a href="revival.html"
+              ><i class="ti ti-hourglass" aria-hidden="true"></i> Lost Traditions</a
+            >
+          </li>
+          <li>
+            <a href="risk-dashboard.html"
+              ><i class="ti ti-alert-triangle" aria-hidden="true"></i> Risk </a
+            >
+          </li>
+          <li>
+            <a href="reputation.html"
+              ><i class="ti ti-medal" aria-hidden="true"></i> Contributor Reputation</a
+            >
+          </li>
+          <li>
+            <a href="timeline.html"
+              ><i class="ti ti-history" aria-hidden="true"></i> Historical Timeline</a
+            >
+          </li>
+          <li>
+            <a href="story-generator.html"
+              ><i class="ti ti-books" aria-hidden="true"></i> AI Story Generator</a
+            >
+          </li>
+          <li>
+            <a href="knowledge-vault.html" class="active" aria-current="page"
+              ><i class="ti ti-book-2" aria-hidden="true"></i> Knowledge Vault</a
+            >
+          </li>
+                  <li>
+            <a href="favorites.html"><i class="ti ti-heart"></i> My Favorites</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="vault-container">
+      <section class="vault-hero" aria-labelledby="vault-hero-title">
+        <div class="vault-hero-content">
+          <span class="vault-hero-badge">Oral Heritage Archive</span>
+          <h1 id="vault-hero-title">Grandmother's Knowledge Vault</h1>
+          <p class="vault-hero-subtitle">
+            A living repository of indigenous wisdom — recipes whispered across
+            generations, farming secrets read from the soil, remedies drawn from
+            forest leaves, and customs that mark the turning of seasons. Every
+            entry honours the elders who carry this knowledge forward.
+          </p>
+          <a href="#knowledge-grid" class="btn btn-primary vault-hero-cta">
+            <i class="ti ti-search" aria-hidden="true"></i>
+            Browse Knowledge
+          </a>
+        </div>
+      </section>
+
+      <section class="vault-stats" aria-label="Knowledge vault statistics">
+        <div class="stat-card">
+          <div class="stat-icon" aria-hidden="true">
+            <i class="ti ti-books"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-entries">0</span>
+            <span class="stat-label">Knowledge Entries</span>
+          </div>
+        </div>
+        <div class="stat-card stat-villages">
+          <div class="stat-icon" aria-hidden="true">
+            <i class="ti ti-home-2"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-villages">0</span>
+            <span class="stat-label">Villages Covered</span>
+          </div>
+        </div>
+        <div class="stat-card stat-elders">
+          <div class="stat-icon" aria-hidden="true">
+            <i class="ti ti-user-heart"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-elders">0</span>
+            <span class="stat-label">Elders Featured</span>
+          </div>
+        </div>
+        <div class="stat-card stat-categories">
+          <div class="stat-icon" aria-hidden="true">
+            <i class="ti ti-category"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-categories">0</span>
+            <span class="stat-label">Categories</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="vault-filters" aria-label="Search and filter knowledge">
+        <label for="vault-search" class="visually-hidden"
+          >Search knowledge entries</label
+        >
+        <input
+          type="search"
+          id="vault-search"
+          class="search-input"
+          placeholder="Search by title, village, elder, or description..."
+          aria-label="Search knowledge entries"
+        />
+        <div class="sort-container">
+  <label for="vault-sort">Sort By:</label>
+  <select id="vault-sort" class="sort-select">
+    <option value="default">Default</option>
+    <option value="az">Alphabetical (A–Z)</option>
+    <option value="za">Alphabetical (Z–A)</option>
+    <option value="recent">Recently Added</option>
+  </select>
+</div>
+        <div
+          class="vault-filter-chips"
+          id="category-filters"
+          role="group"
+          aria-label="Filter by category"
+        >
+          <!-- Rendered by knowledge-vault.js -->
+        </div>
+
+        <p id="results-count" class="results-count" aria-live="polite"></p>
+      </section>
+
+      <section
+        id="knowledge-grid"
+        class="knowledge-grid"
+        aria-label="Knowledge entries directory"
+      >
+        <!-- Cards rendered by knowledge-vault.js -->
+      </section>
+
+      <section
+        class="contribution-section"
+        aria-labelledby="contribution-heading"
+      >
+        <div class="contribution-header">
+          <h2 id="contribution-heading">Share Elder Knowledge</h2>
+          <p>
+            Record wisdom from your grandmother, village elder, or community
+            keeper. Submissions are saved locally in your browser.
+          </p>
+        </div>
+        <form id="contribution-form" class="contribution-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contrib-title">Knowledge Title</label>
+              <input
+                type="text"
+                id="contrib-title"
+                name="title"
+                required
+                aria-required="true"
+              />
+            </div>
+            <div class="form-group">
+              <label for="contrib-elder">Elder Name</label>
+              <input
+                type="text"
+                id="contrib-elder"
+                name="elderName"
+                required
+                aria-required="true"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contrib-village">Village</label>
+              <input
+                type="text"
+                id="contrib-village"
+                name="village"
+                required
+                aria-required="true"
+              />
+            </div>
+            <div class="form-group">
+              <label for="contrib-region">Region</label>
+              <input
+                type="text"
+                id="contrib-region"
+                name="region"
+                required
+                aria-required="true"
+              />
+            </div>
+            <div class="form-group">
+              <label for="contrib-category">Category</label>
+              <select
+                id="contrib-category"
+                name="category"
+                required
+                aria-required="true"
+              >
+                <option value="">Select a category</option>
+                <option value="Traditional Recipes">Traditional Recipes</option>
+                <option value="Farming Wisdom">Farming Wisdom</option>
+                <option value="Folk Remedies">Folk Remedies</option>
+                <option value="Seasonal Customs">Seasonal Customs</option>
+                <option value="Household Practices">Household Practices</option>
+                <option value="Proverbs">Proverbs</option>
+                <option value="Environmental Knowledge">Environmental Knowledge</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="contrib-description">Description</label>
+            <textarea
+              id="contrib-description"
+              name="description"
+              rows="4"
+              required
+              aria-required="true"
+            ></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contrib-audio">Audio URL</label>
+              <input
+                type="url"
+                id="contrib-audio"
+                name="audioUrl"
+                placeholder="https://..."
+              />
+            </div>
+            <div class="form-group">
+              <label for="contrib-image">Image URL</label>
+              <input
+                type="url"
+                id="contrib-image"
+                name="imageUrl"
+                placeholder="https://..."
+              />
+            </div>
+            <div class="form-group">
+              <label for="contrib-video">Video URL</label>
+              <input
+                type="url"
+                id="contrib-video"
+                name="videoUrl"
+                placeholder="https://..."
+              />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="ti ti-send" aria-hidden="true"></i>
+            Submit Knowledge
+          </button>
+          <p
+            id="contribution-feedback"
+            class="contribution-feedback"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </form>
+      </section>
+    </main>
+
+    <div
+      id="knowledge-modal"
+      class="modal vault-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-knowledge-title"
+      aria-hidden="true"
+    >
+      <div class="modal-content vault-modal-content">
+        <div class="modal-header">
+          <h3 id="modal-knowledge-title"></h3>
+          <button
+            class="close-btn"
+            id="close-knowledge-modal"
+            aria-label="Close knowledge details"
+            type="button"
+          >
+            ×
+          </button>
+        </div>
+        <div class="modal-body" id="modal-knowledge-body">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <!-- Brand Section -->
+        <div class="footer-brand">
+          <h2 class="footer-logo">🏛️ Parampara</h2>
+          <p>
+            Preserving rural heritage, traditions, and stories for future
+            generations.
+          </p>
+        </div>
+
+        <!-- Social media links -->
+        <div class="footer-links">
+          <h3>More about Parampara</h3>
+          <ul>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/instagram-svgrepo-com.svg"
+                  alt="insta-logo"
+              /></a>
+            </li>
+
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/facebook-svgrepo-com.svg"
+                  alt="facebook-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/twitter-svgrepo-com.svg"
+                  alt="X-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/reddit-fill-svgrepo-com.svg"
+                  alt="reddit-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/github-142-svgrepo-com.svg"
+                  alt="git-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/youtube-svgrepo-com.svg"
+                  alt="yt-logo"
+              /></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
+      </div>
+    </footer>
+
+    <button id="backToTopBtn" aria-label="Back to top" type="button">↑</button>
+
+    <!-- Markdown Support -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <script src="scripts/markdown.js"></script>
+
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/skeletonEngine.js"></script>
+    <script src="scripts/knowledge-vault.js"></script>
+    <script src="scripts/navbar.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/sw-register.js"></script>
+  <script src="scripts/audio-visualizer.js"></script>
+<script src="scripts/breadcrumbs.js"></script>
+<script src="scripts/telemetry.js"></script>
+</body>
+</html>
+
+
+
+

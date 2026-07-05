@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Your favorite cultural items, traditional art forms, and stories from Parampara"
+    />
+    <title>My Favorites - Parampara</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/gallery.css" />
+    <link rel="stylesheet" href="styles/favorites.css" />
+    <link rel="stylesheet" href="styles/languageSelector.css" />
+    <link rel="stylesheet" href="styles/theme.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
+          🌙
+        </button>
+        <div class="logo">
+          <h1 data-i18n="brand_name">Parampara</h1>
+          <p class="tagline" data-i18n="brand_tagline">
+            Preserving Living Traditions
+          </p>
+        </div>
+        <button
+          class="hamburger"
+          id="hamburgerBtn"
+          aria-label="Toggle navigation"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        <ul class="nav-menu" id="navMenu">
+          <li>
+            <a href="index.html"><i class="ti ti-home"></i> Home</a>
+          </li>
+          <li>
+            <a href="map.html"><i class="ti ti-map-2"></i> Explore Map</a>
+          </li>
+          <li>
+            <a href="gallery.html"><i class="ti ti-photo"></i> Gallery</a>
+          </li>
+          <li>
+            <a href="paths.html"><i class="ti ti-route"></i> Heritage Paths</a>
+          </li>
+          <li>
+            <a href="quest.html"><i class="ti ti-compass"></i> Discovery Quest</a>
+          </li>
+          <li>
+            <a href="trails.html"><i class="ti ti-trail-sign"></i> Heritage Trails</a>
+          </li>
+          <li>
+            <a href="chat.html"><i class="ti ti-message-circle"></i> Talk to Elder</a>
+          </li>
+          <li>
+            <a href="revival.html"><i class="ti ti-hourglass"></i> <span data-i18n="nav_revival">Lost Traditions</span></a>
+          </li>
+          <li>
+            <a href="risk-dashboard.html"><i class="ti ti-alert-triangle"></i> <span data-i18n="nav_risk">Risk </span></a>
+          </li>
+          <li>
+            <a href="reputation.html"><i class="ti ti-medal"></i> <span data-i18n="nav_reputation">Contributor Reputation</span></a>
+          </li>
+          <li>
+            <a href="timeline.html"><i class="ti ti-history"></i> <span data-i18n="nav_timeline">Living Timeline</span></a>
+          </li>
+          <li>
+            <a href="story-generator.html"><i class="ti ti-book"></i> <span data-i18n="nav_story_generator">Story Generator</span></a>
+          </li>
+          <li>
+            <a href="artisans.html"><i class="ti ti-users"></i> <span data-i18n="nav_artisans">Artisan Directory</span></a>
+          </li>
+          <li>
+            <a href="favorites.html" class="active"><i class="ti ti-heart"></i> My Favorites</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="page-container">
+      <section class="favorites-hero">
+        <h2>My Favorites</h2>
+        <p>Your curated collection of cherished cultural items, crafts, and stories.</p>
+      </section>
+
+      <!-- Favorites Grid -->
+      <section class="gallery-section">
+        <div class="gallery-grid" id="favorites-grid">
+          <!-- Favorite items will be injected here via JavaScript -->
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <!-- Brand Section -->
+        <div class="footer-brand">
+          <h2 class="footer-logo">🏛️ Parampara</h2>
+          <p>
+            Preserving rural heritage, traditions, and stories for future
+            generations.
+          </p>
+        </div>
+
+        <!-- Social media links -->
+        <div class="footer-links">
+          <h3>More about Parampara</h3>
+          <ul>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/instagram-svgrepo-com.svg"
+                  alt="insta-logo"
+              /></a>
+            </li>
+
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/facebook-svgrepo-com.svg"
+                  alt="facebook-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/twitter-svgrepo-com.svg"
+                  alt="X-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/reddit-fill-svgrepo-com.svg"
+                  alt="reddit-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/github-142-svgrepo-com.svg"
+                  alt="git-logo"
+              /></a>
+            </li>
+            <li>
+              <a href=""
+                ><img
+                  loading="lazy"
+                  src="./assets/logos/youtube-svgrepo-com.svg"
+                  alt="yt-logo"
+              /></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Parampara. Preserving rural heritage, one story at a time.</p>
+      </div>
+    </footer>
+
+    <!-- Back To Top Button -->
+    <button id="backToTopBtn" aria-label="Back to top">↑</button>
+    <script src="scripts/favoritesManager.js"></script>
+    <script src="scripts/favorites.js"></script>
+    <script src="scripts/cacheLayer.js"></script>
+    <script src="scripts/languageSwitcher.js"></script>
+    <script src="scripts/navbar.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/theme.js"></script>
+    <script src="scripts/sw-register.js"></script>
+<script src="scripts/breadcrumbs.js"></script>
+<script src="scripts/telemetry.js"></script>
+</body>
+</html>
+
+
+

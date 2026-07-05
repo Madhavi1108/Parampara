@@ -5,7 +5,8 @@ const chatResponse = (req, res) => {
     }
 
     const question = req.body.question.toLowerCase();
-    let response = "I'm a cultural curator. Based on our archive, ";
+    let words = ['good', 'awesome', 'excellent', 'nice'];
+    let response = `That is ${words[Math.floor(Math.random() * 3)]} question to ask about, `;
 
     // Enhanced keyword matching (in production, use proper AI/NLP)
     if (question.includes('blue') && question.includes('door')) {

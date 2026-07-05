@@ -104,8 +104,13 @@ function setupEventListeners() {
 
 function displayTrails() {
   const trailsList = document.getElementById('trails-list');
+  
+  if (window.SkeletonEngine) {
+    window.SkeletonEngine.show(trailsList, 'card', 3, false);
+  }
 
-  trailsList.innerHTML = sampleTrails
+  setTimeout(() => {
+    trailsList.innerHTML = sampleTrails
     .map(
       (trail) => `
     <div class="trail-item">
@@ -136,12 +141,13 @@ function displayTrails() {
             </div>
         </div>
                      <div class="trail-image-wrap">
-            <img src="${trail.image}" alt="${escapeHtml(tTrail(trail.titleKey))}" class="trail-image" loading="lazy"> 
+            <img src="${trail.image}" alt="${escapeHtml(tTrail(trail.titleKey))}" class="trail-image lazy-img" loading="lazy" onload="this.classList.add('loaded')"> 
                     </div>
      </div>
 `
     )
     .join('');
+  }, 500); // Simulate network load
 }
 
 function showTrailDetails(trailId) {
@@ -276,17 +282,6 @@ window.openRoute = openRoute;
 window.checkIn = checkIn;
 window.openRoute = openRoute;
 window.checkIn = checkIn;
-
-const backToTopBtn = document.getElementById('backToTopBtn');
-
-// Show button after scrolling
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 300) {
-    backToTopBtn.classList.add('show');
-  } else {
-    backToTopBtn.classList.remove('show');
-  }
-});
 
 // Smooth scroll to top
 backToTopBtn.addEventListener('click', () => {

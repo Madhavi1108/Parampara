@@ -1,0 +1,304 @@
+/* Favorites Page Styles */
+
+.favorites-hero {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 2rem;
+}
+
+.favorites-hero h2 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.favorites-hero p {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  margin: 2rem 0;
+  border: 1px dashed var(--border-color);
+}
+
+.empty-state i {
+  display: block;
+  font-size: 4rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.empty-state p {
+  margin-bottom: 1.5rem;
+}
+
+/* ── Primary button ── */
+.btn-primary {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+}
+
+/* ── Heart (favorite) button – uses inline SVG ── */
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  z-index: 10;
+  padding: 0;
+  line-height: 1;
+}
+
+.favorite-btn svg {
+  display: block;
+  transition: transform 0.18s ease;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.18);
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+
+.favorite-btn:hover svg {
+  transform: scale(1.12);
+}
+
+.favorite-btn.favorited {
+  background: rgba(229, 62, 62, 0.1);
+}
+
+
+/* ── Item Detail Modal ── */
+.fav-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.fav-modal-overlay.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.fav-modal-card {
+  background: var(--card-bg, #fff);
+  border-radius: 12px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  position: relative;
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.fav-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.12);
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.18s ease;
+  color: var(--text-color, #333);
+}
+
+.fav-modal-close:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.fav-modal-image {
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(135deg, var(--earth-brown, #6b4226), var(--terracotta, #c97d60));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+
+.fav-modal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fav-modal-icon {
+  font-size: 4rem;
+}
+
+.fav-modal-body {
+  padding: 1.5rem;
+}
+
+.fav-modal-type {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: var(--field-green, #4a7c59);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.fav-modal-body h2 {
+  font-size: 1.5rem;
+  color: var(--text-strong, #222);
+  margin-bottom: 0.5rem;
+}
+
+.fav-modal-location {
+  color: var(--text-muted, #666);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.fav-modal-body p {
+  color: var(--text-dark, #444);
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+
+.fav-modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.fav-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.fav-modal-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 2px solid #e53e3e;
+  color: #e53e3e;
+  padding: 0.65rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.fav-modal-remove-btn:hover {
+  background: #e53e3e;
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .fav-modal-card {
+    border-radius: 10px;
+  }
+
+  .fav-modal-image {
+    height: 160px;
+  }
+
+  .fav-modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fav-modal-actions .btn-primary,
+  .fav-modal-remove-btn {
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* Drag and Drop Styles */
+.gallery-item[draggable="true"] {
+  cursor: grab;
+}
+
+.gallery-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  transform: scale(0.98);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-item.drag-over {
+  border: 2px dashed var(--primary-color);
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}

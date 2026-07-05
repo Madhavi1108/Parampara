@@ -1,0 +1,144 @@
+/* artisan-profile.css */
+/* Premium, responsive design for artisan profile page */
+
+:root {
+  --bg-color: #f5f7fa;
+  --card-bg: #fff;
+  --primary-color: #0066ff;
+  --text-color: #333;
+  --accent-color: #ff6600;
+    /* Typography Scale */
+  --font-xs: 0.75rem;      /* 12px */
+  --font-sm: 0.875rem;     /* 14px */
+  --font-base: 1rem;       /* 16px */
+  --font-md: 1.125rem;     /* 18px */
+  --font-lg: 1.25rem;      /* 20px */
+  --font-xl: 1.5rem;       /* 24px */
+  --font-2xl: 2rem;        /* 32px */
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-size: var(--font-base);
+  line-height: 1.8;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.profile-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-header img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.profile-header .info {
+  flex: 1;
+}
+
+.profile-header .info h2 {
+  margin: 0 0 0.5rem;
+  font-size: var(--font-2xl);
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.profile-header .info p {
+  margin: 0.3rem 0;
+  font-size: var(--font-base);
+  line-height: 1.7;
+}
+
+
+.profile-header .info .badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  background: var(--accent-color);
+  color: #fff;
+  border-radius: 4px;
+  font-size: var(--font-sm);
+  font-weight: 600;
+}
+
+section {
+  margin-bottom: 2rem;
+}
+
+section h2 {
+  margin-bottom: 0.8rem;
+  font-size: var(--font-xl);
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.biography p {
+  line-height: 1.8;
+  font-size: var(--font-base);
+}
+
+.portfolio .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.portfolio .grid img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.contact p {
+  margin: 0.4rem 0;
+  font-size: var(--font-base);
+  line-height: 1.7;
+}
+
+.related li {
+  font-size: var(--font-base);
+  line-height: 1.7;
+}
+
+.related ul {
+  list-style: disc inside;
+  padding-left: 0;
+}
+
+@media (max-width: 600px) {
+  .profile-header .info h2 {
+      font-size: var(--font-xl);
+    }
+
+    section h2 {
+      font-size: var(--font-lg);
+    }
+
+    .profile-header .info p,
+    .biography p,
+    .contact p,
+    .related li {
+      font-size: 0.95rem;
+    }
+}

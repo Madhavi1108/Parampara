@@ -1,82 +1,38 @@
-/*
- * Parampara — Language Selector Styles
- * Add this to your main.css, or link lang-selector.css in every HTML <head>
- */
-
-/* Wrapper sits at the right end of the nav-container */
 .lang-selector-wrapper {
-  display: flex;
-  align-items: center;
-  margin-left: auto; /* push to far right of navbar */
-  padding-left: 1.5rem;
+  position: relative;
 }
 
-/* The <select> pill */
-.global-lang-selector {
-  appearance: none;
-  -webkit-appearance: none;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  border-radius: 999px;
-  padding: 0.35rem 1.1rem 0.35rem 0.75rem;
-  font-size: 0.85rem;
-  font-family: inherit;
+.lang-btn {
+  border: none;
+  width: 80px;
+  height: 35px;
+  padding: 10px 18px;
+  border-radius: 10px;
   cursor: pointer;
-  transition:
-    background 0.2s,
-    border-color 0.2s;
-  /* Custom dropdown arrow */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23fff'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.55rem center;
-  background-size: 8px 5px;
-  padding-right: 1.6rem;
 }
 
-.global-lang-selector:hover {
-  background-color: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.6);
+.lang-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 150px;
+
+  display: none;
+  flex-direction: column;
+
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.global-lang-selector:focus {
-  outline: 2px solid #f4a261;
-  outline-offset: 2px;
+.lang-dropdown.show {
+  display: flex;
 }
 
-.global-lang-selector option {
-  background: #2d3748;
-  color: #fff;
+.lang-option {
+  padding: 12px 16px;
+  border: none;
+  text-align: left;
+  cursor: pointer;
 }
 
-/* Mobile: make selector full-width row below nav links */
-/* @media (max-width: 768px) {
-  .lang-selector-wrapper {
-    width: 100%;
-    justify-content: flex-end;
-    margin-left: 0;
-    padding: 0.5rem 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-} */
 
-@media (max-width: 768px) {
-  .lang-selector-wrapper {
-    width: auto;
-    /* was 100% — was pushing it to wrap below */
-    justify-content: flex-end;
-    margin-left: 0;
-    padding: 0;
-    border-top: none;
-  }
-
-  .nav-container {
-    gap: 0.6rem;
-    /* small gap between logo, hamburger, and language pill */
-  }
-
-  .global-lang-selector {
-    font-size: 0.78rem;
-    padding: 0.3rem 1.3rem 0.3rem 0.6rem;
-  }
-}

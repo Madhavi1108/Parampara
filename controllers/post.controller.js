@@ -1,7 +1,14 @@
 const store = require('../data/store');
+const sseManager = require('../utils/sseManager');
 
 const getPosts = (req, res) => {
-  res.json(store.villagePosts);
+  let posts = typeof store.villagePosts.values === 'function' ? store.villagePosts.values() : store.villagePosts;
+  posts = posts.filter(post => !post.isHidden);
+  res.json(posts);
+};
+
+const streamPosts = (req, res) => {
+  sseManager.addClient(req, res);
 };
 
 const createPost = (req, res) => {
@@ -21,12 +28,18 @@ const createPost = (req, res) => {
     timestamp: new Date().toISOString(),
   };
 
-  store.villagePosts.push(newPost);
+  if (typeof store.villagePosts.push === 'function') {
+    store.villagePosts.push(newPost);
+  }
+
+  // Broadcast to all connected SSE clients
+  sseManager.broadcast('NEW_POST', newPost);
 
   res.status(201).json(newPost);
 };
 
 module.exports = {
   getPosts,
+  streamPosts,
   createPost,
 };

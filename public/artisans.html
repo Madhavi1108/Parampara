@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="artisan_directory_title">Artisan Directory</title>
+  <link rel="stylesheet" href="styles/artisans.css" />
+</head>
+<body>
+  <!-- Navigation (included from other pages) -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <h1 data-i18n="brand_name">Parampara</h1>
+        <p class="tagline" data-i18n="brand_tagline">Preserving Living Traditions</p>
+      </div>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <!-- Existing links ... -->
+        <li><a href="index.html"  data-i18n="nav_home">Home</a></li>
+        <li><a href="map.html" data-i18n="nav_explore_map">Explore Map</a></li>
+        <li><a href="gallery.html" data-i18n="nav_gallery">Gallery</a></li>
+        <li><a href="paths.html" data-i18n="nav_heritage_paths">Heritage Paths</a></li>
+        <li><a href="quest.html" data-i18n="nav_discovery_quest">Discovery Quest</a></li>
+        <li><a href="trails.html" data-i18n="nav_heritage_trails">Heritage Trails</a></li>
+        <li><a href="chat.html" data-i18n="nav_chat">Talk to Elder</a></li>
+        <li><a href="revival.html" data-i18n="nav_revival">Lost Traditions</a></li>
+        <li><a href="risk-dashboard.html" data-i18n="nav_risk_dashboard">Risk</a></li>
+        <li><a href="reputation.html" data-i18n="nav_reputation">Contributor Reputation</a></li>
+        <li><a href="timeline.html" data-i18n="nav_timeline">Historical Timeline</a></li>
+        <li><a href="story-generator.html" data-i18n="nav_story_generator">AI Story Generator</a></li>
+        <li><a href="artisans.html" data-i18n="nav_artisan_directory" class="active">Artisan Directory</a></li>
+                <li>
+            <a href="favorites.html"><i class="ti ti-heart"></i> My Favorites</a>
+          </li>
+        </ul>
+    </div>
+  </nav>
+
+  <main id="artisan-directory" class="container">
+    <section class="stats" id="artisan-stats"></section>
+    <section class="filters" id="artisan-filters">
+      <input type="text" id="searchInput" placeholder="Search artisans..." aria-label="Search artisans" />
+      <select id="craftFilter" aria-label="Filter by craft">
+        <option value="">All Crafts</option>
+      </select>
+      <select id="villageFilter" aria-label="Filter by village">
+        <option value="">All Villages</option>
+      </select>
+      <select id="regionFilter" aria-label="Filter by region">
+        <option value="">All Regions</option>
+      </select>
+      <select id="experienceFilter" aria-label="Filter by experience">
+        <option value="">All Experience Levels</option>
+        <option value="apprentice">Apprentice (0‑5 yrs)</option>
+        <option value="skilled">Skilled (6‑15 yrs)</option>
+        <option value="master">Master (16‑30 yrs)</option>
+        <option value="keeper">Keeper (30+ yrs)</option>
+      </select>
+    </section>
+    <section class="grid" id="artisanGrid"></section>
+  </main>
+
+  <script src="scripts/utils.js"></script>
+  <script src="scripts/artisans.js"></script>
+  <script src="scripts/cacheLayer.js"></script>
+  <script src="scripts/languageSwitcher.js"></script>
+  <script src="scripts/sw-register.js"></script>
+<script src="scripts/breadcrumbs.js"></script>
+<script src="scripts/telemetry.js"></script>
+</body>
+</html>
+
+
+

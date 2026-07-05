@@ -10,51 +10,52 @@
  */
 
 (function () {
-  const STORAGE_KEY = 'parampara_lang';
-  const DEFAULT_LANG = 'en';
+  const LOCALE_STORAGE_KEY = 'parampara_lang';
+  const FALLBACK_LANGUAGE = 'en';
 
   // ── Helpers
-  function getCurrentLang() {
-    return localStorage.getItem(STORAGE_KEY) || DEFAULT_LANG;
+  function retrieveCurrentLang() {
+    return localStorage.getItem(LOCALE_STORAGE_KEY) || FALLBACK_LANGUAGE;
   }
 
-  function t(key, lang) {
-    lang = lang || getCurrentLang();
+  function translateKey(key, lang) {
+    lang = lang || retrieveCurrentLang();
     var dict =
-      PARAMPARA_TRANSLATIONS[lang] || PARAMPARA_TRANSLATIONS[DEFAULT_LANG];
-    return dict[key] !== undefined
-      ? dict[key]
-      : PARAMPARA_TRANSLATIONS[DEFAULT_LANG][key] || key;
+      PARAMPARA_TRANSLATIONS[lang] || PARAMPARA_TRANSLATIONS[FALLBACK_LANGUAGE];
+      console.log("Current language:", lang);
+console.log("Translations:", PARAMPARA_TRANSLATIONS);
+console.log("Current dict:", dict);
+    return dict[key] !== undefined ? dict[key] : PARAMPARA_TRANSLATIONS[FALLBACK_LANGUAGE][key] || key;
   }
 
   // ── Apply all translations to the page ────────────────────────────────────
-  function applyTranslations(lang) {
+  function renderLanguageTranslations(lang) {
     // data-i18n="key"  →  textContent
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      el.textContent = t(el.getAttribute('data-i18n'), lang);
+      el.textContent = translateKey(el.getAttribute('data-i18n'), lang);
     });
 
     // data-i18n-html="key"  →  innerHTML  (for strings containing markup)
     document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
-      el.innerHTML = t(el.getAttribute('data-i18n-html'), lang);
+      el.innerHTML = translateKey(el.getAttribute('data-i18n-html'), lang);
     });
 
     // data-i18n-placeholder="key"  →  placeholder attribute
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
       el.setAttribute(
         'placeholder',
-        t(el.getAttribute('data-i18n-placeholder'), lang)
+        translateKey(el.getAttribute('data-i18n-placeholder'), lang)
       );
     });
 
     // data-i18n-title="key"  →  title attribute  (tooltips)
     document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
-      el.setAttribute('title', t(el.getAttribute('data-i18n-title'), lang));
+      el.setAttribute('title', translateKey(el.getAttribute('data-i18n-title'), lang));
     });
 
     // data-i18n-value="key"  →  value attribute  (<input type="button">)
     document.querySelectorAll('[data-i18n-value]').forEach(function (el) {
-      el.setAttribute('value', t(el.getAttribute('data-i18n-value'), lang));
+      el.setAttribute('value', translateKey(el.getAttribute('data-i18n-value'), lang));
     });
 
     // data-i18n-question="key"  →  data-question attribute
@@ -62,7 +63,7 @@
     document.querySelectorAll('[data-i18n-question]').forEach(function (el) {
       el.setAttribute(
         'data-question',
-        t(el.getAttribute('data-i18n-question'), lang)
+        translateKey(el.getAttribute('data-i18n-question'), lang)
       );
     });
 
@@ -80,85 +81,109 @@
   }
 
   // ── Inject floating language-selector pill into navbar ────────────────────
-  function injectSelector() {
-    if (document.getElementById('global-lang-selector')) return; // already there
+  function buildLanguageSelector() {
+    if (document.getElementById('global-lang-selector')) return;
 
-    var langs = [
+    const langs = [
       { value: 'en', label: 'English' },
       { value: 'hi', label: 'हिन्दी' },
       { value: 'mr', label: 'मराठी' },
     ];
 
-    var sel = document.createElement('select');
-    sel.id = 'global-lang-selector';
-    sel.className = 'global-lang-selector';
-    sel.setAttribute('aria-label', 'Select language');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'lang-selector-wrapper';
 
-    langs.forEach(function (l) {
-      var opt = document.createElement('option');
-      opt.value = l.value;
-      opt.textContent = l.label;
-      sel.appendChild(opt);
+    const btn = document.createElement('button');
+    btn.id = 'global-lang-selector';
+    btn.className = 'lang-btn';
+
+    const currentLang = retrieveCurrentLang();
+    btn.textContent =
+      langs.find((l) => l.value === currentLang)?.label || 'English';
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'lang-dropdown';
+
+    langs.forEach((lang) => {
+      const item = document.createElement('button');
+      item.className = 'lang-option';
+      item.textContent = lang.label;
+
+      item.addEventListener('click', () => {
+        btn.textContent = lang.label;
+
+        localStorage.setItem(LOCALE_STORAGE_KEY, lang.value);
+        localStorage.setItem('language', lang.value);
+
+        renderLanguageTranslations(lang.value);
+
+        const mapSel = document.getElementById('language-selector');
+        if (mapSel) mapSel.value = lang.value;
+
+        dropdown.classList.remove('show');
+      });
+
+      dropdown.appendChild(item);
     });
 
-    sel.value = getCurrentLang();
-
-    sel.addEventListener('change', function () {
-      var chosen = this.value;
-      localStorage.setItem(STORAGE_KEY, chosen);
-      localStorage.setItem('language', chosen);
-      applyTranslations(chosen);
-      // Keep map page selector in sync
-      var mapSel = document.getElementById('language-selector');
-      if (mapSel) mapSel.value = chosen;
+    btn.addEventListener('click', () => {
+      dropdown.classList.toggle('show');
     });
 
-    // Wrap in a div and append to nav-container
-    var navContainer = document.querySelector('.nav-container');
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    wrapper.append(btn, dropdown);
+
+    const navContainer = document.querySelector('.nav-container');
+
     if (navContainer) {
-      var wrapper = document.createElement('div');
-      wrapper.className = 'lang-selector-wrapper';
-      wrapper.appendChild(sel);
       navContainer.appendChild(wrapper);
     } else {
-      // Fallback: fixed pill bottom-right corner
-      sel.style.cssText = 'position:fixed;bottom:1rem;right:1rem;z-index:9999;';
-      document.body.appendChild(sel);
+      wrapper.style.cssText =
+        'position:fixed;bottom:1rem;right:1rem;z-index:9999;';
+      document.body.appendChild(wrapper);
     }
   }
 
   // ── Sync the map page's built-in language selector ────────────────────────
-  function syncMapSelector() {
+  function bindMapLanguageSelector() {
     var mapSel = document.getElementById('language-selector');
     if (!mapSel) return;
 
-    mapSel.value = getCurrentLang();
+    mapSel.value = retrieveCurrentLang();
     mapSel.addEventListener('change', function () {
       var chosen = this.value;
-      localStorage.setItem(STORAGE_KEY, chosen);
+      localStorage.setItem(LOCALE_STORAGE_KEY, chosen);
       localStorage.setItem('language', chosen);
-      applyTranslations(chosen);
+      renderLanguageTranslations(chosen);
       var globalSel = document.getElementById('global-lang-selector');
       if (globalSel) globalSel.value = chosen;
     });
   }
 
   // ── Boot ──────────────────────────────────────────────────────────────────
-  function boot() {
-    if (typeof PARAMPARA_TRANSLATIONS === 'undefined') {
-      console.error(
-        'Parampara: translations.js must be loaded before language-switcher.js'
-      );
+  async function initializeTranslations() {
+    try {
+      const data = await window.CacheManager.get('/api/translations');
+      window.PARAMPARA_TRANSLATIONS = data.PARAMPARA_TRANSLATIONS ?? data;
+      window.translations = data.translations;
+    } catch (error) {
+      console.error('Parampara: failed to load translations', error);
       return;
     }
-    injectSelector();
-    syncMapSelector();
-    applyTranslations(getCurrentLang());
+
+    buildLanguageSelector();
+    bindMapLanguageSelector();
+    renderLanguageTranslations(retrieveCurrentLang());
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
+    document.addEventListener('DOMContentLoaded', initializeTranslations);
   } else {
-    boot();
+    initializeTranslations();
   }
 })();
