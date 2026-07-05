@@ -28,7 +28,7 @@ const store = require('./data/store');
 
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
-const TokenBucketLimiter = require('./middleware/rateLimiter');
+const HeuristicRateLimiter = require('./middleware/rateLimiter');
 
 const initializeSampleData = require('./config/sampleData');
 
@@ -72,6 +72,16 @@ app.use(
     extended: true,
   })
 );
+
+// Global Heuristic Rate Limiter
+// Base protection for all endpoints: 300 tokens per minute
+const globalLimiter = new HeuristicRateLimiter({
+  windowMs: 60000, 
+  maxTokens: 300, 
+  baseDelayMs: 2000, // Up to 2s delay for tarpitting
+  message: 'Too many requests, please slow down.'
+});
+app.use(globalLimiter.middleware());
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -160,13 +170,7 @@ app.use('/api/csrf-token', csrfRoutes);
 // Apply CSRF protection globally for state-changing routes
 app.use(csrfProtection);
 
-// Global API Rate Limiter (100 reqs / 1 min)
-const globalLimiter = new TokenBucketLimiter({
-  windowMs: 60000,
-  max: 100,
-  message: 'Too many API requests from this IP, please try again after a minute.'
-});
-app.use('/api', globalLimiter.middleware());
+
 
 // API Routes
 app.use('/api/items', itemRoutes);

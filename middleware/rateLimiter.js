@@ -1,40 +1,40 @@
 /**
- * Token Bucket Rate Limiter Middleware
- * Uses an in-memory Map to track tokens and last refill timestamp per IP address.
- * This provides O(1) memory consumption and high performance.
+ * Heuristic Rate Limiting and Adaptive Throttling Middleware
+ * Uses an in-memory Map to track tokens and dynamically delays responses to tarpit abusive users.
  */
-class TokenBucketLimiter {
-  /**
-   * @param {Object} options
-   * @param {number} options.windowMs - Time window in milliseconds for the rate limit
-   * @param {number} options.max - Maximum number of requests allowed in the window
-   * @param {string} options.message - Error message returned when limit is exceeded
-   * @param {Function} options.exclude - Function (req) => boolean to bypass limiter
-   */
+class HeuristicRateLimiter {
   constructor(options = {}) {
-    this.windowMs = options.windowMs || 60000; // Default 1 minute
-    this.max = options.max || 10; // Default 10 requests
+    this.windowMs = options.windowMs || 60000;
+    this.maxTokens = options.maxTokens || 100; // Total tokens in bucket
     this.message = options.message || 'Too many requests, please try again later.';
     this.exclude = options.exclude || null;
+    this.baseDelayMs = options.baseDelayMs || 2000; // Max artificial delay to introduce (2 seconds)
     
-    // Map of IP to { tokens: number, lastRefill: number }
     this.store = new Map();
 
-    // Cleanup interval to remove inactive IPs and prevent memory leaks
     this.cleanupInterval = setInterval(() => {
       const now = Date.now();
       for (const [ip, bucket] of this.store.entries()) {
-        // If the bucket has been inactive for more than windowMs, it would be fully refilled, so we can delete it
         if (now - bucket.lastRefill > this.windowMs) {
           this.store.delete(ip);
         }
       }
     }, this.windowMs);
 
-    // Prevent the interval from keeping the Node.js event loop alive unnecessarily
-    if (this.cleanupInterval.unref) {
-      this.cleanupInterval.unref();
+    if (this.cleanupInterval.unref) this.cleanupInterval.unref();
+  }
+
+  // Calculate heuristic cost of a request
+  calculateCost(req) {
+    let cost = 1; // Base cost for GET
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
+      cost = 3; // Modifying operations are 3x as expensive
     }
+    // High risk endpoints (e.g., search, reports) cost more
+    if (req.path.includes('/search') || req.path.includes('/report')) {
+      cost += 2; 
+    }
+    return cost;
   }
 
   middleware() {
@@ -42,64 +42,78 @@ class TokenBucketLimiter {
       const ip = req.ip || req.connection.remoteAddress || 'unknown';
       const now = Date.now();
 
-      // Check if request is excluded from rate limiting
-      if (this.exclude && this.exclude(req)) {
-        return next();
+      try {
+        if (this.exclude && this.exclude(req)) return next();
+      } catch (err) {
+        console.error('[RateLimiter] Error in exclude function:', err);
       }
 
       let bucket = this.store.get(ip);
-
       if (!bucket) {
-        // First request from this IP
-        bucket = {
-          tokens: this.max,
-          lastRefill: now
-        };
+        bucket = { tokens: this.maxTokens, lastRefill: now, lastRequestTime: 0, burstCount: 0 };
         this.store.set(ip, bucket);
       } else {
-        // Refill tokens based on time passed
         const timePassed = now - bucket.lastRefill;
-        const refillRate = this.max / this.windowMs; // tokens per ms
+        const refillRate = this.maxTokens / this.windowMs; 
         const tokensToAdd = timePassed * refillRate;
-
         if (tokensToAdd > 0) {
-          bucket.tokens = Math.min(this.max, bucket.tokens + tokensToAdd);
+          bucket.tokens = Math.min(this.maxTokens, bucket.tokens + tokensToAdd);
           bucket.lastRefill = now;
         }
       }
 
-      // Calculate state for headers
-      // If we have at least 1 token, we will consume 1.
-      const remaining = Math.max(0, Math.floor(bucket.tokens) - (bucket.tokens >= 1 ? 1 : 0));
-      
-      // Calculate retry-after (time until next token is available if we are out)
+      // Burst Detection Heuristics
+      const timeSinceLastRequest = now - bucket.lastRequestTime;
+      if (timeSinceLastRequest < 500) { // Less than 500ms between requests
+        bucket.burstCount++;
+      } else if (timeSinceLastRequest > 2000) {
+        bucket.burstCount = Math.max(0, bucket.burstCount - 1);
+      }
+      bucket.lastRequestTime = now;
+
+      // Calculate cost
+      let cost = this.calculateCost(req);
+      if (bucket.burstCount > 5) cost *= 2; // Burst penalty
+
+      const remaining = Math.max(0, Math.floor(bucket.tokens) - cost);
+
       let retryAfterSeconds = 0;
-      if (bucket.tokens < 1) {
-         const timeToNextToken = (1 - bucket.tokens) / (this.max / this.windowMs);
+      if (bucket.tokens < cost) {
+         const timeToNextToken = (cost - bucket.tokens) / (this.maxTokens / this.windowMs);
          retryAfterSeconds = Math.ceil(timeToNextToken / 1000);
-      } else {
-         const timeToFull = ((this.max - bucket.tokens) / (this.max / this.windowMs)) || 0;
-         retryAfterSeconds = Math.ceil(timeToFull / 1000); // Or time until reset if tokens are available
       }
 
-      // Set Rate Limit headers
-      res.setHeader('X-RateLimit-Limit', this.max);
+      res.setHeader('X-RateLimit-Limit', this.maxTokens);
       res.setHeader('X-RateLimit-Remaining', remaining);
-      res.setHeader('Retry-After', retryAfterSeconds);
+      if (retryAfterSeconds > 0) res.setHeader('Retry-After', retryAfterSeconds);
 
-      if (bucket.tokens < 1) {
-        console.warn(`[RateLimiter] Limit exceeded for IP: ${ip} at ${req.originalUrl}`);
-        return res.status(429).json({ 
-          error: this.message, 
-          retryAfter: retryAfterSeconds 
-        });
+      if (bucket.tokens < cost) {
+        console.warn(`[RateLimiter] BLOCKED ${req.method} ${req.originalUrl} from ${ip} (Burst: ${bucket.burstCount}, Cost: ${cost})`);
+        return res.status(429).json({ error: this.message, retryAfter: retryAfterSeconds });
       }
 
-      // Consume one token and proceed
-      bucket.tokens -= 1;
-      next();
+      // Consume tokens
+      bucket.tokens -= cost;
+
+      // Adaptive Throttling (Tarpitting)
+      // If tokens drop below 30%, start introducing artificial delay
+      const healthPercentage = bucket.tokens / this.maxTokens;
+      let delayMs = 0;
+      
+      if (healthPercentage < 0.3) {
+        // Linearly increase delay from 0 to baseDelayMs as health drops from 30% to 0%
+        const delayFactor = (0.3 - healthPercentage) / 0.3; // 0 to 1
+        delayMs = Math.floor(this.baseDelayMs * delayFactor);
+      }
+
+      if (delayMs > 50) {
+        console.log(`[RateLimiter] THROTTLING ${req.method} ${req.originalUrl} from ${ip} (Delay: ${delayMs}ms, Health: ${Math.round(healthPercentage*100)}%)`);
+        setTimeout(() => next(), delayMs);
+      } else {
+        next();
+      }
     };
   }
 }
 
-module.exports = TokenBucketLimiter;
+module.exports = HeuristicRateLimiter;
