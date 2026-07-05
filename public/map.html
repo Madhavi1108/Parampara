@@ -246,44 +246,24 @@
           "
         ></div>
 
-        <div
-          class="route-finder-control"
-          style="
-            margin-top: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-          "
-        >
+        <div class="route-finder-control">
           <strong><i class="ti ti-route"></i> Route Finder:</strong>
-          <select
-            id="route-start"
-            class="btn btn-secondary"
-            style="max-width: 150px"
-          >
-            <option value="">Start Location...</option>
-          </select>
-          <select
-            id="route-end"
-            class="btn btn-secondary"
-            style="max-width: 150px"
-          >
-            <option value="">End Location...</option>
-          </select>
-          <select
-            id="route-theme"
-            class="btn btn-secondary"
-            style="max-width: 120px"
-          >
+          <input
+            type="text"
+            id="route-start-input"
+            list="villages-datalist"
+            placeholder="Start Location..."
+            class="route-input"
+          />
+          <input
+            type="text"
+            id="route-end-input"
+            list="villages-datalist"
+            placeholder="End Location..."
+            class="route-input"
+          />
+          <datalist id="villages-datalist"></datalist>
+          <select id="route-theme">
             <option value="">Any Theme</option>
           </select>
           <button id="btn-find-route" class="btn btn-primary">
