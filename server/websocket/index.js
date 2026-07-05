@@ -523,13 +523,13 @@ class CollaborativeMapServer {
   }
 }
 
-// Start server
-const wsServer = new CollaborativeMapServer(process.env.WS_PORT || 8080);
+// Start server if run directly
+if (require.main === module) {
+  const wsServer = new CollaborativeMapServer(process.env.WS_PORT || 8080);
+  setInterval(() => {
+    const stats = wsServer.getStats();
+    console.log('WebSocket Server Stats:', stats);
+  }, 30000);
+}
 
-// Add health check endpoint
-setInterval(() => {
-  const stats = wsServer.getStats();
-  console.log('WebSocket Server Stats:', stats);
-}, 30000);
-
-module.exports = wsServer;
+module.exports = CollaborativeMapServer;
