@@ -392,6 +392,14 @@ app.get('/api/recommendations/health', async (req, res) => {
   }
 });
 
+// Add gamification routes
+const gamificationRoutes = require('./routes/gamification.routes');
+app.use('/api/gamification', gamificationRoutes);
+
+// Gamification page
+app.get('/gamification', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'gamification.html'));
+});
 // ==================== ERROR HANDLING ====================
 
 // 404 Middleware
