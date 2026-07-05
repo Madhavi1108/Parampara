@@ -188,34 +188,19 @@ const createPath = (req, res, next) =>
 
         store.heritagePaths.push(newPath);
 
+        // Invalidate caches
+        if (apiCache && typeof apiCache.invalidateByPrefix === 'function')
+        {
+            apiCache.invalidateByPrefix('/api/paths');
+            apiCache.invalidateByPrefix('/api/search');
+        }
+
         res.status(201).json(newPath);
     }
     catch (error)
     {
         next(error);
     }
-// Deduplicate and sanitise items array
-const rawItems = Array.isArray(req.body.items) ? req.body.items : [];
-const items = [...new Set(rawItems.filter((id) => typeof id === 'string' && id.trim()))];
-
-const newPath = {
-  id: Date.now().toString(),
-  title,
-  description,
-  items,
-  theme,
-};
-
-store.heritagePaths.push(newPath);
-
-// Invalidate caches
-apiCache.invalidateByPrefix('/api/paths');
-apiCache.invalidateByPrefix('/api/search');
-
-res.status(201).json(newPath);
-} catch (error) {
-  next(error);
-}
 };
 
 /**

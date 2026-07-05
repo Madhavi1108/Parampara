@@ -383,7 +383,7 @@ app.get('/api/ws/stats', (req, res) => {
 // Recommendation engine status endpoint
 app.get('/api/recommendations/health', async (req, res) => {
   try {
-    const RecommendationEngine = require('./services/recommendationEngine');
+    const RecommendationEngine = require('./server/services/recommendationEngine');
     const engine = new RecommendationEngine();
     const stats = engine.getModelStats();
     
@@ -432,9 +432,6 @@ app.use(notFound);
 
 // Error Middleware
 app.use(errorHandler);
-// Add moderation routes
-const moderationRoutes = require('./routes/moderation.routes');
-app.use('/api/moderation', moderationRoutes);
 
 // Moderation dashboard page
 app.get('/moderation', (req, res) => {
