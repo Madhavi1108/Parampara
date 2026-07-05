@@ -1,9 +1,15 @@
 const LRUCache = require('../server/utils/lruCache');
 const { createAuditProxy } = require('../server/services/auditService');
 const { SearchEngine, createSearchProxy } = require('../utils/searchEngine');
+const { QuadTree, BoundingBox } = require('../utils/QuadTree');
 
 const auditLog = new LRUCache(5000);
 const searchEngine = new SearchEngine();
+
+// Initialize spatial indexes covering the globe (Lat: -90 to 90, Lng: -180 to 180)
+const globalBounds = new BoundingBox(-90, -180, 90, 180);
+const culturalItemsQuadTree = new QuadTree(globalBounds);
+const villagePostsQuadTree = new QuadTree(globalBounds);
 
 const store = {
   searchEngine,
@@ -35,7 +41,9 @@ const store = {
     pageViews: {},
     events: [],
     interactions: {}
-  }
+  },
+  culturalItemsQuadTree,
+  villagePostsQuadTree
 };
 
 module.exports = store;

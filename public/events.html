@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cultural Events - Parampara</title>
+  <link rel="stylesheet" href="/styles/main.css">
+  <style>
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .page-header { text-align: center; margin-bottom: 30px; }
+    .page-header h1 { font-size: 2.5em; color: #2E7D32; }
+    .filters { 
+      display: flex; 
+      gap: 15px; 
+      justify-content: center; 
+      margin-bottom: 20px; 
+      flex-wrap: wrap;
+    }
+    .filters select, .filters input {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+    }
+    .filters input { flex: 1; min-width: 200px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>🎉 Cultural Events & Festivals</h1>
+      <p>Discover and participate in cultural events near you</p>
+    </div>
+
+    <div class="filters">
+      <input id="event-search" type="text" placeholder="🔍 Search events..." />
+      <select id="event-category-filter">
+        <option value="">All Categories</option>
+        <option value="festival">🎊 Festival</option>
+        <option value="ceremony">🕯️ Ceremony</option>
+        <option value="workshop">📚 Workshop</option>
+        <option value="exhibition">🎨 Exhibition</option>
+        <option value="performance">🎭 Performance</option>
+        <option value="ritual">🙏 Ritual</option>
+        <option value="celebration">🎉 Celebration</option>
+        <option value="gathering">👥 Gathering</option>
+      </select>
+      <button onclick="window.eventUI.loadEvents()" style="
+        padding: 10px 20px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      ">Apply Filters</button>
+    </div>
+
+    <div id="events-container"></div>
+  </div>
+
+  <script src="/scripts/events.js"></script>
+</body>
+</html>
