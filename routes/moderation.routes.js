@@ -169,11 +169,6 @@ router.get('/status', (req, res, next) => {
   }
 });
 
-module.exports = router;
-
-const express = require('express');
-const router = express.Router();
-
 const { reportItem } = require('../controllers/moderation.controller');
 const SlidingWindowLimiter = require('../middleware/rateLimiter');
 
@@ -187,4 +182,3 @@ const reportLimiter = new SlidingWindowLimiter({
 router.post('/report', reportLimiter.middleware(), reportItem);
 
 module.exports = router;
-
