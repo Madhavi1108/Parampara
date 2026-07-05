@@ -130,6 +130,7 @@ const createItem = (req, res) =>
                 ? [req.body.tags]
                 : [];
         createdAsset.timestamp = new Date().toISOString();
+        createdAsset.authorId = req.user ? req.user.id : null;
 
         // Store in memory database and update spatial index
         store.culturalItems.push(createdAsset);
@@ -160,7 +161,31 @@ const createItem = (req, res) =>
     }
 };
 
+const deleteItem = (req, res) => {
+    try {
+        const id = req.params.id;
+        const index = store.culturalItems.findIndex(i => i.id === id);
+        if (index === -1) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+        
+        // Manually rebuild array to avoid missing prototype methods on Proxy
+        const filtered = store.culturalItems.filter(i => i.id !== id);
+        store.culturalItems.length = 0;
+        filtered.forEach(item => store.culturalItems.push(item));
+        
+        apiCache.invalidateByPrefix('/api/items');
+        apiCache.invalidateByPrefix('/api/search');
+        
+        res.json({ message: 'Item deleted successfully' });
+    } catch (error) {
+        console.error('[Item Controller] Failed to delete item:', error);
+        res.status(500).json({ error: 'Error deleting item' });
+    }
+};
+
 module.exports = {
     getItems,
     createItem,
+    deleteItem
 };

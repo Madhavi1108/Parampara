@@ -28,6 +28,8 @@ const store = {
     searchEngine, 'villagePost', ['title', 'village', 'content', 'type'],
     createAuditProxy('villagePosts', new LRUCache(1000), auditLog)
   ),
+  refreshTokens: new LRUCache(500),
+  users: createAuditProxy('users', new LRUCache(100), auditLog),
   contributors: createAuditProxy('contributors', new LRUCache(500), auditLog),
   timelineEvents: createSearchProxy(
     searchEngine, 'timelineEvent', ['item', 'type', 'description'],

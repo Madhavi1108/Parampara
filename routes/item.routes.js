@@ -2,9 +2,11 @@ const express = require('express');
 
 const router = express.Router();
 
-const { getItems, createItem } = require('../controllers/item.controller');
+const { getItems, createItem, deleteItem } = require('../controllers/item.controller');
 const moderateContent = require('../middleware/moderation');
 const { cacheMiddleware } = require('../middleware/lruCache');
+const { authenticateToken, requirePermission } = require('../middleware/auth');
+const { verifyOwnership } = require('../middleware/ownership');
 
 const HeuristicRateLimiter = require('../middleware/rateLimiter');
 
@@ -19,9 +21,18 @@ router.get('/', cacheMiddleware, getItems);
 
 router.post(
   '/',
+  authenticateToken,
+  requirePermission('create:items'),
   createItemLimiter.middleware(),
   moderateContent({ action: 'block', fields: ['title', 'description', 'location'] }),
   createItem
+);
+
+router.delete(
+  '/:id',
+  authenticateToken,
+  verifyOwnership('culturalItems'),
+  deleteItem
 );
 
 module.exports = router;

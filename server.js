@@ -25,6 +25,8 @@ const searchRoutes = require('./routes/search.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const galleryRoutes = require('./routes/gallery.routes');
 const integrityRoutes = require('./routes/integrity.routes');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 const { csrfProtection } = require('./middleware/csrf');
 
 const store = require('./data/store');
@@ -187,15 +189,17 @@ app.use('/api/csrf-token', csrfRoutes);
 app.use(csrfProtection);
 
 // Global API Rate Limiter (100 reqs / 1 min)
-const globalLimiter = new SlidingWindowLimiter({
+const apiLimiter = new HeuristicRateLimiter({
   windowMs: 60000,
   max: 100,
   message:
     'Too many API requests from this IP, please try again after a minute.',
 });
-app.use('/api', globalLimiter.middleware());
+app.use('/api', apiLimiter.middleware());
 
 // API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/gallery', galleryRoutes);
 
@@ -431,7 +435,7 @@ app.get('/api/recommendations/health', async (req, res) => {
   }
 });
 // Add search engine routes
-const searchEngineRoutes = require('./routes/searchEngine.routes');
+const searchEngineRoutes = require('./routes/searchEngine');
 app.use('/api/search', searchEngineRoutes);
 
 // Search page
@@ -460,6 +464,7 @@ app.use(notFound);
 
 // Error Middleware
 app.use(errorHandler);
+
 
 // ==================== START SERVER ====================
 
