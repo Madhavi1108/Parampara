@@ -20,8 +20,8 @@
   };
 
   // --- Helper utilities ---
-  const $(selector) => document.querySelector(selector);
-  const $$ (selector) => Array.from(document.querySelectorAll(selector));
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
   const createElement = (tag, className, attrs = {}) => {
     const el = document.createElement(tag);
@@ -175,12 +175,17 @@
           </div>
           ${progressBar}
           <div class="actions">
-            <button ${btnDisabled ? 'disabled' : ''} aria-label="${btnLabel} challenge ${c.title}" onclick="window.Challenges.startChallenge('${c.id}')">${btnLabel}</button>
+            <button class="start-btn" ${btnDisabled ? 'disabled' : ''} aria-label="${btnLabel} challenge ${c.title}" data-id="${c.id}">${btnLabel}</button>
           </div>
         </div>
       `;
     }).join('');
     container.innerHTML = cards;
+    $$('.start-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        window.Challenges.startChallenge(e.target.dataset.id);
+      });
+    });
   }
 
   function renderBadges() {
