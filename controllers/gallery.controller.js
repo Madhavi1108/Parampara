@@ -2,18 +2,68 @@ const store = require('../data/store');
 
 /**
  * GET /api/gallery
- * Retrieves a list of cultural items for the gallery with pagination and search support.
+ * Retrieves a list of cultural items for the gallery with pagination, search, and filtering support.
  */
 const getGallery = (req, res, next) => {
   try {
-    const { search } = req.query;
+    const { search, craft, state, tag, type, year } = req.query;
     let culturalAssets;
 
-    // Use search engine if query is provided
+    // 1. Use search engine if query is provided
     if (search && search.trim() !== '') {
       culturalAssets = store.searchEngine.search(search, 'culturalItem');
     } else {
       culturalAssets = store.culturalItems || [];
+    }
+
+    // 2. Apply filtering (AND condition)
+
+    // filter by craft
+    if (craft) {
+      const cLower = craft.toLowerCase();
+      culturalAssets = culturalAssets.filter((item) => {
+        const craftVal = (item.craft || '').toLowerCase();
+        const titleVal = (item.title || '').toLowerCase();
+        const descVal = (item.description || '').toLowerCase();
+        return (
+          craftVal === cLower ||
+          titleVal.includes(cLower) ||
+          descVal.includes(cLower)
+        );
+      });
+    }
+
+    // filter by state
+    if (state) {
+      const sLower = state.toLowerCase();
+      culturalAssets = culturalAssets.filter((item) => {
+        const stateVal = (item.state || '').toLowerCase();
+        const locVal = (item.location || '').toLowerCase();
+        return stateVal === sLower || locVal.includes(sLower);
+      });
+    }
+
+    // filter by tag
+    if (tag) {
+      const tLower = tag.toLowerCase();
+      culturalAssets = culturalAssets.filter((item) => {
+        return (
+          Array.isArray(item.tags) &&
+          item.tags.some((t) => t.toLowerCase() === tLower)
+        );
+      });
+    }
+
+    // filter by type
+    if (type && type !== 'all') {
+      culturalAssets = culturalAssets.filter((item) => item.type === type);
+    }
+
+    // filter by year
+    if (year && year !== 'All') {
+      culturalAssets = culturalAssets.filter((item) => {
+        return item.year && item.year.toString() === year.toString();
+      });
     }
 
     // Parse pagination parameters
