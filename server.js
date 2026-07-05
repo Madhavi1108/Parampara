@@ -31,7 +31,7 @@ const store = require('./data/store');
 
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
-const TokenBucketLimiter = require('./middleware/rateLimiter');
+const HeuristicRateLimiter = require('./middleware/rateLimiter');
 
 const initializeSampleData = require('./config/sampleData');
 
@@ -75,6 +75,16 @@ app.use(
     extended: true,
   })
 );
+
+// Global Heuristic Rate Limiter
+// Base protection for all endpoints: 300 tokens per minute
+const globalLimiter = new HeuristicRateLimiter({
+  windowMs: 60000, 
+  maxTokens: 300, 
+  baseDelayMs: 2000, // Up to 2s delay for tarpitting
+  message: 'Too many requests, please slow down.'
+});
+app.use(globalLimiter.middleware());
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -171,13 +181,7 @@ app.use('/api/csrf-token', csrfRoutes);
 // Apply CSRF protection globally for state-changing routes
 app.use(csrfProtection);
 
-// Global API Rate Limiter (100 reqs / 1 min)
-const globalLimiter = new TokenBucketLimiter({
-  windowMs: 60000,
-  max: 100,
-  message: 'Too many API requests from this IP, please try again after a minute.'
-});
-app.use('/api', globalLimiter.middleware());
+
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -204,8 +208,7 @@ app.use('/api/integrity', integrityRoutes);
 const exportRoutes = require('./routes/export.routes');
 app.use('/api/export', exportRoutes);
 
-const moderationRoutes = require('./routes/moderation.routes');
-app.use('/api/moderation', moderationRoutes);
+
 
 // ==================== ADDITIONAL API ENDPOINTS ====================
 
@@ -397,7 +400,7 @@ app.get('/api/ws/stats', (req, res) => {
 // Recommendation engine status endpoint
 app.get('/api/recommendations/health', async (req, res) => {
   try {
-    const RecommendationEngine = require('./services/recommendationEngine');
+    const RecommendationEngine = require('./server/services/recommendationEngine');
     const engine = new RecommendationEngine();
     const stats = engine.getModelStats();
     
@@ -415,14 +418,28 @@ app.get('/api/recommendations/health', async (req, res) => {
     });
   }
 });
+// Add search engine routes
+const searchEngineRoutes = require('./routes/searchEngine');
+app.use('/api/search', searchEngineRoutes);
 
+// Search page
+app.get('/search', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'search.html'));
+});
 // Add gamification routes
-const gamificationRoutes = require('./routes/gamification.routes');
-app.use('/api/gamification', gamificationRoutes);
 
 // Gamification page
 app.get('/gamification', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'gamification.html'));
+});
+
+// Add event routes
+const eventRoutes = require('./routes/event.routes');
+app.use('/api/events', eventRoutes);
+
+// Events page
+app.get('/events', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'events.html'));
 });
 // ==================== ERROR HANDLING ====================
 
@@ -433,10 +450,6 @@ app.use(notFound);
 app.use(errorHandler);
 
 
-// Moderation dashboard page
-app.get('/moderation', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'moderation.html'));
-});
 // ==================== START SERVER ====================
 
 // Create HTTP server

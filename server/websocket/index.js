@@ -124,6 +124,15 @@ class CollaborativeMapServer {
       case 'trivia:answer':
         this.handleTriviaAnswer(userId, message.roomId, message.answerIndex, message.timeTaken);
         break;
+      // WEBRTC SYNC SIGNALING
+      case 'sync:join':
+        this.handleSyncJoin(userId);
+        break;
+      case 'webrtc:offer':
+      case 'webrtc:answer':
+      case 'webrtc:candidate':
+        this.handleWebRTCSignaling(userId, message);
+        break;
       default:
         client.ws.send(JSON.stringify({
           type: 'error',
@@ -487,6 +496,58 @@ class CollaborativeMapServer {
     // Keep only last 1000 operations to prevent memory issues
     if (this.operationHistory.length > 1000) {
       this.operationHistory.shift();
+    }
+  }
+
+  // ==================== WEBSOCKET SYNC NETWORK ====================
+
+  handleSyncJoin(userId) {
+    const client = this.clients.get(userId);
+    if (!client) return;
+
+    // Put client in sync room
+    const roomId = 'sync-network';
+    client.roomId = roomId;
+
+    if (!this.rooms.has(roomId)) {
+      this.rooms.set(roomId, new Set());
+    }
+    this.rooms.get(roomId).add(userId);
+
+    // Get all peers in sync network
+    const peers = Array.from(this.rooms.get(roomId))
+      .filter(id => id !== userId) // exclude self
+      .map(id => {
+        const c = this.clients.get(id);
+        return { userId: id, username: c ? c.username : 'Unknown' };
+      });
+
+    // Send the current peer list to the joining node
+    client.ws.send(JSON.stringify({
+      type: 'sync:peers',
+      peers
+    }));
+
+    // Broadcast to other peers that this node joined
+    this.broadcastToRoom(roomId, {
+      type: 'sync:peer-joined',
+      userId,
+      username: client.username
+    }, client.ws);
+  }
+
+  handleWebRTCSignaling(sourceUserId, message) {
+    const { targetId } = message;
+    if (!targetId) return;
+
+    const targetClient = this.clients.get(targetId);
+    if (targetClient && targetClient.ws.readyState === WebSocket.OPEN) {
+      // Relay the signaling message to the target client exactly as is, 
+      // but inject the sourceUserId so the target knows who sent it
+      targetClient.ws.send(JSON.stringify({
+        ...message,
+        sourceId: sourceUserId
+      }));
     }
   }
 
