@@ -7,6 +7,7 @@
 const store = require('../data/store');
 const { apiCache } = require('../middleware/lruCache');
 const { BoundingBox } = require('../utils/QuadTree');
+const notificationService = require('../server/services/notificationService');
 
 /**
  * Retrieves a list of cultural items with optional search, category filters, and pagination.
@@ -134,6 +135,15 @@ const createItem = (req, res) =>
         // Invalidate caches
         apiCache.invalidateByPrefix('/api/items');
         apiCache.invalidateByPrefix('/api/search');
+
+        // Broadcast notification
+        notificationService.broadcast('new_item', {
+            title: createdAsset.title,
+            type: createdAsset.type,
+            location: createdAsset.location,
+            id: createdAsset.id,
+            message: `New cultural asset added: ${createdAsset.title} in ${createdAsset.location}`
+        }, 'community');
 
         // Return the newly created asset
         res.status(201).json(createdAsset);

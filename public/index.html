@@ -7,6 +7,7 @@
     <title>Parampara - Preserving Rural Heritage</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/languageSelector.css">
+    <link rel="stylesheet" href="styles/notifications.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <meta name="description" content="A community-driven digital archive for preserving rural cultural heritage - stories, crafts, traditions, and responsible tourism">
   </head>
@@ -34,6 +35,12 @@
       <li><a href="trails.html"><i class="ti ti-trail-sign"></i> Heritage Trails</a></li>
       <li><a href="timeline.html">Timeline</a></li>
 <li><a href="chat.html"><i class="ti ti-message-circle"></i> Talk to Elder</a></li>
+      <li id="notificationBellItem" class="notification-bell">
+        <a href="javascript:void(0)">
+          <i class="ti ti-bell"></i> Notifications
+          <span class="notification-badge" id="notificationBadge"></span>
+        </a>
+      </li>
     </ul>
   </div>
 </nav>
@@ -146,9 +153,12 @@
     <!-- Back To Top Button -->
     <button id="backToTopBtn" aria-label="Back to top">↑</button>
 
+    <div id="toast-container"></div>
+
     <script src="scripts/main.js"></script>
     <script src="scripts/translations.js"></script>
     <script src="scripts/languageSwitcher.js"></script>
+    <script src="scripts/notifications.js"></script>
     <!-- <script src="scripts/navbar.js"></script> -->
   </body>
 </html>

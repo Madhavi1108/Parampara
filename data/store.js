@@ -23,6 +23,7 @@ const store = {
     createAuditProxy('heritagePaths', new LRUCache(1000), auditLog)
   ),
   userProgress: {}, // Keep as object for fast lookup by userId
+  userNotifications: {}, // Tracks read state per user: { [userId]: { readIds: Set, preferences: {} } }
   villagePosts: createSearchProxy(
     searchEngine, 'villagePost', ['title', 'village', 'content', 'type'],
     createAuditProxy('villagePosts', new LRUCache(1000), auditLog)
