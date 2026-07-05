@@ -43,6 +43,9 @@ const getItems = (req, res) =>
         if (fullTextSearchQuery)
         {
             culturalAssets = store.searchEngine.search(fullTextSearchQuery, 'culturalItem');
+
+            // Ensure hidden items never reappear in search results
+            culturalAssets = culturalAssets.filter(item => !item.isHidden);
         }
 
         // Filter items based on specified type category (skip if set to 'all')
@@ -118,8 +121,8 @@ const createItem = (req, res) =>
         createdAsset.location = location;
         createdAsset.coordinates = req.body.coordinates || null;
         createdAsset.description = req.body.description || '';
-        createdAsset.imageUrl = req.body.imageUrl || '',
-        createdAsset.audioUrl = req.body.audioUrl || '',
+        createdAsset.imageUrl = req.body.imageUrl || '';
+        createdAsset.audioUrl = req.body.audioUrl || '';
         createdAsset.tags = Array.isArray(req.body.tags)
             ? req.body.tags
             : req.body.tags
@@ -130,10 +133,6 @@ const createItem = (req, res) =>
         // Store in memory database and update spatial index
         store.culturalItems.push(createdAsset);
         store.culturalItemsQuadTree.insert(createdAsset);
-
-        // Invalidate caches
-        apiCache.invalidateByPrefix('/api/items');
-        apiCache.invalidateByPrefix('/api/search');
 
         // Invalidate caches
         apiCache.invalidateByPrefix('/api/items');
