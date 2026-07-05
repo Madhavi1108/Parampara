@@ -1,6 +1,6 @@
 importScripts('/scripts/idb-storage.js');
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CORE_CACHE = `parampara-core-${CACHE_VERSION}`;
 const API_CACHE = `parampara-api-${CACHE_VERSION}`;
 const MEDIA_CACHE = `parampara-media-${CACHE_VERSION}`;
