@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search - Parampara</title>
+  <link rel="stylesheet" href="/styles/main.css">
+  <style>
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .search-header { text-align: center; margin-bottom: 30px; }
+    .search-header h1 { font-size: 2.5em; color: #2E7D32; margin-bottom: 10px; }
+    .search-container { 
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .search-container input {
+      width: 100%;
+      padding: 15px 50px 15px 20px;
+      border: 2px solid #ddd;
+      border-radius: 30px;
+      font-size: 18px;
+      transition: border-color 0.3s;
+    }
+    .search-container input:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+    #voice-search-btn {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+    #voice-search-btn:hover { background: #f0f0f0; }
+    #search-suggestions { 
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+    #search-stats { 
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 10px 0;
+      color: #666;
+      font-size: 14px;
+    }
+    #popular-searches { margin: 20px 0; }
+    #search-results { min-height: 200px; }
+    .empty-search { 
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+    .empty-search p:first-child { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="search-header">
+      <h1>🔍 Heritage Search</h1>
+      <p>Discover cultural content with semantic understanding</p>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="Search for cultural terms, traditions, crafts..." autocomplete="off" />
+      <button id="voice-search-btn" title="Voice Search">🎤</button>
+      <div id="search-suggestions"></div>
+    </div>
+
+    <div id="search-stats"></div>
+
+    <div id="popular-searches"></div>
+
+    <div id="search-results">
+      <div style="text-align: center; padding: 60px; color: #999;">
+        <p>🔍 Start typing to search</p>
+        <p style="font-size: 14px;">Try: "madhubani painting", "traditional crafts", or "cultural festivals"</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/scripts/search.js"></script>
+</body>
+</html>

@@ -382,7 +382,7 @@ app.get('/api/ws/stats', (req, res) => {
 // Recommendation engine status endpoint
 app.get('/api/recommendations/health', async (req, res) => {
   try {
-    const RecommendationEngine = require('./services/recommendationEngine');
+    const RecommendationEngine = require('./server/services/recommendationEngine');
     const engine = new RecommendationEngine();
     const stats = engine.getModelStats();
     
@@ -400,9 +400,29 @@ app.get('/api/recommendations/health', async (req, res) => {
     });
   }
 });
+// Add search engine routes
+const searchEngineRoutes = require('./routes/searchEngine.routes');
+app.use('/api/search', searchEngineRoutes);
 
+// Search page
+app.get('/search', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'search.html'));
+});
 // Add gamification routes
 
+// Gamification page
+app.get('/gamification', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'gamification.html'));
+});
+
+// Add event routes
+const eventRoutes = require('./routes/event.routes');
+app.use('/api/events', eventRoutes);
+
+// Events page
+app.get('/events', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'events.html'));
+});
 // ==================== ERROR HANDLING ====================
 
 // 404 Middleware

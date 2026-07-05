@@ -135,6 +135,10 @@ const createItem = (req, res) =>
         apiCache.invalidateByPrefix('/api/items');
         apiCache.invalidateByPrefix('/api/search');
 
+        // Invalidate caches
+        apiCache.invalidateByPrefix('/api/items');
+        apiCache.invalidateByPrefix('/api/search');
+
         // Return the newly created asset
         res.status(201).json(createdAsset);
     }

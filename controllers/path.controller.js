@@ -188,6 +188,13 @@ const createPath = (req, res, next) =>
 
         store.heritagePaths.push(newPath);
 
+        // Invalidate caches
+        if (apiCache && typeof apiCache.invalidateByPrefix === 'function')
+        {
+            apiCache.invalidateByPrefix('/api/paths');
+            apiCache.invalidateByPrefix('/api/search');
+        }
+
         res.status(201).json(newPath);
     }
     catch (error)
