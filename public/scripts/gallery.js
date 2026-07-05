@@ -127,6 +127,41 @@ function setupShareDelegation() {
 }
 
 function setupEventListeners() {
+  const grid = document.getElementById('gallery-grid');
+  if (grid) {
+    grid.addEventListener('click', function(e) {
+      const reportBtn = e.target.closest('.report-card-btn');
+      if (!reportBtn) return;
+      e.stopPropagation();
+
+      const itemId = reportBtn.dataset.itemId;
+      if (!itemId) return;
+
+      if (confirm('Are you sure you want to report this item for inappropriate content?')) {
+        fetch('/api/moderation/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: itemId, type: 'culturalItem' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert('Item reported successfully. Thank you for keeping our community safe.');
+            if (data.isHidden) {
+              // Reload gallery to remove hidden item
+              currentPage = 1;
+              hasMore = true;
+              loadGalleryItems(1, false);
+            }
+          } else {
+            alert(data.error || 'Failed to report item');
+          }
+        })
+        .catch(err => console.error('Error reporting item:', err));
+      }
+    });
+  }
+
   document.getElementById('add-item-btn').addEventListener('click', () => {
     document.getElementById('add-item-modal').classList.add('active');
   });
@@ -376,6 +411,15 @@ const GalleryItemComponent = ({ item }) => {
     innerHTML: heartSvg
   });
 
+  const reportBtn = h('button', {
+    class: 'report-card-btn',
+    'data-item-id': escapeHtml(item.id),
+    'aria-label': 'Report inappropriate content',
+    title: 'Report inappropriate content',
+    innerHTML: '🚩',
+    style: 'position:absolute; top:10px; left:10px; background:rgba(255,255,255,0.8); border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; font-size:16px; z-index:2; box-shadow:0 2px 5px rgba(0,0,0,0.2);'
+  });
+
   let panoramaBtn = null;
   if (item.panoramaUrl) {
     panoramaBtn = h('button', {
@@ -390,7 +434,7 @@ const GalleryItemComponent = ({ item }) => {
   }
 
   const imageWrapper = h('div', { class: 'gallery-item-image', style: 'position:relative;' }, 
-    mediaNode, shareBtn, favBtn, panoramaBtn
+    mediaNode, shareBtn, favBtn, reportBtn, panoramaBtn
   );
 
   let tagsNode = null;

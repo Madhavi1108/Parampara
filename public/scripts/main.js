@@ -57,17 +57,19 @@ function initNavbar() {
 async function loadVillagePosts() {
   const DUMMY_POSTS = [
     {
+      id: "dummy1",
       titleKey: "post1_title",
-      title: "Warli Festival Begins in Palghar",
+      title: "Village Council Announces Seed Bank",
       villageKey: "post1_village",
-      village: "Palghar, Maharashtra",
+      village: "Piplantri, Rajasthan",
       contentKey: "post1_content",
-      content: "The annual **Warli** harvest festival kicked off with traditional dance and painting ceremonies.\n\n* Over 200 villagers participated.\n* Features live art demonstrations.",
+      content: "The local panchayat just approved a native seed bank to preserve 20 varieties of indigenous millet.",
       typeKey: "post1_type",
-      type: "Festival",
+      type: "Update",
       timestamp: new Date().toISOString()
     },
     {
+      id: "dummy2",
       titleKey: "post2_title",
       title: "New Pottery Workshop Opens",
       villageKey: "post2_village",
@@ -79,6 +81,7 @@ async function loadVillagePosts() {
       timestamp: new Date(Date.now() - 86400000).toISOString()
     },
     {
+      id: "dummy3",
       titleKey: "post3_title",
       title: "Elder Storytelling Session Recorded",
       villageKey: "post3_village",
@@ -90,6 +93,7 @@ async function loadVillagePosts() {
       timestamp: new Date(Date.now() - 2 * 86400000).toISOString()
     },
     {
+      id: "dummy4",
       titleKey: "post4_title",
       title: "Heritage Bamboo Bridge Restored",
       villageKey: "post4_village",
@@ -101,6 +105,7 @@ async function loadVillagePosts() {
       timestamp: new Date(Date.now() - 3 * 86400000).toISOString()
     },
     {
+      id: "dummy5",
       titleKey: "post5_title",
       title: "Phad Painting Exhibition Next Week",
       villageKey: "post5_village",
@@ -112,6 +117,7 @@ async function loadVillagePosts() {
       timestamp: new Date(Date.now() - 4 * 86400000).toISOString()
     },
     {
+      id: "dummy6",
       titleKey: "post6_title",
       title: "Tribal Music Archive — 50 Songs Added",
       villageKey: "post6_village",
@@ -159,18 +165,48 @@ function renderPosts(container, posts, isDummy) {
         const type = (tr && post.typeKey && tr[post.typeKey]) || post.type || "Update";
 
         return `
-          <div class="post-card">
+          <div class="post-card" data-post-id="${post.id || ''}">
               <h4>${title}</h4>
               <p class="post-meta">📍 ${village} · 📅 ${formatDate(post.timestamp)}</p>
               <div class="post-content markdown-body">${renderMarkdown(content)}</div>
               <span class="post-card-badge">
                   ${type}
               </span>
+              ${post.id ? `<button class="report-post-btn" data-post-id="${post.id}" title="Report inappropriate content" aria-label="Report" style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer; font-size:16px; opacity:0.6;">🚩</button>` : ''}
           </div>
         `;
       }
     )
     .join("");
+
+  // Attach event listeners for report buttons
+  const reportBtns = container.querySelectorAll('.report-post-btn');
+  reportBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const postId = e.target.dataset.postId;
+      if (!postId) return;
+      if (confirm('Are you sure you want to report this post?')) {
+        fetch('/api/moderation/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: postId, type: 'villagePost' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert('Post reported successfully.');
+            if (data.isHidden) {
+              const card = e.target.closest('.post-card');
+              if (card) card.remove();
+            }
+          } else {
+            alert(data.error || 'Failed to report post');
+          }
+        })
+        .catch(err => console.error('Error reporting:', err));
+      }
+    });
+  });
 
   if (isDummy) {
     const note = document.createElement("p");
@@ -222,6 +258,18 @@ function initVillagePostsSSE() {
     }
   });
 
+  eventSource.addEventListener('HIDE_POST', (event) => {
+    try {
+      const payload = JSON.parse(event.data);
+      if (payload && payload.id) {
+        const card = document.querySelector(`.post-card[data-post-id="${payload.id}"]`);
+        if (card) card.remove();
+      }
+    } catch (err) {
+      console.error("Error parsing SSE HIDE_POST message:", err);
+    }
+  });
+
   eventSource.onerror = (err) => {
     console.error("EventSource failed:", err);
     // EventSource auto-reconnects natively, but we can log errors.
@@ -245,17 +293,50 @@ function handleNewVillagePost(post) {
   const type = (tr && post.typeKey && tr[post.typeKey]) || post.type || "Update";
   
   const postHtml = `
-    <div class="post-card new-post" style="opacity: 0; transform: translateY(-20px); transition: all 0.5s ease;">
+    <div class="post-card new-post" data-post-id="${post.id || ''}" style="opacity: 0; transform: translateY(-20px); transition: all 0.5s ease;">
         <h4>${title}</h4>
         <p class="post-meta">${village} • ${formatDate(post.timestamp)}</p>
         <div class="post-content markdown-body">${renderMarkdown(content)}</div>
         <span class="post-card-badge">
             ${type}
         </span>
+        ${post.id ? `<button class="report-post-btn" data-post-id="${post.id}" title="Report inappropriate content" aria-label="Report" style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer; font-size:16px; opacity:0.6;">🚩</button>` : ''}
     </div>
   `;
 
-  postsGrid.insertAdjacentHTML("afterbegin", postHtml);
+  // Insert at the top of the grid
+  postsGrid.insertAdjacentHTML('afterbegin', postHtml);
+  
+  // Attach listener to the newly inserted button
+  const newCard = postsGrid.firstElementChild;
+  const newReportBtn = newCard.querySelector('.report-post-btn');
+  if (newReportBtn) {
+    newReportBtn.addEventListener('click', (e) => {
+      const postId = e.target.dataset.postId;
+      if (!postId) return;
+      if (confirm('Are you sure you want to report this post?')) {
+        fetch('/api/moderation/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: postId, type: 'villagePost' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert('Post reported successfully.');
+            if (data.isHidden) {
+              const card = e.target.closest('.post-card');
+              if (card) card.remove();
+            }
+          } else {
+            alert(data.error || 'Failed to report post');
+          }
+        })
+        .catch(err => console.error('Error reporting:', err));
+      }
+    });
+  }
+
   requestAnimationFrame(() => {
     const newEl = postsGrid.firstElementChild;
     if (newEl) {

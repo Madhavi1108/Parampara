@@ -188,6 +188,9 @@ app.use('/api/search', searchRoutes);
 const exportRoutes = require('./routes/export.routes');
 app.use('/api/export', exportRoutes);
 
+const moderationRoutes = require('./routes/moderation.routes');
+app.use('/api/moderation', moderationRoutes);
+
 // ==================== ADDITIONAL API ENDPOINTS ====================
 
 app.get('/api/reputation', (req, res, next) => {

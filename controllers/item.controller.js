@@ -18,6 +18,9 @@ const getItems = (req, res) =>
     {
         let culturalAssets = store.culturalItems || [];
 
+        // Filter out hidden items
+        culturalAssets = culturalAssets.filter(item => !item.isHidden);
+
         // Extract and parse pagination config & query variables
         var activePage = parseInt(req.query.page, 10) || 1;
         var itemsPerPageLimit = parseInt(req.query.limit, 10) || 10;

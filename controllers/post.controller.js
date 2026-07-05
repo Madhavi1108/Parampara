@@ -2,7 +2,9 @@ const store = require('../data/store');
 const sseManager = require('../utils/sseManager');
 
 const getPosts = (req, res) => {
-  res.json(typeof store.villagePosts.values === 'function' ? store.villagePosts.values() : store.villagePosts);
+  let posts = typeof store.villagePosts.values === 'function' ? store.villagePosts.values() : store.villagePosts;
+  posts = posts.filter(post => !post.isHidden);
+  res.json(posts);
 };
 
 const streamPosts = (req, res) => {
