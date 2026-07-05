@@ -22,6 +22,7 @@ const csrfRoutes = require('./routes/csrf.routes');
 const cacheRoutes = require('./routes/cache.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
 const searchRoutes = require('./routes/search.routes');
+const integrityRoutes = require('./routes/integrity.routes');
 const { csrfProtection } = require('./middleware/csrf');
 
 const store = require('./data/store');
@@ -90,6 +91,14 @@ app.use('/scripts/collaborative', express.static(path.join(__dirname, 'public/sc
 
 // Initialize Data
 initializeSampleData();
+
+// Start Background Integrity Scanner
+const integrityService = require('./services/integrityService');
+integrityService.scanAll();
+setInterval(() => {
+  integrityService.scanAll();
+  console.log('🔍 Scheduled integrity scan completed');
+}, 60 * 60 * 1000); // Every hour
 
 // ==================== FRONTEND ROUTES ====================
 
@@ -190,6 +199,7 @@ app.use('/api/audit', auditRoutes);
 app.use('/api/cache', cacheRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/integrity', integrityRoutes);
 
 const exportRoutes = require('./routes/export.routes');
 app.use('/api/export', exportRoutes);
