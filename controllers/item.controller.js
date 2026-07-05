@@ -6,6 +6,7 @@
 
 const store = require('../data/store');
 const { apiCache } = require('../middleware/lruCache');
+const { BoundingBox } = require('../utils/QuadTree');
 
 /**
  * Retrieves a list of cultural items with optional search, category filters, and pagination.
@@ -18,6 +19,16 @@ const getItems = (req, res) =>
     try
     {
         let culturalAssets = store.culturalItems || [];
+
+        // Apply Spatial Bounding Box Filter if 'bounds' query is provided
+        if (req.query.bounds) {
+            const parts = req.query.bounds.split(',').map(Number);
+            if (parts.length === 4 && !parts.some(isNaN)) {
+                // frontend sends: minLng, minLat, maxLng, maxLat
+                const range = new BoundingBox(parts[1], parts[0], parts[3], parts[2]);
+                culturalAssets = store.culturalItemsQuadTree.search(range);
+            }
+        }
 
         // Filter out hidden items
         culturalAssets = culturalAssets.filter(item => !item.isHidden);
@@ -116,8 +127,9 @@ const createItem = (req, res) =>
                 : [];
         createdAsset.timestamp = new Date().toISOString();
 
-        // Store in memory database
+        // Store in memory database and update spatial index
         store.culturalItems.push(createdAsset);
+        store.culturalItemsQuadTree.insert(createdAsset);
 
         // Invalidate caches
         apiCache.invalidateByPrefix('/api/items');

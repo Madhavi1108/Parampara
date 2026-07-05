@@ -688,6 +688,14 @@ function initializeSampleData() {
       ]
     }
   );
+
+  // Populate QuadTrees
+  store.culturalItems.forEach(item => {
+    store.culturalItemsQuadTree.insert(item);
+  });
+  
+  // Note: if store.villagePosts had sample data with coordinates, we would insert them here:
+  // store.villagePosts.forEach(post => store.villagePostsQuadTree.insert(post));
 }
 
 module.exports = initializeSampleData;

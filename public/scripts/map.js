@@ -284,9 +284,15 @@ async function initializeMap() {
       setMapLanguage(currentLanguage);
       addVillageMarkers();
       
-      // Update clusters on zoom and move
-      map.on('zoomend', () => addVillageMarkers());
-      map.on('moveend', () => addVillageMarkers());
+      // Update clusters and items on zoom and move
+      map.on('zoomend', () => {
+          addVillageMarkers();
+          loadCulturalItems();
+      });
+      map.on('moveend', () => {
+          addVillageMarkers();
+          loadCulturalItems();
+      });
       
       await loadCulturalItems();
       checkFlyover();
@@ -691,6 +697,14 @@ async function loadCulturalItems() {
     let url = '/api/items?limit=1000';
     if (window.mapActiveEra && window.mapActiveEra !== 'All') {
       url += `&year=${window.mapActiveEra}`;
+    }
+
+    // Attach bounding box query parameters for optimized spatial search
+    const bounds = map.getBounds();
+    if (bounds) {
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+      url += `&bounds=${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
     }
 
     const response = await fetch(url);
