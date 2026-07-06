@@ -164,15 +164,37 @@ function renderPosts(container, posts, isDummy) {
         const content = (tr && post.contentKey && tr[post.contentKey]) || post.content || "";
         const type = (tr && post.typeKey && tr[post.typeKey]) || post.type || "Update";
 
+        // Assign emojis to categories for high visual polish
+        const typeIcons = {
+          Update: '📢',
+          Craft: '🏺',
+          Story: '📖',
+          Restoration: '🔨',
+          Art: '🎨',
+          Music: '🎵'
+        };
+        const icon = typeIcons[type] || '📍';
+
+        // Check if content exceeds 120 chars for read-more functionality
+        const isLong = content.length > 120;
+        const displayContent = isLong ? content.slice(0, 110) + '...' : content;
+        const postClass = `post-card ${isLong ? 'has-read-more' : ''}`;
+
         return `
-          <div class="post-card" data-post-id="${post.id || ''}">
+          <div class="${postClass}" data-post-id="${post.id || ''}" data-type="${type.toLowerCase()}">
+              <div class="post-card-header">
+                <span class="post-type-icon">${icon}</span>
+                <span class="post-card-badge">${type}</span>
+              </div>
               <h4>${title}</h4>
               <p class="post-meta">📍 ${village} · 📅 ${formatDate(post.timestamp)}</p>
-              <div class="post-content markdown-body">${renderMarkdown(content)}</div>
-              <span class="post-card-badge">
-                  ${type}
-              </span>
-              ${post.id ? `<button class="report-post-btn" data-post-id="${post.id}" title="Report inappropriate content" aria-label="Report" style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer; font-size:16px; opacity:0.6;">🚩</button>` : ''}
+              <div class="post-content markdown-body" id="post-content-${post.id}">
+                ${renderMarkdown(displayContent)}
+              </div>
+              ${isLong ? `
+                <button class="read-more-btn" onclick="toggleReadMore('${post.id}', '${encodeURIComponent(content)}')">Read More <i class="ti ti-chevron-down"></i></button>
+              ` : ''}
+              ${post.id && !post.id.startsWith('dummy') ? `<button class="report-post-btn" data-post-id="${post.id}" title="Report inappropriate content" aria-label="Report">🚩 Report</button>` : ''}
           </div>
         `;
       }
@@ -392,5 +414,28 @@ function handleNewVillagePost(post) {
 })();
 
 
-const heroStats = document.querySelector(".hero-stats")
-heroStats.style.transform = "rotateX(3600deg)"
+const heroStats = document.querySelector(".hero-stats");
+if (heroStats) {
+  heroStats.style.transform = "rotateX(3600deg)";
+}
+
+// Toggle Read More / Read Less for village post cards
+window.toggleReadMore = function(postId, fullContentEncoded) {
+  const contentDiv = document.getElementById(`post-content-${postId}`);
+  const btn = event.currentTarget;
+  const isExpanded = btn.classList.contains('expanded');
+  const fullContent = decodeURIComponent(fullContentEncoded);
+  
+  if (isExpanded) {
+    // Collapse
+    const collapsedContent = fullContent.slice(0, 110) + '...';
+    contentDiv.innerHTML = renderMarkdown(collapsedContent);
+    btn.innerHTML = 'Read More <i class="ti ti-chevron-down"></i>';
+    btn.classList.remove('expanded');
+  } else {
+    // Expand
+    contentDiv.innerHTML = renderMarkdown(fullContent);
+    btn.innerHTML = 'Read Less <i class="ti ti-chevron-up"></i>';
+    btn.classList.add('expanded');
+  }
+};
