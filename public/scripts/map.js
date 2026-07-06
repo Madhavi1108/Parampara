@@ -574,7 +574,9 @@ function setupEventListeners() {
     }
   });
 
-  // Toggle heatmap functionality... (existing code below)
+  heatmapBtn.addEventListener('click', toggleHeatmap);
+  soundBtn.addEventListener('click', toggleSound);
+
   setupSpatialSearch();
 }
 
@@ -628,8 +630,6 @@ function setupSpatialSearch() {
     }
   });
 
-  heatmapBtn.addEventListener('click', toggleHeatmap);
-  soundBtn.addEventListener('click', toggleSound);
   // Ensure heritage health view updates when markers are re-added
   const heritageToggle = document.getElementById('toggle-heritage-health');
   if (heritageToggle) {
@@ -676,19 +676,127 @@ function toggleHeatmap() {
   }
 }
 
-// function toggleSound() {
-//   ambientSoundEnabled = !ambientSoundEnabled;
-//   const t = getTranslation();
+/**
+ * ============================================================================
+ * Premium Map Audio Control Engine
+ * Handles user-gesture safe instantiation, looping, volume fades, and localization.
+ * ============================================================================
+ */
+class MapAudioEngine {
+  constructor() {
+    this.ambientTrack = null;
+    this.isAmbientPlaying = false;
+    this.targetVolume = 0.35;
+    this.fadeTimer = null;
+  }
 
-//   document.getElementById('toggle-sound').textContent = ambientSoundEnabled
-//     ? t.soundOn
-//     : t.soundOff;
+  /**
+   * Safe Audio instantiation inside user gesture thread.
+   * Resolves absolute route path for location-agnostic loads.
+   */
+  initAmbient() {
+    if (!this.ambientTrack) {
+      this.ambientTrack = new Audio('/assets/sounds/ambientSound.mp3');
+      this.ambientTrack.loop = true;
+      this.ambientTrack.volume = 0;
+    }
+  }
 
-//   if (!ambientSoundEnabled && currentSound) {
-//     currentSound.pause();
-//     currentSound = null;
-//   }
-// }
+  /**
+   * Play ambient track with a smooth fade-in transition.
+   */
+  playAmbient() {
+    this.initAmbient();
+    this.isAmbientPlaying = true;
+    this.updateButtonState(true);
+
+    this.ambientTrack.play().then(() => {
+      this.fadeVolume(this.ambientTrack, this.targetVolume, 1000);
+    }).catch(err => {
+      console.warn('⚠️ Audio play blocked or failed:', err);
+      this.isAmbientPlaying = false;
+      this.updateButtonState(false);
+    });
+  }
+
+  /**
+   * Pause ambient track with a smooth fade-out transition.
+   */
+  pauseAmbient() {
+    if (!this.ambientTrack) return;
+    this.isAmbientPlaying = false;
+    this.updateButtonState(false);
+
+    this.fadeVolume(this.ambientTrack, 0, 600, () => {
+      this.ambientTrack.pause();
+    });
+  }
+
+  /**
+   * Toggle action handler called by the toolbar control.
+   */
+  toggleAmbient() {
+    if (this.isAmbientPlaying) {
+      this.pauseAmbient();
+    } else {
+      this.playAmbient();
+    }
+  }
+
+  /**
+   * Utility to smoothly transition volume level over time.
+   */
+  fadeVolume(audio, targetVolume, duration, callback) {
+    if (this.fadeTimer) {
+      clearInterval(this.fadeTimer);
+    }
+
+    const startVolume = audio.volume;
+    const steps = 20;
+    const stepTime = duration / steps;
+    const volumeStep = (targetVolume - startVolume) / steps;
+    let currentStep = 0;
+
+    this.fadeTimer = setInterval(() => {
+      currentStep++;
+      const newVolume = startVolume + (volumeStep * currentStep);
+      audio.volume = Math.max(0, Math.min(1, newVolume));
+
+      if (currentStep >= steps) {
+        clearInterval(this.fadeTimer);
+        audio.volume = targetVolume;
+        if (callback) callback();
+      }
+    }, stepTime);
+  }
+
+  /**
+   * Synchronize the text of the toolbar toggle button with localizations.
+   */
+  updateButtonState(playing) {
+    const soundBtn = document.getElementById('toggle-sound');
+    if (!soundBtn) return;
+
+    const t = getTranslation();
+    if (playing) {
+      soundBtn.textContent = t.soundOn || 'Ambient Sounds: ON';
+      soundBtn.classList.add('playing');
+    } else {
+      soundBtn.textContent = t.soundOff || 'Ambient Sounds: OFF';
+      soundBtn.classList.remove('playing');
+    }
+  }
+}
+
+// Instantiate the singleton audio manager
+const audioEngine = new MapAudioEngine();
+
+/**
+ * Global interface handler for sound toggle events.
+ */
+function toggleSound() {
+  audioEngine.toggleAmbient();
+}
 
 async function loadCulturalItems() {
   if (!map) {
@@ -787,32 +895,7 @@ window.addEventListener('parampara:langchange', (e) => {
   translatePage();
 });
 
-const ambientMusic = new Audio('assets/sounds/ambientSound.mp3');
 
-ambientMusic.loop = true;
-ambientMusic.volume = 0.3;
-
-function soundToggler() {
-  toggleSound = !toggleSound;
-  if (toggleSound) {
-    ambientMusic.pause();
-    toggle_btn.textContent = 'Ambient Sound : ON';
-  } else {
-    ambientMusic.play();
-    toggle_btn.textContent = 'Ambient Sound : OFF';
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle_btn = document.getElementById('toggle-sound');
-
-  if (toggle_btn) {
-    toggle_btn.addEventListener('click', () => {
-      toggle_btn.textContent = '';
-      soundToggler();
-    });
-  }
-});
 
 // ── Cinematic Flyover Logic ──────────────────────────────────────────────────
 async function checkFlyover() {
