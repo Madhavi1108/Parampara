@@ -26,6 +26,7 @@ const store = {
   userNotifications: {}, // Tracks read state per user: { [userId]: { readIds: Set, preferences: {} } }
   publicKeys: new Map(), // { userId -> { publicKeyJwk, timestamp } }
   familyArchives: new LRUCache(1000), // E2EE Archives
+  audioMetadata: new LRUCache(1000), // Processed audio metadata
   villagePosts: createSearchProxy(
     searchEngine, 'villagePost', ['title', 'village', 'content', 'type'],
     createAuditProxy('villagePosts', new LRUCache(1000), auditLog)
