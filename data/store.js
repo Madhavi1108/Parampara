@@ -27,6 +27,9 @@ const store = {
   publicKeys: new Map(), // { userId -> { publicKeyJwk, timestamp } }
   familyArchives: new LRUCache(1000), // E2EE Archives
   audioMetadata: new LRUCache(1000), // Processed audio metadata
+  moderationQueue: new LRUCache(500), // Pending moderation items
+  trustedPeers: new Map(),            // peerId -> { secretHash, username, registeredAt }
+  moderationLog: [],                  // Audit trail (capped at 500)
   villagePosts: createSearchProxy(
     searchEngine, 'villagePost', ['title', 'village', 'content', 'type'],
     createAuditProxy('villagePosts', new LRUCache(1000), auditLog)

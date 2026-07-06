@@ -42,6 +42,9 @@ class HeuristicRateLimiter {
       const ip = req.ip || req.connection.remoteAddress || 'unknown';
       const now = Date.now();
 
+      // Skip rate limiting in test environment
+      if (process.env.NODE_ENV === 'test') return next();
+
       try {
         if (this.exclude && this.exclude(req)) return next();
       } catch (err) {

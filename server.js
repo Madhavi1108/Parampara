@@ -165,6 +165,11 @@ app.get('/audio', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'audio.html'));
 });
 
+// Moderation Dashboard Route
+app.get('/moderation', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'moderation.html'));
+});
+
 // ==================== RECOMMENDATION ENGINE ROUTES ====================
 
 // Import recommendation routes
@@ -238,6 +243,9 @@ app.use('/api/archives', archiveRoutes);
 
 const audioRoutes = require('./routes/audio.routes');
 app.use('/api/audio', audioRoutes);
+
+const moderationRoutes = require('./routes/moderation.routes');
+app.use('/api/moderation', moderationRoutes);
 
 // ==================== ADDITIONAL API ENDPOINTS ====================
 
