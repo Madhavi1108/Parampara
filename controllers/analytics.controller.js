@@ -1,5 +1,34 @@
 const store = require('../data/store');
 
+const INTERACTION_EVENTS = new Set([
+  'click',
+  'button_click',
+  'item_view',
+  'search',
+]);
+
+const isPlainObject = (value) => {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+};
+
+const getInteractionValue = (data) => {
+  if (!isPlainObject(data)) return null;
+
+  const candidates = [data.action, data.label, data.itemId, data.query];
+
+  for (const value of candidates) {
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+
+    if (typeof value === 'number') {
+      return String(value);
+    }
+  }
+
+  return null;
+};
+
 /**
  * Handle incoming batch of anonymous telemetry events
  */
