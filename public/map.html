@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      window.addEventListener('error', function(e) {
+        alert('JS Error: ' + e.message + '\nFile: ' + e.filename + '\nLine: ' + e.lineno);
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        alert('Unhandled Rejection: ' + e.reason);
+      });
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
@@ -10,7 +18,7 @@
     <title>Cultural Map - Parampara</title>
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/livingHeritageBadge.css" />
-    <link rel="stylesheet" href="styles/map.css" />
+    <link rel="stylesheet" href="styles/map.css?v=5.0" />
     <link rel="stylesheet" href="styles/languageSelector.css" />
     <link rel="stylesheet" href="styles/theme.css" />
     <link rel="stylesheet" href="styles/main.css" />
@@ -486,17 +494,17 @@
     <script src="scripts/cacheLayer.js"></script>
     <script src="scripts/spatial.js"></script>
     <script src="scripts/heritageScoreUtil.js"></script>
-    <script src="scripts/clusterEngine.js?v=4"></script>
-    <script src="scripts/routeFinder.js"></script>
+    <script src="scripts/clusterEngine.js?v=5.0"></script>
+    <script src="scripts/routeFinder.js?v=5.0"></script>
     <script src="scripts/timeMachine.js"></script>
-    <script src="scripts/map.js?v=4"></script>
-    <script src="scripts/languageSwitcher.js"></script>
-    <script src="scripts/navbar.js"></script>
-    <script src="scripts/theme.js"></script>
-    <script src="scripts/main.js"></script>
-    <script src="scripts/sw-register.js"></script>
-    <script src="scripts/breadcrumbs.js"></script>
-    <script src="scripts/telemetry.js"></script>
+    <script src="scripts/map.js?v=5.0"></script>
+    <script src="scripts/languageSwitcher.js?v=5.0"></script>
+    <script src="scripts/navbar.js?v=5.0"></script>
+    <script src="scripts/theme.js?v=5.0"></script>
+    <script src="scripts/main.js?v=5.0"></script>
+    <script src="scripts/sw-register.js?v=5.0"></script>
+    <script src="scripts/breadcrumbs.js?v=5.0"></script>
+    <script src="scripts/telemetry.js?v=5.0"></script>
 
     <!-- Newsletter Form Script -->
     <script>

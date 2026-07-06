@@ -27,14 +27,10 @@ function setupRouteFinder() {
     .catch(console.error);
 
   // Populate locations datalist
-  let retries = 0;
   const populateLocations = () => {
     // wait until sampleVillages is loaded
     if (!window.sampleVillages || window.sampleVillages.length === 0) {
-      if (retries < 10) {
-        retries++;
-        setTimeout(populateLocations, 500);
-      }
+      setTimeout(populateLocations, 500);
       return;
     }
     

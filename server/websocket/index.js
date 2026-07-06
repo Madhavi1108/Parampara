@@ -5,6 +5,9 @@ const triviaQuestions = require('../../config/triviaData');
 class CollaborativeMapServer {
   constructor(port = 8080) {
     this.wss = new WebSocket.Server({ port });
+    this.wss.on('error', (err) => {
+      console.error(`❌ WebSocket Server Error on port ${port}:`, err.message);
+    });
     this.clients = new Map(); // userId -> { ws, username, cursor }
     this.markers = new Map(); // markerId -> marker data
     this.rooms = new Map(); // roomId -> Set of userIds

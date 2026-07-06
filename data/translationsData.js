@@ -24,6 +24,7 @@ const translations = {
       "Copy .env.example to .env and add a free key from maptiler.com",
     location: "Location",
     tags: "Tags",
+    map_toggle_heritage: "Heritage Health View",
 
     trailsTitle: "Heritage Trails & Local Hosts",
     trailsDesc:
@@ -94,6 +95,7 @@ const translations = {
       ".env.example को .env में कॉपी करें और maptiler.com से एक मुफ्त कुंजी जोड़ें",
     location: "स्थान",
     tags: "टैग",
+    map_toggle_heritage: "विरासत स्वास्थ्य दृश्य",
 
     post1_title: "पालघर में वारली उत्सव प्रारंभ",
     post1_village: "पालघर, महाराष्ट्र",
@@ -164,6 +166,7 @@ const translations = {
       ".env.example ला .env मध्ये कॉपी करा आणि maptiler.com वरून विनामूल्य की जोडा",
     location: "स्थान",
     tags: "टॅग",
+    map_toggle_heritage: "वारसा आरोग्य दृश्य",
 
     trailsTitle: "वारसा ट्रेल्स आणि स्थानिक होस्ट",
     trailsDesc: "गावांना जबाबदारीने भेट द्या आणि कलाकारांना भेटा",

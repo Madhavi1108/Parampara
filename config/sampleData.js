@@ -96,6 +96,23 @@ function initializeSampleData() {
     engagement: 20,
   });
 
+  store.culturalItems.push({
+    id: '6',
+    title: 'Sundarbans Folk Tales',
+    type: 'story',
+    location: 'Sundarbans Village',
+    coordinates: [21.9497, 88.8156],
+    description:
+      'Traditional stories about Bonbibi and honey collectors of the Sundarbans.',
+    tags: ['folklore', 'storytelling'],
+    year: 1950,
+    timestamp: new Date().toISOString(),
+    artisans: 5,
+    records: 4,
+    lastUpdated: '2026-06-20',
+    engagement: 75,
+  });
+
   // ── Heritage Paths sample data ─────────────────────────────────────────────
   store.heritagePaths.push({
     id: 'path-1',
@@ -148,7 +165,7 @@ function initializeSampleData() {
     description:
       'Journey through the seasonal festivals that shape rural life — from Chhath Puja to Bastar Lokotsav.',
     theme: 'Festivals',
-    items: ['1', '2', '3', '4', '5'],
+    items: ['1', '2', '3', '4', '5', '6'],
   });
 
   // Artisan sample data
