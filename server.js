@@ -151,6 +151,11 @@ app.get('/chat', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'chat.html'));
 });
 
+// Archives Route
+app.get('/archives', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'archives.html'));
+});
+
 // Serve Trivia Game Page
 app.get('/trivia', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'trivia.html'));
@@ -224,7 +229,8 @@ app.use('/api/integrity', integrityRoutes);
 const exportRoutes = require('./routes/export.routes');
 app.use('/api/export', exportRoutes);
 
-
+const archiveRoutes = require('./routes/archive.routes');
+app.use('/api/archives', archiveRoutes);
 
 // ==================== ADDITIONAL API ENDPOINTS ====================
 

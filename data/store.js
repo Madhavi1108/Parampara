@@ -24,6 +24,8 @@ const store = {
   ),
   userProgress: {}, // Keep as object for fast lookup by userId
   userNotifications: {}, // Tracks read state per user: { [userId]: { readIds: Set, preferences: {} } }
+  publicKeys: new Map(), // { userId -> { publicKeyJwk, timestamp } }
+  familyArchives: new LRUCache(1000), // E2EE Archives
   villagePosts: createSearchProxy(
     searchEngine, 'villagePost', ['title', 'village', 'content', 'type'],
     createAuditProxy('villagePosts', new LRUCache(1000), auditLog)
