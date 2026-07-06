@@ -30,6 +30,7 @@ const store = {
   moderationQueue: new LRUCache(500), // Pending moderation items
   trustedPeers: new Map(),            // peerId -> { secretHash, username, registeredAt }
   moderationLog: [],                  // Audit trail (capped at 500)
+  uploadSessions: new LRUCache(200),  // Chunked upload sessions
   villagePosts: createSearchProxy(
     searchEngine, 'villagePost', ['title', 'village', 'content', 'type'],
     createAuditProxy('villagePosts', new LRUCache(1000), auditLog)
