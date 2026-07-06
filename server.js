@@ -83,6 +83,10 @@ app.use(
   })
 );
 
+// Serve static files (placed before rate limiter to prevent script throttling)
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/scripts/collaborative', express.static(path.join(__dirname, 'public/scripts/collaborative')));
+
 // Global Heuristic Rate Limiter
 // Base protection for all endpoints: 300 tokens per minute
 const globalLimiter = new HeuristicRateLimiter({
@@ -92,11 +96,6 @@ const globalLimiter = new HeuristicRateLimiter({
   message: 'Too many requests, please slow down.'
 });
 app.use(globalLimiter.middleware());
-
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
-// Serve collaborative scripts
-app.use('/scripts/collaborative', express.static(path.join(__dirname, 'public/scripts/collaborative')));
 
 // Initialize Data
 initializeSampleData();

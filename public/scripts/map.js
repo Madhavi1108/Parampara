@@ -350,40 +350,91 @@ function setMapLanguage(lang) {
 
 function addVillageMarker(village) {
   const el = document.createElement('div');
+  el.className = 'marker-container';
 
-  el.className = 'marker';
+  const dot = document.createElement('div');
+  dot.className = 'marker-dot';
+  el.appendChild(dot);
 
-  el.style.width = '20px';
-  el.style.height = '20px';
-  el.style.borderRadius = '50%';
-  el.style.background = '#f4a261';
-  el.style.border = '2px solid white';
-  el.style.cursor = 'pointer';
-  el.style.pointerEvents = 'auto';
+  const name = village.name[currentLanguage] || village.name.en || village.name;
+  const description = village.description[currentLanguage] || village.description.en || '';
+  
+  // Get traditions, crafts, and festivals lists for popup details
+  const traditionsList = village.traditions && village.traditions[currentLanguage] 
+    ? village.traditions[currentLanguage] 
+    : (village.traditions && village.traditions.en ? village.traditions.en : []);
+    
+  const craftsList = village.crafts && village.crafts[currentLanguage] 
+    ? village.crafts[currentLanguage] 
+    : (village.crafts && village.crafts.en ? village.crafts.en : []);
+
+  const festivalsList = village.festivals && village.festivals[currentLanguage] 
+    ? village.festivals[currentLanguage] 
+    : (village.festivals && village.festivals.en ? village.festivals.en : []);
+
+  let detailsHtml = '';
+  if (traditionsList.length > 0) {
+    detailsHtml += `
+      <div class="popup-detail-section popup-detail-tradition">
+        <span class="detail-label">🎭 Traditions:</span>
+        <span class="detail-values">${traditionsList.slice(0, 2).join(', ')}</span>
+      </div>
+    `;
+  }
+  if (craftsList.length > 0) {
+    detailsHtml += `
+      <div class="popup-detail-section popup-detail-craft">
+        <span class="detail-label">🏺 Crafts:</span>
+        <span class="detail-values">${craftsList.slice(0, 2).join(', ')}</span>
+      </div>
+    `;
+  }
+  if (festivalsList.length > 0) {
+    detailsHtml += `
+      <div class="popup-detail-section popup-detail-festival">
+        <span class="detail-label">🎉 Festivals:</span>
+        <span class="detail-values">${festivalsList.slice(0, 2).join(', ')}</span>
+      </div>
+    `;
+  }
+
+  const popupContent = `
+    <div class="custom-map-popup">
+      <div class="popup-header">
+        <span class="popup-header-icon">🏛️</span>
+        <h3>${name}</h3>
+      </div>
+      <p class="popup-description">${description}</p>
+      <div class="popup-details-container">
+        ${detailsHtml}
+      </div>
+    </div>
+  `;
 
   const popup = new maplibregl.Popup({
     closeButton: true,
     closeOnClick: true,
     offset: 25,
-  }).setHTML(`
-      <h3>${village.name[currentLanguage]}</h3>
-      <div class="markdown-body">${renderMarkdown(village.description[currentLanguage])}</div>
-  `);
+  }).setHTML(popupContent);
+
+  // Hook into Maplibre's native popup lifecycle events to avoid click listener collision
+  popup.on('open', () => {
+    // Clear other active markers
+    document.querySelectorAll('.marker-container').forEach(item => item.classList.remove('active-marker'));
+    // Set this marker active
+    el.classList.add('active-marker');
+    // Open sidebar pane
+    showVillageInfo(village);
+  });
+
+  popup.on('close', () => {
+    el.classList.remove('active-marker');
+  });
 
   const marker = new maplibregl.Marker({ element: el })
     .setLngLat([village.coordinates[1], village.coordinates[0]])
     .setPopup(popup)
     .addTo(map);
-
-  marker.getElement().addEventListener('click', (e) => {
-    e.stopPropagation();
-
-    popup
-      .setLngLat([village.coordinates[1], village.coordinates[0]])
-      .addTo(map);
-
-    showVillageInfo(village);
-  });
 
   markers.push({
     id: village.id,
@@ -401,7 +452,8 @@ async function updateMarkerColors() {
   // If not showing health view, reset to default colors
   if (!showHealth) {
     markers.forEach((m) => {
-      m.element.style.background = '#f4a261';
+      const dot = m.element.querySelector('.marker-dot') || m.element;
+      dot.style.background = '#f4a261';
     });
     return;
   }
@@ -416,11 +468,12 @@ async function updateMarkerColors() {
 
   results.forEach((result, idx) => {
     const el = markers[idx].element;
+    const dot = el.querySelector('.marker-dot') || el;
     let color = '#ff4d4d'; // Endangered (red)
     if (result.category === 'Thriving') color = '#4caf50'; // green
     else if (result.category === 'Stable') color = '#2196f3'; // blue
     else if (result.category === 'Vulnerable') color = '#ff9800'; // orange
-    el.style.background = color;
+    dot.style.background = color;
     // Optionally set tooltip
     el.title = `${result.category} (${result.score}/100)`;
   });

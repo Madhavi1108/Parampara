@@ -2563,3 +2563,167 @@ body > * {
     color: #ffffff;
     padding-left: 1.5rem;
 }
+
+/* ==========================================================================
+   Custom Village Feed Card Enhancements
+   ========================================================================== */
+.post-card {
+  position: relative;
+  overflow: hidden;
+  border-top: 4px solid var(--accent-color);
+  background: var(--card-bg) !important;
+  border-radius: var(--border-radius);
+  padding: 1.8rem !important;
+  box-shadow: var(--shadow);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--text-dark) !important;
+  border: 1px solid rgba(139, 69, 19, 0.12) !important;
+}
+
+.post-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(45, 24, 16, 0.5) !important;
+  border-top-color: var(--mustard);
+}
+
+.post-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  width: 100%;
+}
+
+.post-type-icon {
+  font-size: 1.3rem;
+  background: rgba(205, 133, 63, 0.1);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.post-card h4 {
+  color: var(--text-strong) !important;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Georgia', serif;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.post-card .post-meta {
+  color: var(--text-muted) !important;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.post-card .post-content {
+  flex: 1;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+  color: var(--text-dark) !important;
+}
+
+.post-card .markdown-body,
+.post-card .markdown-body p,
+.post-card .markdown-body li,
+.post-card .markdown-body strong,
+.post-card .markdown-body em {
+  color: var(--text-dark) !important;
+}
+
+.read-more-btn {
+  background: none !important;
+  border: none !important;
+  color: var(--accent-color) !important;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 0 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  transition: all 0.2s ease;
+  margin-top: auto;
+  font-family: 'Georgia', serif;
+}
+
+.read-more-btn:hover {
+  color: var(--terracotta) !important;
+  text-decoration: underline;
+}
+
+.post-card .report-post-btn {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: rgba(178, 34, 34, 0.05) !important;
+  border: 1px solid rgba(178, 34, 34, 0.15) !important;
+  color: var(--rust-red) !important;
+  font-size: 0.75rem !important;
+  padding: 0.3rem 0.7rem !important;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+.post-card .report-post-btn:hover {
+  background: rgba(178, 34, 34, 0.15) !important;
+  opacity: 1;
+}
+
+/* Category Specific Border Accents */
+.post-card[data-type="update"] { border-top-color: #31708f; }
+.post-card[data-type="craft"] { border-top-color: #8a6d3b; }
+.post-card[data-type="story"] { border-top-color: #3c763d; }
+.post-card[data-type="restoration"] { border-top-color: #a94442; }
+.post-card[data-type="art"] { border-top-color: var(--terracotta); }
+.post-card[data-type="music"] { border-top-color: var(--primary-color); }
+
+/* ==========================================================================
+   Premium Footer Readability Fixes
+   ========================================================================== */
+.heritage-footer {
+    background: linear-gradient(180deg, #120c08 0%, #1c0f0a 100%) !important;
+    color: #e6dfd5 !important;
+}
+
+.brand-description {
+    color: #dfd5c6 !important;
+    font-size: 0.95rem;
+}
+
+.footer-links li a {
+    color: #dfd5c6 !important;
+}
+
+.footer-links li a:hover {
+    color: #d4a853 !important;
+}
+
+.newsletter-text {
+    color: #dfd5c6 !important;
+}
+
+.footer-contact p {
+    color: #dfd5c6 !important;
+}
+
+.footer-bottom-content p.copyright {
+    color: #a8988a !important;
+}
+
+.newsletter-group input {
+    color: #ffffff !important;
+}
+
+.newsletter-group input::placeholder {
+    color: #a8988a !important;
+}
