@@ -378,3 +378,91 @@
   font-weight: bold;
   color: var(--warm-beige);
 }
+
+/* Route Finder Control UI Redesign */
+.route-finder-control {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+  background: rgba(35, 18, 10, 0.75) !important;
+  border: 1px solid rgba(244, 162, 97, 0.25);
+  padding: 1.25rem 2rem !important;
+  border-radius: 16px !important;
+  width: 100%;
+  max-width: 850px;
+  margin-left: auto;
+  margin-right: auto;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.route-finder-control strong {
+  color: var(--wheat-yellow);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 8px;
+}
+
+.route-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(244, 162, 97, 0.3);
+  border-radius: 30px;
+  color: #fff8dc;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s ease;
+  min-width: 180px;
+}
+
+.route-input:focus {
+  border-color: #f4a261;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(244, 162, 97, 0.3);
+}
+
+.route-input::placeholder {
+  color: rgba(245, 222, 179, 0.5);
+}
+
+.route-finder-control select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(244, 162, 97, 0.3);
+  border-radius: 30px;
+  color: #fff8dc;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  outline: none;
+  min-width: 140px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.route-finder-control select:hover {
+  border-color: #f4a261;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.route-finder-control select option {
+  background: #2c1810;
+  color: #fff8dc;
+}
+
+#btn-find-route {
+  border-radius: 30px !important;
+  padding: 0.6rem 1.8rem !important;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+#btn-find-route:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(244, 162, 97, 0.4);
+}

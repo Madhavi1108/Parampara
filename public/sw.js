@@ -1,6 +1,6 @@
 importScripts('/scripts/idb-storage.js');
 
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CORE_CACHE = `parampara-core-${CACHE_VERSION}`;
 const API_CACHE = `parampara-api-${CACHE_VERSION}`;
 const MEDIA_CACHE = `parampara-media-${CACHE_VERSION}`;
@@ -59,6 +59,11 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   
   const url = new URL(event.request.url);
+
+  // Exclude Server-Sent Events (SSE) streams from service worker interception
+  if (url.pathname.includes('/stream') || event.request.headers.get('Accept') === 'text/event-stream') {
+    return;
+  }
 
   // Strategy 1: IndexedDB API Caching for JSON responses
   if (url.pathname.startsWith('/api/')) {
