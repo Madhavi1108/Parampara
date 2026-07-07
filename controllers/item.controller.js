@@ -15,10 +15,8 @@ const notificationService = require('../server/services/notificationService');
  * @param {Object} req Express request object containing query parameters.
  * @param {Object} res Express response object.
  */
-const getItems = (req, res) =>
-{
-    try
-    {
+const getItems = (req, res) => {
+    try {
         let culturalAssets = store.culturalItems || [];
 
         // Apply Spatial Bounding Box Filter if 'bounds' query is provided
@@ -41,8 +39,7 @@ const getItems = (req, res) =>
         var fullTextSearchQuery = req.query.search;
 
         // Utilize the TF-IDF indexing search engine for full-text queries
-        if (fullTextSearchQuery)
-        {
+        if (fullTextSearchQuery) {
             culturalAssets = store.searchEngine.search(fullTextSearchQuery, 'culturalItem');
 
             // Ensure hidden items never reappear in search results
@@ -50,17 +47,15 @@ const getItems = (req, res) =>
         }
 
         // Filter items based on specified type category (skip if set to 'all')
-        if (categoryTypeFilter && categoryTypeFilter !== 'all')
-        {
-            culturalAssets = culturalAssets.filter(function(asset)
-            {
+        if (categoryTypeFilter && categoryTypeFilter !== 'all') {
+            culturalAssets = culturalAssets.filter(function (asset) {
                 return asset.type === categoryTypeFilter;
             });
         }
 
         var yearFilter = req.query.year;
         if (yearFilter && yearFilter !== 'All') {
-            culturalAssets = culturalAssets.filter(function(asset) {
+            culturalAssets = culturalAssets.filter(function (asset) {
                 return asset.year && asset.year.toString() === yearFilter.toString();
             });
         }
@@ -70,7 +65,7 @@ const getItems = (req, res) =>
         var totalPagesCount = Math.ceil(totalMatchedItems / itemsPerPageLimit);
         var paginationOffset = (activePage - 1) * itemsPerPageLimit;
         var paginationUpperLimit = paginationOffset + itemsPerPageLimit;
-        
+
         // Slice active assets block for client response
         var pagedCulturalItems = culturalAssets.slice(paginationOffset, paginationUpperLimit);
 
@@ -85,8 +80,7 @@ const getItems = (req, res) =>
             }
         });
     }
-    catch (fetchError)
-    {
+    catch (fetchError) {
         console.error('[Item Controller] Failed to fetch cultural items:', fetchError);
         res.status(500).json({ error: 'Error fetching items' });
     }
@@ -98,17 +92,14 @@ const getItems = (req, res) =>
  * @param {Object} req Express request object containing item payload in body.
  * @param {Object} res Express response object.
  */
-const createItem = (req, res) =>
-{
-    try
-    {
+const createItem = (req, res) => {
+    try {
         var title = req.body.title;
         var type = req.body.type;
         var location = req.body.location;
 
         // Enforce presence of essential fields
-        if (!title || !type || !location)
-        {
+        if (!title || !type || !location) {
             return res.status(400).json({
                 error: 'Missing required fields: title, type, location',
             });
@@ -131,7 +122,7 @@ const createItem = (req, res) =>
                 : [];
         createdAsset.timestamp = new Date().toISOString();
         createdAsset.authorId = req.user ? req.user.id : null;
-        
+
         // Hashing for tamper detection
         const { hashObject } = require('../server/utils/hashUtils');
         if (req.body.hash) {
@@ -160,8 +151,7 @@ const createItem = (req, res) =>
         // Return the newly created asset
         res.status(201).json(createdAsset);
     }
-    catch (insertionError)
-    {
+    catch (insertionError) {
         console.error('[Item Controller] Failed to create item:', insertionError);
         res.status(500).json({
             error: 'Error adding item',
@@ -173,18 +163,34 @@ const deleteItem = (req, res) => {
     try {
         const id = req.params.id;
         const index = store.culturalItems.findIndex(i => i.id === id);
+
         if (index === -1) {
             return res.status(404).json({ error: 'Item not found' });
         }
-        
-        // Manually rebuild array to avoid missing prototype methods on Proxy
+
+        // Remove item from the primary collection
         const filtered = store.culturalItems.filter(i => i.id !== id);
         store.culturalItems.length = 0;
         filtered.forEach(item => store.culturalItems.push(item));
-        
+
+        // Rebuild spatial index so deleted items do not remain in map/bounds results
+        if (store.culturalItemsQuadTree) {
+            if (typeof store.culturalItemsQuadTree.clear === 'function') {
+                store.culturalItemsQuadTree.clear();
+            } else if (Array.isArray(store.culturalItemsQuadTree.items)) {
+                store.culturalItemsQuadTree.items.length = 0;
+            }
+
+            if (typeof store.culturalItemsQuadTree.insert === 'function') {
+                store.culturalItems.forEach(item => {
+                    store.culturalItemsQuadTree.insert(item);
+                });
+            }
+        }
+
         apiCache.invalidateByPrefix('/api/items');
         apiCache.invalidateByPrefix('/api/search');
-        
+
         res.json({ message: 'Item deleted successfully' });
     } catch (error) {
         console.error('[Item Controller] Failed to delete item:', error);
