@@ -1,6 +1,14 @@
 const store = require('../data/store');
+const bcrypt = require('bcryptjs');
 
 function initializeSampleData() {
+  const salt = bcrypt.genSaltSync(10);
+  // store.users is an LRUCache, so we use set()
+  store.users.set('admin1', { id: 'admin1', username: 'admin', passwordHash: bcrypt.hashSync('admin123', salt), role: 'Administrator' });
+  store.users.set('curator1', { id: 'curator1', username: 'curator', passwordHash: bcrypt.hashSync('curator123', salt), role: 'Curator' });
+  store.users.set('contrib1', { id: 'contrib1', username: 'contributor', passwordHash: bcrypt.hashSync('contrib123', salt), role: 'Contributor' });
+  store.users.set('visitor1', { id: 'visitor1', username: 'visitor', passwordHash: bcrypt.hashSync('visitor123', salt), role: 'Visitor' });
+
   store.culturalItems.push({
     id: '1',
     title: 'Kantha Embroidery Patterns',
@@ -16,6 +24,7 @@ function initializeSampleData() {
     records: 15,
     lastUpdated: '2026-05-15',
     engagement: 85,
+    authorId: 'contrib1',
   });
 
   store.culturalItems.push({
@@ -33,6 +42,7 @@ function initializeSampleData() {
     records: 5,
     lastUpdated: '2024-01-10',
     engagement: 40,
+    authorId: 'curator1',
   });
 
   store.culturalItems.push({
@@ -84,6 +94,23 @@ function initializeSampleData() {
     records: 1,
     lastUpdated: '2024-11-20',
     engagement: 20,
+  });
+
+  store.culturalItems.push({
+    id: '6',
+    title: 'Sundarbans Folk Tales',
+    type: 'story',
+    location: 'Sundarbans Village',
+    coordinates: [21.9497, 88.8156],
+    description:
+      'Traditional stories about Bonbibi and honey collectors of the Sundarbans.',
+    tags: ['folklore', 'storytelling'],
+    year: 1950,
+    timestamp: new Date().toISOString(),
+    artisans: 5,
+    records: 4,
+    lastUpdated: '2026-06-20',
+    engagement: 75,
   });
 
   // ── Heritage Paths sample data ─────────────────────────────────────────────
@@ -138,7 +165,7 @@ function initializeSampleData() {
     description:
       'Journey through the seasonal festivals that shape rural life — from Chhath Puja to Bastar Lokotsav.',
     theme: 'Festivals',
-    items: ['1', '2', '3', '4', '5'],
+    items: ['1', '2', '3', '4', '5', '6'],
   });
 
   // Artisan sample data

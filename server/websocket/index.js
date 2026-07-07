@@ -5,10 +5,14 @@ const triviaQuestions = require('../../config/triviaData');
 class CollaborativeMapServer {
   constructor(port = 8080) {
     this.wss = new WebSocket.Server({ port });
+    this.wss.on('error', (err) => {
+      console.error(`❌ WebSocket Server Error on port ${port}:`, err.message);
+    });
     this.clients = new Map(); // userId -> { ws, username, cursor }
     this.markers = new Map(); // markerId -> marker data
     this.rooms = new Map(); // roomId -> Set of userIds
     this.operationHistory = [];
+    this.moderationVotes = new Map(); // itemId -> Set of peerIds who voted (for real-time tracking)
     
     // Trivia Game State
     this.triviaGames = new Map(); // roomId -> game state
@@ -123,6 +127,25 @@ class CollaborativeMapServer {
         break;
       case 'trivia:answer':
         this.handleTriviaAnswer(userId, message.roomId, message.answerIndex, message.timeTaken);
+        break;
+      // WEBRTC SYNC SIGNALING
+      case 'sync:join':
+        this.handleSyncJoin(userId);
+        break;
+      case 'webrtc:offer':
+      case 'webrtc:answer':
+      case 'webrtc:candidate':
+        this.handleWebRTCSignaling(userId, message);
+        break;
+      // MODERATION CONSENSUS
+      case 'moderation:join':
+        this.handleModerationJoin(userId, message.username);
+        break;
+      case 'moderation:request':
+        this.handleModerationRequest(userId, message.data);
+        break;
+      case 'moderation:vote-broadcast':
+        this.handleModerationVoteBroadcast(userId, message.data);
         break;
       default:
         client.ws.send(JSON.stringify({
@@ -487,6 +510,115 @@ class CollaborativeMapServer {
     // Keep only last 1000 operations to prevent memory issues
     if (this.operationHistory.length > 1000) {
       this.operationHistory.shift();
+    }
+  }
+
+  // ==================== MODERATION CONSENSUS ====================
+
+  handleModerationJoin(userId, username) {
+    const client = this.clients.get(userId);
+    if (!client) return;
+
+    if (username) client.username = username;
+
+    const roomId = 'moderation-room';
+    if (!this.rooms.has(roomId)) this.rooms.set(roomId, new Set());
+    this.rooms.get(roomId).add(userId);
+    client.roomId = roomId;
+
+    // Inform the joining peer of existing moderators
+    const peers = Array.from(this.rooms.get(roomId))
+      .filter(id => id !== userId)
+      .map(id => {
+        const c = this.clients.get(id);
+        return { userId: id, username: c ? c.username : 'Unknown' };
+      });
+
+    client.ws.send(JSON.stringify({
+      type: 'moderation:joined',
+      userId,
+      peers,
+      timestamp: new Date().toISOString()
+    }));
+
+    // Broadcast new moderator to others
+    this.broadcastToRoom(roomId, {
+      type: 'moderation:peer-joined',
+      userId,
+      username: client.username,
+      timestamp: new Date().toISOString()
+    }, client.ws);
+  }
+
+  handleModerationRequest(userId, data) {
+    // Broadcast a new submission to all moderators so they can review it
+    this.broadcastToRoom('moderation-room', {
+      type: 'moderation:new-item',
+      data,
+      fromUserId: userId,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  handleModerationVoteBroadcast(userId, data) {
+    // Relay a vote result to all connected moderators for live UI update
+    this.broadcastToRoom('moderation-room', {
+      type: 'moderation:vote-update',
+      data,
+      fromUserId: userId,
+      timestamp: new Date().toISOString()
+    }, this.clients.get(userId)?.ws);
+  }
+
+  // ==================== WEBSOCKET SYNC NETWORK ====================
+
+  handleSyncJoin(userId) {
+    const client = this.clients.get(userId);
+    if (!client) return;
+
+    // Put client in sync room
+    const roomId = 'sync-network';
+    client.roomId = roomId;
+
+    if (!this.rooms.has(roomId)) {
+      this.rooms.set(roomId, new Set());
+    }
+    this.rooms.get(roomId).add(userId);
+
+    // Get all peers in sync network
+    const peers = Array.from(this.rooms.get(roomId))
+      .filter(id => id !== userId) // exclude self
+      .map(id => {
+        const c = this.clients.get(id);
+        return { userId: id, username: c ? c.username : 'Unknown' };
+      });
+
+    // Send the current peer list to the joining node
+    client.ws.send(JSON.stringify({
+      type: 'sync:peers',
+      peers
+    }));
+
+    // Broadcast to other peers that this node joined
+    this.broadcastToRoom(roomId, {
+      type: 'sync:peer-joined',
+      userId,
+      username: client.username
+    }, client.ws);
+  }
+
+  handleWebRTCSignaling(sourceUserId, message) {
+    const { targetId } = message;
+    if (!targetId) return;
+
+    const targetClient = this.clients.get(targetId);
+    if (targetClient && targetClient.ws.readyState === WebSocket.OPEN) {
+      // Relay the signaling message to the target client exactly as is, 
+      // but inject the sourceUserId so the target knows who sent it
+      targetClient.ws.send(JSON.stringify({
+        ...message,
+        sourceId: sourceUserId
+      }));
     }
   }
 

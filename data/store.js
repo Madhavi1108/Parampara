@@ -23,10 +23,20 @@ const store = {
     createAuditProxy('heritagePaths', new LRUCache(1000), auditLog)
   ),
   userProgress: {}, // Keep as object for fast lookup by userId
+  userNotifications: {}, // Tracks read state per user: { [userId]: { readIds: Set, preferences: {} } }
+  publicKeys: new Map(), // { userId -> { publicKeyJwk, timestamp } }
+  familyArchives: new LRUCache(1000), // E2EE Archives
+  audioMetadata: new LRUCache(1000), // Processed audio metadata
+  moderationQueue: new LRUCache(500), // Pending moderation items
+  trustedPeers: new Map(),            // peerId -> { secretHash, username, registeredAt }
+  moderationLog: [],                  // Audit trail (capped at 500)
+  uploadSessions: new LRUCache(200),  // Chunked upload sessions
   villagePosts: createSearchProxy(
     searchEngine, 'villagePost', ['title', 'village', 'content', 'type'],
     createAuditProxy('villagePosts', new LRUCache(1000), auditLog)
   ),
+  refreshTokens: new LRUCache(500),
+  users: createAuditProxy('users', new LRUCache(100), auditLog),
   contributors: createAuditProxy('contributors', new LRUCache(500), auditLog),
   timelineEvents: createSearchProxy(
     searchEngine, 'timelineEvent', ['item', 'type', 'description'],

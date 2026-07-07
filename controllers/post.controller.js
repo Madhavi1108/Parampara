@@ -2,6 +2,7 @@ const store = require('../data/store');
 const sseManager = require('../utils/sseManager');
 const { apiCache } = require('../middleware/lruCache');
 const { BoundingBox } = require('../utils/QuadTree');
+const notificationService = require('../server/services/notificationService');
 
 const getPosts = (req, res) => {
   let posts = typeof store.villagePosts.values === 'function' ? store.villagePosts.values() : store.villagePosts;

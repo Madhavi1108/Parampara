@@ -7,15 +7,17 @@ let isLoading = false;
 let hasMore = true;
 let observer = null;
 // SVG hearts (inline, no font dependency)
-const HEART_FILLED = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#e53e3e" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
-const HEART_EMPTY = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+const HEART_FILLED =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#e53e3e" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+const HEART_EMPTY =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
 
 document.addEventListener('DOMContentLoaded', () => {
   setupIntersectionObserver();
-  
+
   window.galleryTimeMachine = new TimeMachineEngine({
     containerId: 'gallery-time-machine-container',
-    eras: ['All', '1950', '1980', '2000', '2025']
+    eras: ['All', '1950', '1980', '2000', '2025'],
   });
 
   window.addEventListener('parampara:timemachine:change', (e) => {
@@ -33,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadGalleryItems(1, false);
   setupEventListeners();
-  setupFavDelegation();  // ← single listener handles ALL heart clicks
+  setupFavDelegation(); // ← single listener handles ALL heart clicks
   setupShareDelegation();
 
   // Setup Markdown live preview
@@ -59,9 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
           ['bold', 'italic', 'underline'],
           [{ header: [1, 2, 3, false] }],
           [{ list: 'ordered' }, { list: 'bullet' }],
-          ['link']
-        ]
-      }
+          ['link'],
+        ],
+      },
     });
   }
 
@@ -79,14 +81,17 @@ function setupFavDelegation() {
   grid.addEventListener('click', function (e) {
     // Walk up from the clicked element to find a .favorite-btn
     const btn = e.target.closest('.favorite-btn');
-    if (!btn) return;          // not a heart button click
-    e.stopPropagation();       // don't open the item card
+    if (!btn) return; // not a heart button click
+    e.stopPropagation(); // don't open the item card
 
     const itemId = btn.dataset.itemId;
     if (!itemId) return;
 
     const fm = window.FavoritesManager;
-    if (!fm) { console.warn('FavoritesManager not loaded'); return; }
+    if (!fm) {
+      console.warn('FavoritesManager not loaded');
+      return;
+    }
 
     fm.toggleFavorite(itemId);
     const isFav = fm.isFavorite(itemId);
@@ -96,7 +101,12 @@ function setupFavDelegation() {
     btn.classList.toggle('favorited', isFav);
     btn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
 
-    console.log('[Parampara] Favorite toggled:', itemId, '→', isFav ? 'ADDED' : 'REMOVED');
+    console.log(
+      '[Parampara] Favorite toggled:',
+      itemId,
+      '→',
+      isFav ? 'ADDED' : 'REMOVED'
+    );
   });
 }
 
@@ -111,14 +121,18 @@ function setupShareDelegation() {
     const itemId = btn.dataset.itemId;
     if (!itemId) return;
 
-    const item = allItems.find(i => i.id === itemId);
+    const item = allItems.find((i) => i.id === itemId);
     if (!item) return;
 
     if (window.ShareManager) {
       window.ShareManager.share({
         title: item.title,
         text: item.description,
-        url: window.location.origin + window.location.pathname + '?item=' + encodeURIComponent(item.id)
+        url:
+          window.location.origin +
+          window.location.pathname +
+          '?item=' +
+          encodeURIComponent(item.id),
       });
     } else {
       console.warn('ShareManager not loaded');
@@ -200,10 +214,19 @@ function setupEventListeners() {
     .getElementById('type-filter')
     .addEventListener('change', filterItems);
 
+  const stateFilterEl = document.getElementById('state-filter');
+  if (stateFilterEl) {
+    stateFilterEl.addEventListener('change', filterItems);
+  }
+  const sortSelectEl = document.getElementById('sort-select');
+  if (sortSelectEl) {
+    sortSelectEl.addEventListener('change', filterItems);
+  }
+
   // Setup Image Compression
   const imageUpload = document.getElementById('image-upload');
   const imageQuality = document.getElementById('image-quality');
-  
+
   if (imageUpload) {
     const handleImageCompression = async () => {
       const file = imageUpload.files[0];
@@ -219,21 +242,25 @@ function setupEventListeners() {
 
       uiContainer.style.display = 'block';
       origSizeEl.textContent = 'Processing...';
-      
+
       try {
         if (!window.ImageOptimizer) {
           throw new Error('ImageOptimizer not loaded');
         }
-        
+
         const stats = await window.ImageOptimizer.compressImage(file, quality);
-        
-        origSizeEl.textContent = window.ImageOptimizer.formatBytes(stats.originalSize);
-        compSizeEl.textContent = window.ImageOptimizer.formatBytes(stats.compressedSize);
+
+        origSizeEl.textContent = window.ImageOptimizer.formatBytes(
+          stats.originalSize
+        );
+        compSizeEl.textContent = window.ImageOptimizer.formatBytes(
+          stats.compressedSize
+        );
         savePercentEl.textContent = stats.savingsPercent + '%';
-        
+
         previewEl.src = stats.dataUrl;
         previewEl.style.display = 'inline-block';
-        
+
         // Auto-fill the URL input with base64 data
         if (urlInput) {
           urlInput.value = stats.dataUrl;
@@ -257,28 +284,31 @@ function setupIntersectionObserver() {
   const sentinel = document.getElementById('intersection-sentinel');
   if (!sentinel) return;
 
-  observer = new IntersectionObserver((entries) => {
-    const entry = entries[0];
-    if (entry.isIntersecting && !isLoading && hasMore) {
-      currentPage++;
-      loadGalleryItems(currentPage, true);
+  observer = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0];
+      if (entry.isIntersecting && !isLoading && hasMore) {
+        currentPage++;
+        loadGalleryItems(currentPage, true);
+      }
+    },
+    {
+      root: null,
+      rootMargin: '100px',
+      threshold: 0.1,
     }
-  }, {
-    root: null,
-    rootMargin: '100px',
-    threshold: 0.1
-  });
+  );
 
   observer.observe(sentinel);
 }
 
 async function loadGalleryItems(page = 1, append = false) {
-  if (isLoading || !hasMore && append) return;
+  if (isLoading || (!hasMore && append)) return;
 
   isLoading = true;
   const galleryGrid = document.getElementById('gallery-grid');
   const loadingIndicator = document.getElementById('loading-indicator');
-  
+
   if (window.SkeletonEngine) {
     if (append) {
       window.SkeletonEngine.show(galleryGrid, 'card', limit, true);
@@ -292,8 +322,10 @@ async function loadGalleryItems(page = 1, append = false) {
   try {
     const searchTerm = document.getElementById('search-input').value.trim();
     const typeFilter = document.getElementById('type-filter').value;
+    const stateFilter = document.getElementById('state-filter');
+    const sortSelect = document.getElementById('sort-select');
 
-    let url = `/api/items?page=${page}&limit=${limit}`;
+    let url = `/api/gallery?page=${page}&limit=${limit}`;
     if (typeFilter !== 'all') url += `&type=${typeFilter}`;
     if (window.galleryActiveEra && window.galleryActiveEra !== 'All') {
       url += `&year=${window.galleryActiveEra}`;
@@ -301,8 +333,17 @@ async function loadGalleryItems(page = 1, append = false) {
     if (searchTerm) {
       url += `&search=${encodeURIComponent(searchTerm)}`;
       if (window.Telemetry) {
-        window.Telemetry.track('search', { query: searchTerm, type: typeFilter });
+        window.Telemetry.track('search', {
+          query: searchTerm,
+          type: typeFilter,
+        });
       }
+    }
+    if (stateFilter && stateFilter.value !== 'all') {
+      url += `&state=${encodeURIComponent(stateFilter.value)}`;
+    }
+    if (sortSelect && sortSelect.value) {
+      url += `&sort=${encodeURIComponent(sortSelect.value)}`;
     }
 
     const response = await fetch(url);
@@ -310,7 +351,10 @@ async function loadGalleryItems(page = 1, append = false) {
 
     // Check if new format
     let items = [];
-    if (result && result.data && result.meta) {
+    if (result && result.success && result.data && result.pagination) {
+      items = result.data;
+      hasMore = result.pagination.page < result.pagination.totalPages;
+    } else if (result && result.data && result.meta) {
       items = result.data;
       hasMore = result.meta.currentPage < result.meta.totalPages;
     } else {
@@ -370,8 +414,8 @@ let lastGalleryVirtualTree = null;
 let galleryViewportNode = null;
 
 // Re-render on language change
-window.addEventListener('parampara:langchange', async () => {
-  displayItems(await getCurrentFilteredItems());
+window.addEventListener('parampara:langchange', () => {
+  displayItems(allItems);
 });
 
 const GalleryItemComponent = ({ item }) => {
@@ -518,7 +562,9 @@ function getTypeIcon(type) {
 }
 
 async function getCurrentFilteredItems() {
-  const searchTerm = document.getElementById('search-input').value.toLowerCase();
+  const searchTerm = document
+    .getElementById('search-input')
+    .value.toLowerCase();
   const typeFilter = document.getElementById('type-filter').value;
 
   const galleryGrid = document.getElementById('gallery-grid');
@@ -530,7 +576,7 @@ async function getCurrentFilteredItems() {
     const filtered = await window.dataWorker.runJob('filterGalleryItems', {
       items: allItems,
       typeFilter,
-      searchTerm
+      searchTerm,
     });
 
     return filtered;
@@ -547,9 +593,7 @@ async function getCurrentFilteredItems() {
 async function filterItems() {
   currentPage = 1;
   hasMore = true;
-
-  const filtered = await getCurrentFilteredItems();
-  displayItems(filtered);
+  await loadGalleryItems(1, false);
 }
 
 async function handleAddItem(e) {
@@ -586,25 +630,39 @@ async function handleAddItem(e) {
 
   function isValidUrl(str) {
     if (str.startsWith('data:image/')) return true;
-    try { new URL(str); return true; } catch { return false; }
+    try {
+      new URL(str);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   if (!title) showError('title', 'Title is required.');
   if (!location) showError('location', 'Location/Village is required.');
   if (!description) showError('description', 'Description is required.');
   if (imageUrl && !isValidUrl(imageUrl))
-    showError('imageUrl', 'Please enter a valid URL (e.g. https://example.com/image.jpg).');
+    showError(
+      'imageUrl',
+      'Please enter a valid URL (e.g. https://example.com/image.jpg).'
+    );
   if (audioUrl && !isValidUrl(audioUrl))
     showError('audioUrl', 'Please enter a valid URL.');
 
   if (hasError) return;
 
   const data = {
-    title, type, location, description,
+    title,
+    type,
+    location,
+    description,
     imageUrl: imageUrl || '',
     audioUrl: audioUrl || '',
     tags: formData.get('tags')
-      ? formData.get('tags').split(',').map((t) => t.trim())
+      ? formData
+          .get('tags')
+          .split(',')
+          .map((t) => t.trim())
       : [],
   };
 
@@ -623,11 +681,16 @@ async function handleAddItem(e) {
       e.target.reset();
       const uiContainer = document.getElementById('image-optimization-ui');
       if (uiContainer) uiContainer.style.display = 'none';
-      
+
       const markdownPreview = document.getElementById('markdown-preview');
       if (markdownPreview) markdownPreview.innerHTML = '';
       document.getElementById('add-item-modal').classList.remove('active');
-      window.SyncManager ? window.SyncManager.showToast(tGallery('gallery_item_added'), 'success') : alert(tGallery('gallery_item_added'));
+      window.SyncManager
+        ? window.SyncManager.showToast(
+            tGallery('gallery_item_added'),
+            'success'
+          )
+        : alert(tGallery('gallery_item_added'));
     } else {
       throw new Error(`Server returned status ${response.status}`);
     }
@@ -635,30 +698,40 @@ async function handleAddItem(e) {
     console.error('Error adding item:', error);
 
     // Offline submission handling
-    const isNetworkError = !navigator.onLine ||
+    const isNetworkError =
+      !navigator.onLine ||
       error.message.includes('Failed to fetch') ||
       error.message.includes('NetworkError');
 
     if (isNetworkError && window.SyncManager) {
       try {
-        await window.SyncManager.enqueue('/api/items', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        }, { title: data.title });
+        await window.SyncManager.enqueue(
+          '/api/items',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          },
+          { title: data.title }
+        );
 
         e.target.reset();
         if (quillEditor) {
           quillEditor.root.innerHTML = '';
         }
         document.getElementById('add-item-modal').classList.remove('active');
-        window.SyncManager.showToast('Network is unavailable. Your submission has been saved locally and will be synced automatically when online.', 'info');
+        window.SyncManager.showToast(
+          'Network is unavailable. Your submission has been saved locally and will be synced automatically when online.',
+          'info'
+        );
       } catch (syncErr) {
         console.error('Failed to save to offline queue:', syncErr);
         window.SyncManager.showToast(tGallery('gallery_item_error'), 'error');
       }
     } else {
-      window.SyncManager ? window.SyncManager.showToast(tGallery('gallery_item_error'), 'error') : alert(tGallery('gallery_item_error'));
+      window.SyncManager
+        ? window.SyncManager.showToast(tGallery('gallery_item_error'), 'error')
+        : alert(tGallery('gallery_item_error'));
     }
   }
 }
@@ -679,19 +752,31 @@ function viewItem(id) {
 
   if (!lightbox) {
     if (window.Telemetry) window.Telemetry.track('item_view', { itemId: id });
-    alert(`${tGallery('gallery_viewing')}: ${item.title}\n\n${item.description}`);
+    alert(
+      `${tGallery('gallery_viewing')}: ${item.title}\n\n${item.description}`
+    );
     return;
   }
 
-  if (window.Telemetry) window.Telemetry.track('item_view', { itemId: id, title: item.title });
+  if (window.Telemetry)
+    window.Telemetry.track('item_view', { itemId: id, title: item.title });
   // Set Info
   document.getElementById('lightbox-title').textContent = item.title;
   document.getElementById('lightbox-location').textContent = item.location;
-  document.getElementById('lightbox-type').textContent = translateType(item.type);
-  document.getElementById('lightbox-desc').innerHTML = renderMarkdown(item.description, true);
+  document.getElementById('lightbox-type').textContent = translateType(
+    item.type
+  );
+  document.getElementById('lightbox-desc').innerHTML = renderMarkdown(
+    item.description,
+    true
+  );
 
   const tagsContainer = document.getElementById('lightbox-tags');
-  tagsContainer.innerHTML = item.tags ? item.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join('') : '';
+  tagsContainer.innerHTML = item.tags
+    ? item.tags
+        .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
+        .join('')
+    : '';
 
   // Handle Image or fallback
   const lens = document.getElementById('magnifier-lens');
@@ -708,10 +793,9 @@ function viewItem(id) {
   lightbox.classList.add('active');
 }
 
-
 function setupMagnifier(img, lens, imgUrl) {
   // Disable if device supports touch/pointer is coarse
-  if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
+  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
     return;
   }
 
@@ -726,12 +810,12 @@ function setupMagnifier(img, lens, imgUrl) {
 
   lens.style.backgroundImage = `url('${imgUrl}')`;
 
-  img.addEventListener("mouseenter", () => {
-    lens.style.display = "block";
+  img.addEventListener('mouseenter', () => {
+    lens.style.display = 'block';
     lens.style.backgroundSize = `${img.width * zoomLevel}px ${img.height * zoomLevel}px`;
   });
 
-  img.addEventListener("mousemove", (e) => {
+  img.addEventListener('mousemove', (e) => {
     e.preventDefault();
     const pos = getCursorPos(e, img);
 
@@ -740,14 +824,14 @@ function setupMagnifier(img, lens, imgUrl) {
     lens.style.top = `${pos.y}px`;
 
     // Calculate background position
-    const bgX = (pos.x * zoomLevel) - (lens.offsetWidth / 2);
-    const bgY = (pos.y * zoomLevel) - (lens.offsetHeight / 2);
+    const bgX = pos.x * zoomLevel - lens.offsetWidth / 2;
+    const bgY = pos.y * zoomLevel - lens.offsetHeight / 2;
 
     lens.style.backgroundPosition = `-${bgX}px -${bgY}px`;
   });
 
-  img.addEventListener("mouseleave", () => {
-    lens.style.display = "none";
+  img.addEventListener('mouseleave', () => {
+    lens.style.display = 'none';
   });
 }
 
@@ -769,7 +853,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox || e.target.classList.contains('lightbox-layout') || e.target.classList.contains('lightbox-image-container')) {
+      if (
+        e.target === lightbox ||
+        e.target.classList.contains('lightbox-layout') ||
+        e.target.classList.contains('lightbox-image-container')
+      ) {
         lightbox.classList.remove('active');
       }
     });
@@ -789,7 +877,8 @@ function getSampleItems() {
       id: '1',
       type: 'visual',
       title: 'Kantha Embroidery Patterns',
-      description: 'Traditional Kantha embroidery from rural Bengal, featuring intricate running stitch patterns depicting village life and nature.',
+      description:
+        'Traditional Kantha embroidery from rural Bengal, featuring intricate running stitch patterns depicting village life and nature.',
       location: 'Kantha Village, Bengal',
       imageUrl: '',
       tags: ['embroidery', 'textile'],
@@ -798,7 +887,8 @@ function getSampleItems() {
       id: '2',
       type: 'audio',
       title: 'Folk Songs of Rajasthan',
-      description: 'A collection of traditional folk songs passed down through generations in rural Rajasthan.',
+      description:
+        'A collection of traditional folk songs passed down through generations in rural Rajasthan.',
       location: 'Jaisalmer, Rajasthan',
       imageUrl: '',
       tags: ['music', 'folk', 'oral-tradition'],
@@ -807,7 +897,8 @@ function getSampleItems() {
       id: '3',
       type: 'story',
       title: 'The Blue Door Legend',
-      description: 'An ancient story explaining why villagers in certain regions paint their doors blue to ward off evil spirits.',
+      description:
+        'An ancient story explaining why villagers in certain regions paint their doors blue to ward off evil spirits.',
       location: 'Jodhpur, Rajasthan',
       imageUrl: '',
       tags: ['legend', 'tradition', 'architecture'],
@@ -816,15 +907,18 @@ function getSampleItems() {
       id: '4',
       type: 'visual',
       title: 'Hawa Mahal Interior (360°)',
-      description: 'An immersive 360-degree view from inside the Palace of Winds.',
+      description:
+        'An immersive 360-degree view from inside the Palace of Winds.',
       location: 'Jaipur, Rajasthan',
-      imageUrl: 'https://images.unsplash.com/photo-1599661559863-718f6fdf3946?w=600&auto=format&fit=crop',
-      panoramaUrl: 'https://images.unsplash.com/photo-1557971370-e7298ee473cb?q=80&w=2560&auto=format&fit=crop', // Placeholder equirectangular
+      imageUrl:
+        'https://images.unsplash.com/photo-1599661559863-718f6fdf3946?w=600&auto=format&fit=crop',
+      panoramaUrl:
+        'https://images.unsplash.com/photo-1557971370-e7298ee473cb?q=80&w=2560&auto=format&fit=crop', // Placeholder equirectangular
       tags: ['architecture', '360', 'heritage'],
       hotspots: [
         { lat: 10, lon: 45, info: 'Intricate Jharokhas (windows)' },
-        { lat: -5, lon: -120, info: 'Courtyard view' }
-      ]
+        { lat: -5, lon: -120, info: 'Courtyard view' },
+      ],
     },
   ];
 }
