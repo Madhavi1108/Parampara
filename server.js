@@ -140,6 +140,11 @@ app.get('/p2p-share', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'p2p-share.html'));
 });
 
+// Theme Builder Route
+app.get('/theme-builder', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'theme-builder.html'));
+});
+
 // Quest Route
 app.get('/quest', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'quest.html'));
@@ -231,11 +236,9 @@ app.use('/api/gallery', galleryRoutes);
 const heritageScoreRoutes = require('./routes/heritageScore.routes');
 app.use('/api/heritage-score', heritageScoreRoutes);
 
-app.use('/api/paths', pathRoutes);
-app.use('/api/progress', progressRoutes);
-app.use('/api/posts', postRoutes);
-app.use('/api/chat', chatRoutes);
-app.use('/api/checkin', checkinRoutes);
+const themeRoutes = require('./routes/theme.routes');
+app.use('/api/themes', themeRoutes);
+
 app.use('/api/story-generator', storyRoutes);
 app.use('/api/artisans', artisanRoutes);
 app.use('/api/audit', auditRoutes);
