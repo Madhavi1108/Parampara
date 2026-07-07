@@ -602,6 +602,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Pre-fetch reviews to bootstrap LocalStorage
+  // Pre-fetch reviews to bootstrap LocalStorage dynamically
   getReviews();
 });
