@@ -156,6 +156,11 @@ async function applyFiltersAndSort() {
   saveFiltersToURL({ theme, sort, order });
   renderActiveFilterBadges({ theme, sort, order });
 
+  const pathsList = document.getElementById('paths-list');
+  if (window.SkeletonEngine) {
+    window.SkeletonEngine.show(pathsList, 'list', 5, false);
+  }
+
   try {
     const qs = params.toString();
     const res = await fetch(`/api/paths${qs ? '?' + qs : ''}`);
@@ -165,6 +170,10 @@ async function applyFiltersAndSort() {
   } catch (err) {
     console.error('Error loading paths, falling back to sample data:', err);
     allPaths = getSamplePaths();
+  }
+  
+  if (window.SkeletonEngine) {
+    window.SkeletonEngine.hide(pathsList);
   }
 
   totalPaths = allPaths.length;
@@ -402,7 +411,8 @@ async function loadItems() {
   try {
     const response = await fetch('/api/items');
     if (!response.ok) throw new Error('API error');
-    allItems = await response.json();
+    const data = await response.json();
+    allItems = Array.isArray(data) ? data : (data.data || []);
   } catch (error) {
     console.error('Error loading items, using samples:', error);
     allItems = getSampleItems();

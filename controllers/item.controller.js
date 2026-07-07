@@ -5,6 +5,9 @@
  */
 
 const store = require('../data/store');
+const { apiCache } = require('../middleware/lruCache');
+const { BoundingBox } = require('../utils/QuadTree');
+const notificationService = require('../server/services/notificationService');
 
 /**
  * Retrieves a list of cultural items with optional search, category filters, and pagination.
@@ -18,6 +21,19 @@ const getItems = (req, res) =>
     {
         let culturalAssets = store.culturalItems || [];
 
+        // Apply Spatial Bounding Box Filter if 'bounds' query is provided
+        if (req.query.bounds) {
+            const parts = req.query.bounds.split(',').map(Number);
+            if (parts.length === 4 && !parts.some(isNaN)) {
+                // frontend sends: minLng, minLat, maxLng, maxLat
+                const range = new BoundingBox(parts[1], parts[0], parts[3], parts[2]);
+                culturalAssets = store.culturalItemsQuadTree.search(range);
+            }
+        }
+
+        // Filter out hidden items
+        culturalAssets = culturalAssets.filter(item => !item.isHidden);
+
         // Extract and parse pagination config & query variables
         var activePage = parseInt(req.query.page, 10) || 1;
         var itemsPerPageLimit = parseInt(req.query.limit, 10) || 10;
@@ -28,6 +44,9 @@ const getItems = (req, res) =>
         if (fullTextSearchQuery)
         {
             culturalAssets = store.searchEngine.search(fullTextSearchQuery, 'culturalItem');
+
+            // Ensure hidden items never reappear in search results
+            culturalAssets = culturalAssets.filter(item => !item.isHidden);
         }
 
         // Filter items based on specified type category (skip if set to 'all')
@@ -36,6 +55,13 @@ const getItems = (req, res) =>
             culturalAssets = culturalAssets.filter(function(asset)
             {
                 return asset.type === categoryTypeFilter;
+            });
+        }
+
+        var yearFilter = req.query.year;
+        if (yearFilter && yearFilter !== 'All') {
+            culturalAssets = culturalAssets.filter(function(asset) {
+                return asset.year && asset.year.toString() === yearFilter.toString();
             });
         }
 
@@ -96,17 +122,32 @@ const createItem = (req, res) =>
         createdAsset.location = location;
         createdAsset.coordinates = req.body.coordinates || null;
         createdAsset.description = req.body.description || '';
-        createdAsset.imageUrl = req.body.imageUrl || '',
-        createdAsset.audioUrl = req.body.audioUrl || '',
+        createdAsset.imageUrl = req.body.imageUrl || '';
+        createdAsset.audioUrl = req.body.audioUrl || '';
         createdAsset.tags = Array.isArray(req.body.tags)
             ? req.body.tags
             : req.body.tags
                 ? [req.body.tags]
                 : [];
         createdAsset.timestamp = new Date().toISOString();
+        createdAsset.authorId = req.user ? req.user.id : null;
 
-        // Store in memory database
+        // Store in memory database and update spatial index
         store.culturalItems.push(createdAsset);
+        store.culturalItemsQuadTree.insert(createdAsset);
+
+        // Invalidate caches
+        apiCache.invalidateByPrefix('/api/items');
+        apiCache.invalidateByPrefix('/api/search');
+
+        // Broadcast notification
+        notificationService.broadcast('new_item', {
+            title: createdAsset.title,
+            type: createdAsset.type,
+            location: createdAsset.location,
+            id: createdAsset.id,
+            message: `New cultural asset added: ${createdAsset.title} in ${createdAsset.location}`
+        }, 'community');
 
         // Return the newly created asset
         res.status(201).json(createdAsset);
@@ -120,7 +161,31 @@ const createItem = (req, res) =>
     }
 };
 
+const deleteItem = (req, res) => {
+    try {
+        const id = req.params.id;
+        const index = store.culturalItems.findIndex(i => i.id === id);
+        if (index === -1) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+        
+        // Manually rebuild array to avoid missing prototype methods on Proxy
+        const filtered = store.culturalItems.filter(i => i.id !== id);
+        store.culturalItems.length = 0;
+        filtered.forEach(item => store.culturalItems.push(item));
+        
+        apiCache.invalidateByPrefix('/api/items');
+        apiCache.invalidateByPrefix('/api/search');
+        
+        res.json({ message: 'Item deleted successfully' });
+    } catch (error) {
+        console.error('[Item Controller] Failed to delete item:', error);
+        res.status(500).json({ error: 'Error deleting item' });
+    }
+};
+
 module.exports = {
     getItems,
     createItem,
+    deleteItem
 };

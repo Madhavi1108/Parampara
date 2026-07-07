@@ -1,0 +1,321 @@
+/* =========================================================================
+   Skeleton Screen UI Engine Styles - Advanced Framework
+   ========================================================================= */
+
+:root {
+  --skeleton-base: #e0e0e0;
+  --skeleton-shine: #f5f5f5;
+  --skeleton-border: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode compatibility based on Parampara theme toggle */
+body.dark-mode, [data-theme="dark"] {
+  --skeleton-base: #2a2a35;
+  --skeleton-shine: #3a3a4a;
+  --skeleton-border: rgba(255, 255, 255, 0.05);
+}
+
+.skeleton {
+  background: var(--skeleton-base);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* =========================================================================
+   ANIMATION VARIANTS
+   ========================================================================= */
+
+/* 1. Shimmer (Default) */
+.anim-shimmer .skeleton, 
+.skeleton.anim-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0px,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* 2. Pulse */
+.anim-pulse .skeleton,
+.skeleton.anim-pulse {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* 3. Wave (diagonal sweep) */
+.anim-wave .skeleton,
+.skeleton.anim-wave {
+  background-image: linear-gradient(
+    110deg,
+    var(--skeleton-base) 8%,
+    var(--skeleton-shine) 18%,
+    var(--skeleton-base) 33%
+  );
+  background-size: 200% 100%;
+  animation: wave 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse {
+  0% { background-color: var(--skeleton-base); }
+  50% { background-color: var(--skeleton-shine); }
+  100% { background-color: var(--skeleton-base); }
+}
+
+@keyframes wave {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Performance: pause offscreen animations */
+.skeleton-paused .skeleton,
+.skeleton-paused {
+  animation-play-state: paused !important;
+}
+
+/* Progressive Image Loading State */
+.skeleton-image-loaded {
+  transition: filter 0.3s ease-out, background-image 0.3s ease-out;
+}
+
+/* =========================================================================
+   STAGGER UTILITIES
+   ========================================================================= */
+.skeleton-delay-1 .skeleton { animation-delay: 0.1s; }
+.skeleton-delay-2 .skeleton { animation-delay: 0.2s; }
+.skeleton-delay-3 .skeleton { animation-delay: 0.3s; }
+.skeleton-delay-4 .skeleton { animation-delay: 0.4s; }
+.skeleton-delay-5 .skeleton { animation-delay: 0.5s; }
+
+/* Screen Reader Only (A11y) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* =========================================================================
+   COMPONENTS
+   ========================================================================= */
+
+/* 1. Card (Gallery, Posts) */
+.skeleton-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--theme-card-bg, var(--theme-card, #f9f6f0));
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px var(--skeleton-border);
+  height: 100%;
+  min-height: 300px;
+}
+
+body.dark-mode .skeleton-card, [data-theme="dark"] .skeleton-card {
+  background: var(--theme-card-bg, var(--theme-card, #2a2a2a));
+}
+
+.skeleton-card-img {
+  width: 100%;
+  height: 200px;
+  border-radius: 0;
+}
+
+.skeleton-card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+/* 2. Text elements */
+.skeleton-text {
+  height: 1rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.skeleton-text.title { height: 1.5rem; width: 70%; margin-bottom: 0.5rem; }
+.skeleton-text.short { width: 40%; }
+.skeleton-text.badge { height: 1.2rem; width: 60px; border-radius: 12px; margin-bottom: 0.5rem; }
+.skeleton-text.tags { display: flex; gap: 8px; margin-top: auto; padding-top: 1rem; }
+.skeleton-text.tags .skeleton-tag { height: 1.5rem; width: 60px; border-radius: 16px; }
+
+/* 3. List (Paths, Trails) */
+.skeleton-list-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--skeleton-border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: var(--theme-card-bg, var(--theme-card, transparent));
+}
+
+.skeleton-list-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.skeleton-list-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: center;
+}
+
+/* 4. Profile (Artisans) */
+.skeleton-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background: var(--theme-card, #fff);
+  border-radius: 16px;
+  gap: 1rem;
+}
+
+.skeleton-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+}
+
+.skeleton-profile-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skeleton-profile-stats {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  margin-top: 1.5rem;
+}
+
+.skeleton-stat-box {
+  width: 60px;
+  height: 50px;
+  border-radius: 8px;
+}
+
+/* 5. Chat Bubble (Talk to Elder) */
+.skeleton-chat-bubble {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  max-width: 80%;
+}
+
+.skeleton-avatar-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-chat-content {
+  background: var(--theme-surface, #f0f0f0);
+  padding: 1rem;
+  border-radius: 16px;
+  border-top-left-radius: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* 6. Dashboard Widget (Risk Dashboard) */
+.skeleton-widget {
+  background: var(--theme-card, #fff);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px var(--skeleton-border);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-widget-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skeleton-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.skeleton-graph {
+  height: 120px;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.skeleton-widget-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 7. Timeline Event */
+.skeleton-timeline-event {
+  display: flex;
+  gap: 2rem;
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.skeleton-timeline-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 4px solid var(--theme-bg);
+  box-shadow: 0 0 0 4px var(--skeleton-base);
+  z-index: 2;
+  margin-top: 0.2rem;
+}
+
+.skeleton-timeline-event::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 9px;
+  bottom: -2rem;
+  width: 2px;
+  background: var(--skeleton-base);
+}
+
+.skeleton-timeline-content {
+  flex: 1;
+  background: var(--theme-card, #fff);
+  padding: 1.5rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Container transitions */
+.skeleton-container {
+  display: contents;
+}

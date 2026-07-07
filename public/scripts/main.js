@@ -56,12 +56,78 @@ function initNavbar() {
 
 async function loadVillagePosts() {
   const DUMMY_POSTS = [
-    { titleKey: "post1_title", villageKey: "post1_village", contentKey: "post1_content", typeKey: "post1_type", timestamp: new Date().toISOString() },
-    { titleKey: "post2_title", villageKey: "post2_village", contentKey: "post2_content", typeKey: "post2_type", timestamp: new Date(Date.now() - 86400000).toISOString() },
-    { titleKey: "post3_title", villageKey: "post3_village", contentKey: "post3_content", typeKey: "post3_type", timestamp: new Date(Date.now() - 2 * 86400000).toISOString() },
-    { titleKey: "post4_title", villageKey: "post4_village", contentKey: "post4_content", typeKey: "post4_type", timestamp: new Date(Date.now() - 3 * 86400000).toISOString() },
-    { titleKey: "post5_title", villageKey: "post5_village", contentKey: "post5_content", typeKey: "post5_type", timestamp: new Date(Date.now() - 4 * 86400000).toISOString() },
-    { titleKey: "post6_title", villageKey: "post6_village", contentKey: "post6_content", typeKey: "post6_type", timestamp: new Date(Date.now() - 5 * 86400000).toISOString() },
+    {
+      id: "dummy1",
+      titleKey: "post1_title",
+      title: "Village Council Announces Seed Bank",
+      villageKey: "post1_village",
+      village: "Piplantri, Rajasthan",
+      contentKey: "post1_content",
+      content: "The local panchayat just approved a native seed bank to preserve 20 varieties of indigenous millet.",
+      typeKey: "post1_type",
+      type: "Update",
+      timestamp: new Date().toISOString()
+    },
+    {
+      id: "dummy2",
+      titleKey: "post2_title",
+      title: "New Pottery Workshop Opens",
+      villageKey: "post2_village",
+      village: "Khurja, Uttar Pradesh",
+      contentKey: "post2_content",
+      content: "Local artisan _Ramesh Kumhar_ has opened a free pottery workshop for village youth, teaching **traditional blue pottery** techniques.",
+      typeKey: "post2_type",
+      type: "Craft",
+      timestamp: new Date(Date.now() - 86400000).toISOString()
+    },
+    {
+      id: "dummy3",
+      titleKey: "post3_title",
+      title: "Elder Storytelling Session Recorded",
+      villageKey: "post3_village",
+      village: "Bishnoi, Rajasthan",
+      contentKey: "post3_content",
+      content: "90-year-old Dadi Kamla shared tales of the Bishnoi conservation movement — now archived in 3 languages.",
+      typeKey: "post3_type",
+      type: "Story",
+      timestamp: new Date(Date.now() - 2 * 86400000).toISOString()
+    },
+    {
+      id: "dummy4",
+      titleKey: "post4_title",
+      title: "Heritage Bamboo Bridge Restored",
+      villageKey: "post4_village",
+      village: "Majuli, Assam",
+      contentKey: "post4_content",
+      content: "Community volunteers restored the 80-year-old bamboo bridge using traditional Mising tribe construction methods.",
+      typeKey: "post4_type",
+      type: "Restoration",
+      timestamp: new Date(Date.now() - 3 * 86400000).toISOString()
+    },
+    {
+      id: "dummy5",
+      titleKey: "post5_title",
+      title: "Phad Painting Exhibition Next Week",
+      villageKey: "post5_village",
+      village: "Shahpura, Rajasthan",
+      contentKey: "post5_content",
+      content: "Local Bhopa community is hosting a live Phad painting demo — a 700-year-old narrative scroll art tradition.",
+      typeKey: "post5_type",
+      type: "Art",
+      timestamp: new Date(Date.now() - 4 * 86400000).toISOString()
+    },
+    {
+      id: "dummy6",
+      titleKey: "post6_title",
+      title: "Tribal Music Archive — 50 Songs Added",
+      villageKey: "post6_village",
+      village: "Bastar, Chhattisgarh",
+      contentKey: "post6_content",
+      content: "Gond tribal musicians contributed 50 rare folk songs to the archive, many never recorded before.",
+      typeKey: "post6_type",
+      type: "Music",
+      timestamp: new Date(Date.now() - 5 * 86400000).toISOString()
+    }
   ];
 
   try {
@@ -87,27 +153,82 @@ async function loadVillagePosts() {
 
 function renderPosts(container, posts, isDummy) {
   const lang = localStorage.getItem("parampara_lang") || "en";
-  
-  if (typeof translations === 'undefined' || !translations[lang]) {
-    console.warn("Translations not loaded yet, skipping renderPosts");
-    return;
-  }
-  const tr = translations[lang];
+  const activeTranslations = window.translations;
+  const tr = activeTranslations ? activeTranslations[lang] : null;
 
   container.innerHTML = posts
     .map(
-      (post) => `
-    <div class="post-card">
-        <h4>${tr[post.titleKey]}</h4>
-        <p class="post-meta">📍 ${tr[post.villageKey]} · 📅 ${formatDate(post.timestamp)}</p>
-        <div class="post-content markdown-body">${renderMarkdown(tr[post.contentKey] || '')}</div>
-        <span style="display:inline-block;padding:0.25rem 0.75rem;background:var(--primary-color);border-radius:20px;font-size:0.85rem;margin-top:1rem;color:white">
-            ${tr[post.typeKey]}
-        </span>
-    </div>
-`,
+      (post) => {
+        const title = (tr && post.titleKey && tr[post.titleKey]) || post.title || "Post";
+        const village = (tr && post.villageKey && tr[post.villageKey]) || post.village || "Unknown Village";
+        const content = (tr && post.contentKey && tr[post.contentKey]) || post.content || "";
+        const type = (tr && post.typeKey && tr[post.typeKey]) || post.type || "Update";
+
+        // Assign emojis to categories for high visual polish
+        const typeIcons = {
+          Update: '📢',
+          Craft: '🏺',
+          Story: '📖',
+          Restoration: '🔨',
+          Art: '🎨',
+          Music: '🎵'
+        };
+        const icon = typeIcons[type] || '📍';
+
+        // Check if content exceeds 120 chars for read-more functionality
+        const isLong = content.length > 120;
+        const displayContent = isLong ? content.slice(0, 110) + '...' : content;
+        const postClass = `post-card ${isLong ? 'has-read-more' : ''}`;
+
+        return `
+          <div class="${postClass}" data-post-id="${post.id || ''}" data-type="${type.toLowerCase()}">
+              <div class="post-card-header">
+                <span class="post-type-icon">${icon}</span>
+                <span class="post-card-badge">${type}</span>
+              </div>
+              <h4>${title}</h4>
+              <p class="post-meta">📍 ${village} · 📅 ${formatDate(post.timestamp)}</p>
+              <div class="post-content markdown-body" id="post-content-${post.id}">
+                ${renderMarkdown(displayContent)}
+              </div>
+              ${isLong ? `
+                <button class="read-more-btn" onclick="toggleReadMore('${post.id}', '${encodeURIComponent(content)}')">Read More <i class="ti ti-chevron-down"></i></button>
+              ` : ''}
+              ${post.id && !post.id.startsWith('dummy') ? `<button class="report-post-btn" data-post-id="${post.id}" title="Report inappropriate content" aria-label="Report">🚩 Report</button>` : ''}
+          </div>
+        `;
+      }
     )
     .join("");
+
+  // Attach event listeners for report buttons
+  const reportBtns = container.querySelectorAll('.report-post-btn');
+  reportBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const postId = e.target.dataset.postId;
+      if (!postId) return;
+      if (confirm('Are you sure you want to report this post?')) {
+        fetch('/api/moderation/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: postId, type: 'villagePost' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert('Post reported successfully.');
+            if (data.isHidden) {
+              const card = e.target.closest('.post-card');
+              if (card) card.remove();
+            }
+          } else {
+            alert(data.error || 'Failed to report post');
+          }
+        })
+        .catch(err => console.error('Error reporting:', err));
+      }
+    });
+  });
 
   if (isDummy) {
     const note = document.createElement("p");
@@ -159,6 +280,18 @@ function initVillagePostsSSE() {
     }
   });
 
+  eventSource.addEventListener('HIDE_POST', (event) => {
+    try {
+      const payload = JSON.parse(event.data);
+      if (payload && payload.id) {
+        const card = document.querySelector(`.post-card[data-post-id="${payload.id}"]`);
+        if (card) card.remove();
+      }
+    } catch (err) {
+      console.error("Error parsing SSE HIDE_POST message:", err);
+    }
+  });
+
   eventSource.onerror = (err) => {
     console.error("EventSource failed:", err);
     // EventSource auto-reconnects natively, but we can log errors.
@@ -173,24 +306,59 @@ function handleNewVillagePost(post) {
   if (!postsGrid) return;
 
   const lang = localStorage.getItem("parampara_lang") || "en";
-  
-  if (typeof translations === 'undefined' || !translations[lang]) {
-    return;
-  }
-  const tr = translations[lang];
+  const activeTranslations = window.translations;
+  const tr = activeTranslations ? activeTranslations[lang] : null;
+
+  const title = (tr && post.titleKey && tr[post.titleKey]) || post.title || "New Post";
+  const village = (tr && post.villageKey && tr[post.villageKey]) || post.village || "Unknown Village";
+  const content = (tr && post.contentKey && tr[post.contentKey]) || post.content || "";
+  const type = (tr && post.typeKey && tr[post.typeKey]) || post.type || "Update";
   
   const postHtml = `
-    <div class="post-card new-post" style="opacity: 0; transform: translateY(-20px); transition: all 0.5s ease;">
-        <h4>${tr[post.titleKey] || post.title || "New Post"}</h4>
-        <p class="post-meta">${tr[post.villageKey] || post.village || "Unknown Village"} • ${formatDate(post.timestamp)}</p>
-        <div class="post-content markdown-body">${renderMarkdown(tr[post.contentKey] || post.content || "")}</div>
-        <span style="display:inline-block;padding:0.25rem 0.75rem;background:var(--primary-color);border-radius:20px;font-size:0.85rem;margin-top:1rem;color:white">
-            ${tr[post.typeKey] || post.type || "Update"}
+    <div class="post-card new-post" data-post-id="${post.id || ''}" style="opacity: 0; transform: translateY(-20px); transition: all 0.5s ease;">
+        <h4>${title}</h4>
+        <p class="post-meta">${village} • ${formatDate(post.timestamp)}</p>
+        <div class="post-content markdown-body">${renderMarkdown(content)}</div>
+        <span class="post-card-badge">
+            ${type}
         </span>
+        ${post.id ? `<button class="report-post-btn" data-post-id="${post.id}" title="Report inappropriate content" aria-label="Report" style="position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer; font-size:16px; opacity:0.6;">🚩</button>` : ''}
     </div>
   `;
 
-  postsGrid.insertAdjacentHTML("afterbegin", postHtml);
+  // Insert at the top of the grid
+  postsGrid.insertAdjacentHTML('afterbegin', postHtml);
+  
+  // Attach listener to the newly inserted button
+  const newCard = postsGrid.firstElementChild;
+  const newReportBtn = newCard.querySelector('.report-post-btn');
+  if (newReportBtn) {
+    newReportBtn.addEventListener('click', (e) => {
+      const postId = e.target.dataset.postId;
+      if (!postId) return;
+      if (confirm('Are you sure you want to report this post?')) {
+        fetch('/api/moderation/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: postId, type: 'villagePost' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert('Post reported successfully.');
+            if (data.isHidden) {
+              const card = e.target.closest('.post-card');
+              if (card) card.remove();
+            }
+          } else {
+            alert(data.error || 'Failed to report post');
+          }
+        })
+        .catch(err => console.error('Error reporting:', err));
+      }
+    });
+  }
+
   requestAnimationFrame(() => {
     const newEl = postsGrid.firstElementChild;
     if (newEl) {
@@ -244,3 +412,30 @@ function handleNewVillagePost(post) {
     }
   });
 })();
+
+
+const heroStats = document.querySelector(".hero-stats");
+if (heroStats) {
+  heroStats.style.transform = "rotateX(3600deg)";
+}
+
+// Toggle Read More / Read Less for village post cards
+window.toggleReadMore = function(postId, fullContentEncoded) {
+  const contentDiv = document.getElementById(`post-content-${postId}`);
+  const btn = event.currentTarget;
+  const isExpanded = btn.classList.contains('expanded');
+  const fullContent = decodeURIComponent(fullContentEncoded);
+  
+  if (isExpanded) {
+    // Collapse
+    const collapsedContent = fullContent.slice(0, 110) + '...';
+    contentDiv.innerHTML = renderMarkdown(collapsedContent);
+    btn.innerHTML = 'Read More <i class="ti ti-chevron-down"></i>';
+    btn.classList.remove('expanded');
+  } else {
+    // Expand
+    contentDiv.innerHTML = renderMarkdown(fullContent);
+    btn.innerHTML = 'Read Less <i class="ti ti-chevron-up"></i>';
+    btn.classList.add('expanded');
+  }
+};

@@ -7,7 +7,7 @@ let ambientSoundEnabled = true;
 let currentSound = null;
 let heatmapMarkers = [];
 let draw = null;
-
+let culturalMarkers = []; // Track cultural item markers to allow clearing
 let currentLanguage = localStorage.getItem('language') || 'en';
 
 // Flyover state
@@ -46,6 +46,22 @@ document.addEventListener('DOMContentLoaded', () => {
     translatePage();
   });
 
+  window.mapTimeMachine = new TimeMachineEngine({
+    containerId: 'map-time-machine-container',
+    eras: ['All', '1950', '1980', '2000', '2025']
+  });
+
+  window.mapActiveEra = 'All';
+
+  window.addEventListener('parampara:timemachine:change', (e) => {
+    const selectedEra = window.mapTimeMachine.getCurrentEra();
+    if (window.mapActiveEra !== selectedEra) {
+      window.mapActiveEra = selectedEra;
+      // Re-load cultural items based on the new era
+      loadCulturalItems();
+    }
+  });
+
   initializeMap();
   setupEventListeners();
   translatePage();
@@ -53,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const sampleVillages = [
   {
+    id: '6',
     name: {
       en: 'Sundarbans Village',
       hi: 'सुंदरबन गांव',
@@ -91,6 +108,7 @@ const sampleVillages = [
   },
 
   {
+    id: '1',
     name: {
       en: 'Kantha Village, Bengal',
       hi: 'कांथा गांव, बंगाल',
@@ -121,6 +139,7 @@ const sampleVillages = [
   },
 
   {
+    id: '3',
     name: {
       en: 'Madhubani Village, Bihar',
       hi: 'मधुबनी गांव, बिहार',
@@ -129,7 +148,7 @@ const sampleVillages = [
     coordinates: [26.3537, 86.0719],
     traditions: {
       en: ['Madhubani painting', 'Mithila art', 'Folk songs'],
-      hi: ['मधुबनी चित्रकला', 'मिथिला कला', 'लोकगीत'],
+      hi: ['मधुबनी चित्रकला', 'मिथिला कला', 'लोक गीत'],
       mr: ['मधुबनी चित्रकला', 'मिथिला कला', 'लोकगीते'],
     },
     festivals: {
@@ -139,8 +158,8 @@ const sampleVillages = [
     },
     crafts: {
       en: ['Madhubani paintings', 'Traditional pottery'],
-      hi: ['मधुबनी पेंटिंग', 'मिट्टी के बर्तन'],
-      mr: ['मधुबनी चित्रे', 'मातीची भांडी'],
+      hi: ['मधुबनी चित्रकारी', 'पारंपरिक मिट्टी के बर्तन'],
+      mr: ['मधुबनी चित्रे', 'पारंपरिक मातीची भांडी'],
     },
     description: {
       en: 'Home to the world-famous Madhubani paintings.',
@@ -181,8 +200,11 @@ const sampleVillages = [
   },
 ];
 
+window.sampleVillages = sampleVillages;
+
 function getTranslation() {
-  return translations[currentLanguage];
+  const activeTranslations = window.translations || {};
+  return activeTranslations[currentLanguage] || {};
 }
 
 function translatePage() {
@@ -192,23 +214,23 @@ function translatePage() {
   const subtitle = document.querySelector('.map-header p');
   const villageName = document.getElementById('village-name');
 
-  if (title) title.textContent = t.mapTitle;
-  if (subtitle) subtitle.textContent = t.mapDescription;
-  if (villageName) villageName.textContent = t.selectVillage;
-  document.getElementById('info-content').innerHTML =
-    `<p>${t.clickVillage}</p>`;
-
-  const heatmapBtn = document.getElementById('toggle-heatmap');
-
-  if (heatmapLayer) {
-    heatmapBtn.textContent = t.hideHeatmap;
-  } else {
-    heatmapBtn.textContent = t.toggleHeatmap;
+  if (title && t.mapTitle) title.textContent = t.mapTitle;
+  if (subtitle && t.mapDescription) subtitle.textContent = t.mapDescription;
+  if (villageName && t.selectVillage) villageName.textContent = t.selectVillage;
+  
+  const infoContent = document.getElementById('info-content');
+  if (infoContent && t.clickVillage) {
+    infoContent.innerHTML = `<p>${t.clickVillage}</p>`;
   }
 
-  // document.getElementById('toggle-sound').textContent = ambientSoundEnabled
-  //   ? t.soundOn
-  //   : t.soundOff;
+  const heatmapBtn = document.getElementById('toggle-heatmap');
+  if (heatmapBtn) {
+    if (heatmapLayer) {
+      heatmapBtn.textContent = t.hideHeatmap || 'Hide Heatmap';
+    } else {
+      heatmapBtn.textContent = t.toggleHeatmap || 'Toggle Heatmap';
+    }
+  }
 
   updateMapUnavailableNotice();
 }
@@ -268,9 +290,15 @@ async function initializeMap() {
       setMapLanguage(currentLanguage);
       addVillageMarkers();
       
-      // Update clusters on zoom and move
-      map.on('zoomend', () => addVillageMarkers());
-      map.on('moveend', () => addVillageMarkers());
+      // Update clusters and items on zoom and move
+      map.on('zoomend', () => {
+          addVillageMarkers();
+          loadCulturalItems();
+      });
+      map.on('moveend', () => {
+          addVillageMarkers();
+          loadCulturalItems();
+      });
       
       await loadCulturalItems();
       checkFlyover();
@@ -322,40 +350,91 @@ function setMapLanguage(lang) {
 
 function addVillageMarker(village) {
   const el = document.createElement('div');
+  el.className = 'marker-container';
 
-  el.className = 'marker';
+  const dot = document.createElement('div');
+  dot.className = 'marker-dot';
+  el.appendChild(dot);
 
-  el.style.width = '20px';
-  el.style.height = '20px';
-  el.style.borderRadius = '50%';
-  el.style.background = '#f4a261';
-  el.style.border = '2px solid white';
-  el.style.cursor = 'pointer';
-  el.style.pointerEvents = 'auto';
+  const name = village.name[currentLanguage] || village.name.en || village.name;
+  const description = village.description[currentLanguage] || village.description.en || '';
+  
+  // Get traditions, crafts, and festivals lists for popup details
+  const traditionsList = village.traditions && village.traditions[currentLanguage] 
+    ? village.traditions[currentLanguage] 
+    : (village.traditions && village.traditions.en ? village.traditions.en : []);
+    
+  const craftsList = village.crafts && village.crafts[currentLanguage] 
+    ? village.crafts[currentLanguage] 
+    : (village.crafts && village.crafts.en ? village.crafts.en : []);
+
+  const festivalsList = village.festivals && village.festivals[currentLanguage] 
+    ? village.festivals[currentLanguage] 
+    : (village.festivals && village.festivals.en ? village.festivals.en : []);
+
+  let detailsHtml = '';
+  if (traditionsList.length > 0) {
+    detailsHtml += `
+      <div class="popup-detail-section popup-detail-tradition">
+        <span class="detail-label">🎭 Traditions:</span>
+        <span class="detail-values">${traditionsList.slice(0, 2).join(', ')}</span>
+      </div>
+    `;
+  }
+  if (craftsList.length > 0) {
+    detailsHtml += `
+      <div class="popup-detail-section popup-detail-craft">
+        <span class="detail-label">🏺 Crafts:</span>
+        <span class="detail-values">${craftsList.slice(0, 2).join(', ')}</span>
+      </div>
+    `;
+  }
+  if (festivalsList.length > 0) {
+    detailsHtml += `
+      <div class="popup-detail-section popup-detail-festival">
+        <span class="detail-label">🎉 Festivals:</span>
+        <span class="detail-values">${festivalsList.slice(0, 2).join(', ')}</span>
+      </div>
+    `;
+  }
+
+  const popupContent = `
+    <div class="custom-map-popup">
+      <div class="popup-header">
+        <span class="popup-header-icon">🏛️</span>
+        <h3>${name}</h3>
+      </div>
+      <p class="popup-description">${description}</p>
+      <div class="popup-details-container">
+        ${detailsHtml}
+      </div>
+    </div>
+  `;
 
   const popup = new maplibregl.Popup({
     closeButton: true,
     closeOnClick: true,
     offset: 25,
-  }).setHTML(`
-      <h3>${village.name[currentLanguage]}</h3>
-      <div class="markdown-body">${renderMarkdown(village.description[currentLanguage])}</div>
-  `);
+  }).setHTML(popupContent);
+
+  // Hook into Maplibre's native popup lifecycle events to avoid click listener collision
+  popup.on('open', () => {
+    // Clear other active markers
+    document.querySelectorAll('.marker-container').forEach(item => item.classList.remove('active-marker'));
+    // Set this marker active
+    el.classList.add('active-marker');
+    // Open sidebar pane
+    showVillageInfo(village);
+  });
+
+  popup.on('close', () => {
+    el.classList.remove('active-marker');
+  });
 
   const marker = new maplibregl.Marker({ element: el })
     .setLngLat([village.coordinates[1], village.coordinates[0]])
     .setPopup(popup)
     .addTo(map);
-
-  marker.getElement().addEventListener('click', (e) => {
-    e.stopPropagation();
-
-    popup
-      .setLngLat([village.coordinates[1], village.coordinates[0]])
-      .addTo(map);
-
-    showVillageInfo(village);
-  });
 
   markers.push({
     id: village.id,
@@ -373,7 +452,8 @@ async function updateMarkerColors() {
   // If not showing health view, reset to default colors
   if (!showHealth) {
     markers.forEach((m) => {
-      m.element.style.background = '#f4a261';
+      const dot = m.element.querySelector('.marker-dot') || m.element;
+      dot.style.background = '#f4a261';
     });
     return;
   }
@@ -388,11 +468,12 @@ async function updateMarkerColors() {
 
   results.forEach((result, idx) => {
     const el = markers[idx].element;
+    const dot = el.querySelector('.marker-dot') || el;
     let color = '#ff4d4d'; // Endangered (red)
     if (result.category === 'Thriving') color = '#4caf50'; // green
     else if (result.category === 'Stable') color = '#2196f3'; // blue
     else if (result.category === 'Vulnerable') color = '#ff9800'; // orange
-    el.style.background = color;
+    dot.style.background = color;
     // Optionally set tooltip
     el.title = `${result.category} (${result.score}/100)`;
   });
@@ -546,7 +627,9 @@ function setupEventListeners() {
     }
   });
 
-  // Toggle heatmap functionality... (existing code below)
+  heatmapBtn.addEventListener('click', toggleHeatmap);
+  soundBtn.addEventListener('click', toggleSound);
+
   setupSpatialSearch();
 }
 
@@ -600,8 +683,6 @@ function setupSpatialSearch() {
     }
   });
 
-  heatmapBtn.addEventListener('click', toggleHeatmap);
-  soundBtn.addEventListener('click', toggleSound);
   // Ensure heritage health view updates when markers are re-added
   const heritageToggle = document.getElementById('toggle-heritage-health');
   if (heritageToggle) {
@@ -648,19 +729,127 @@ function toggleHeatmap() {
   }
 }
 
-// function toggleSound() {
-//   ambientSoundEnabled = !ambientSoundEnabled;
-//   const t = getTranslation();
+/**
+ * ============================================================================
+ * Premium Map Audio Control Engine
+ * Handles user-gesture safe instantiation, looping, volume fades, and localization.
+ * ============================================================================
+ */
+class MapAudioEngine {
+  constructor() {
+    this.ambientTrack = null;
+    this.isAmbientPlaying = false;
+    this.targetVolume = 0.35;
+    this.fadeTimer = null;
+  }
 
-//   document.getElementById('toggle-sound').textContent = ambientSoundEnabled
-//     ? t.soundOn
-//     : t.soundOff;
+  /**
+   * Safe Audio instantiation inside user gesture thread.
+   * Resolves absolute route path for location-agnostic loads.
+   */
+  initAmbient() {
+    if (!this.ambientTrack) {
+      this.ambientTrack = new Audio('/assets/sounds/ambientSound.mp3');
+      this.ambientTrack.loop = true;
+      this.ambientTrack.volume = 0;
+    }
+  }
 
-//   if (!ambientSoundEnabled && currentSound) {
-//     currentSound.pause();
-//     currentSound = null;
-//   }
-// }
+  /**
+   * Play ambient track with a smooth fade-in transition.
+   */
+  playAmbient() {
+    this.initAmbient();
+    this.isAmbientPlaying = true;
+    this.updateButtonState(true);
+
+    this.ambientTrack.play().then(() => {
+      this.fadeVolume(this.ambientTrack, this.targetVolume, 1000);
+    }).catch(err => {
+      console.warn('⚠️ Audio play blocked or failed:', err);
+      this.isAmbientPlaying = false;
+      this.updateButtonState(false);
+    });
+  }
+
+  /**
+   * Pause ambient track with a smooth fade-out transition.
+   */
+  pauseAmbient() {
+    if (!this.ambientTrack) return;
+    this.isAmbientPlaying = false;
+    this.updateButtonState(false);
+
+    this.fadeVolume(this.ambientTrack, 0, 600, () => {
+      this.ambientTrack.pause();
+    });
+  }
+
+  /**
+   * Toggle action handler called by the toolbar control.
+   */
+  toggleAmbient() {
+    if (this.isAmbientPlaying) {
+      this.pauseAmbient();
+    } else {
+      this.playAmbient();
+    }
+  }
+
+  /**
+   * Utility to smoothly transition volume level over time.
+   */
+  fadeVolume(audio, targetVolume, duration, callback) {
+    if (this.fadeTimer) {
+      clearInterval(this.fadeTimer);
+    }
+
+    const startVolume = audio.volume;
+    const steps = 20;
+    const stepTime = duration / steps;
+    const volumeStep = (targetVolume - startVolume) / steps;
+    let currentStep = 0;
+
+    this.fadeTimer = setInterval(() => {
+      currentStep++;
+      const newVolume = startVolume + (volumeStep * currentStep);
+      audio.volume = Math.max(0, Math.min(1, newVolume));
+
+      if (currentStep >= steps) {
+        clearInterval(this.fadeTimer);
+        audio.volume = targetVolume;
+        if (callback) callback();
+      }
+    }, stepTime);
+  }
+
+  /**
+   * Synchronize the text of the toolbar toggle button with localizations.
+   */
+  updateButtonState(playing) {
+    const soundBtn = document.getElementById('toggle-sound');
+    if (!soundBtn) return;
+
+    const t = getTranslation();
+    if (playing) {
+      soundBtn.textContent = t.soundOn || 'Ambient Sounds: ON';
+      soundBtn.classList.add('playing');
+    } else {
+      soundBtn.textContent = t.soundOff || 'Ambient Sounds: OFF';
+      soundBtn.classList.remove('playing');
+    }
+  }
+}
+
+// Instantiate the singleton audio manager
+const audioEngine = new MapAudioEngine();
+
+/**
+ * Global interface handler for sound toggle events.
+ */
+function toggleSound() {
+  audioEngine.toggleAmbient();
+}
 
 async function loadCulturalItems() {
   if (!map) {
@@ -668,7 +857,24 @@ async function loadCulturalItems() {
   }
 
   try {
-    const response = await fetch('/api/items?limit=1000');
+    // Clear existing cultural markers
+    culturalMarkers.forEach(m => m.remove());
+    culturalMarkers = [];
+
+    let url = '/api/items?limit=1000';
+    if (window.mapActiveEra && window.mapActiveEra !== 'All') {
+      url += `&year=${window.mapActiveEra}`;
+    }
+
+    // Attach bounding box query parameters for optimized spatial search
+    const bounds = map.getBounds();
+    if (bounds) {
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+      url += `&bounds=${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
+    }
+
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error('Failed to load cultural items');
@@ -682,11 +888,13 @@ async function loadCulturalItems() {
         const el = document.createElement('div');
         el.className = 'cultural-marker';
 
-        new maplibregl.Marker({
+        const marker = new maplibregl.Marker({
           element: el,
         })
           .setLngLat([item.coordinates[1], item.coordinates[0]])
           .addTo(map);
+
+        culturalMarkers.push(marker);
 
         el.addEventListener('click', () => {
           showPopup(item);
@@ -740,32 +948,7 @@ window.addEventListener('parampara:langchange', (e) => {
   translatePage();
 });
 
-const ambientMusic = new Audio('assets/sounds/ambientSound.mp3');
 
-ambientMusic.loop = true;
-ambientMusic.volume = 0.3;
-
-function soundToggler() {
-  toggleSound = !toggleSound;
-  if (toggleSound) {
-    ambientMusic.pause();
-    toggle_btn.textContent = 'Ambient Sound : ON';
-  } else {
-    ambientMusic.play();
-    toggle_btn.textContent = 'Ambient Sound : OFF';
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle_btn = document.getElementById('toggle-sound');
-
-  if (toggle_btn) {
-    toggle_btn.addEventListener('click', () => {
-      toggle_btn.textContent = '';
-      soundToggler();
-    });
-  }
-});
 
 // ── Cinematic Flyover Logic ──────────────────────────────────────────────────
 async function checkFlyover() {
