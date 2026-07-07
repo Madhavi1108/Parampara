@@ -5,7 +5,12 @@ const { BoundingBox } = require('../utils/QuadTree');
 const notificationService = require('../server/services/notificationService');
 
 const getPosts = (req, res) => {
-  let posts = typeof store.villagePosts.values === 'function' ? store.villagePosts.values() : store.villagePosts;
+  let posts =
+    typeof store.villagePosts.values === 'function'
+      ? Array.from(store.villagePosts.values())
+      : Array.isArray(store.villagePosts)
+        ? store.villagePosts
+        : Array.from(store.villagePosts || []);
 
   if (req.query.bounds) {
     const parts = req.query.bounds.split(',').map(Number);
@@ -41,17 +46,10 @@ const createPost = (req, res) => {
     timestamp: new Date().toISOString(),
   };
 
-  const { hashObject } = require('../server/utils/hashUtils');
-  if (req.body.hash) {
-      newPost.hash = req.body.hash;
-  } else {
-      newPost.hash = hashObject(newPost);
-  }
-
   if (typeof store.villagePosts.push === 'function') {
     store.villagePosts.push(newPost);
   }
-  
+
   store.villagePostsQuadTree.insert(newPost);
 
   // Broadcast to all connected SSE clients
