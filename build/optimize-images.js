@@ -17,6 +17,16 @@ const SIZES = [
 const FORMATS = ['webp', 'avif'];
 const CONCURRENCY_LIMIT = 5;
 
+// Quality settings for various formats
+const QUALITY_SETTINGS = {
+  webp: { quality: 80, lossless: false, effort: 4 },
+  avif: { quality: 65, lossless: false, effort: 4 }
+};
+
+/**
+ * Ensures that the target directory exists, creating it recursively if needed.
+ * @param {string} dirPath - The absolute path of the directory.
+ */
 async function ensureDir(dirPath) {
   try {
     await fs.access(dirPath);
@@ -25,6 +35,33 @@ async function ensureDir(dirPath) {
   }
 }
 
+/**
+ * Generates a Low-Quality Image Placeholder (LQIP) as a Base64-encoded Data URL.
+ * Used for instant skeleton layouts and blur-up loading styles.
+ * 
+ * @param {string} inputPath - The absolute path to the input image file.
+ * @returns {Promise<string>} The base64 data url.
+ */
+async function generateLQIP(inputPath) {
+  try {
+    const lqipBuffer = await sharp(inputPath)
+      .resize(16, 16, { fit: 'inside' })
+      .webp({ quality: 20 })
+      .toBuffer();
+    return `data:image/webp;base64,${lqipBuffer.toString('base64')}`;
+  } catch (err) {
+    console.warn(`[WARN] Failed to generate LQIP for ${path.basename(inputPath)}:`, err.message);
+    return null;
+  }
+}
+
+/**
+ * Processes a single input image by generating responsive widths (thumb, medium, full)
+ * in next-gen formats (WebP, AVIF), compiling metadata, and generating a Base64 LQIP placeholder.
+ * 
+ * @param {string} inputPath - Absolute path to the source image file.
+ * @param {string} relativePath - Relative path structure from INPUT_DIR.
+ */
 async function processImage(inputPath, relativePath) {
   const filename = path.basename(relativePath);
   const ext = path.extname(filename).toLowerCase();
@@ -40,7 +77,10 @@ async function processImage(inputPath, relativePath) {
   let processed = 0;
   let bytesSaved = 0;
   
-  const manifestEntry = {};
+  const manifestEntry = {
+    originalSize: inputStats.size,
+    lqip: await generateLQIP(inputPath)
+  };
 
   for (const size of SIZES) {
     manifestEntry[size.name] = {};
@@ -66,14 +106,22 @@ async function processImage(inputPath, relativePath) {
       if (shouldProcess) {
         try {
           let pipeline = sharp(inputPath);
+          
+          // Preserving color profile, ICC and core EXIF tags
+          pipeline = pipeline.keepMetadata();
+
           if (size.width) {
-            pipeline = pipeline.resize({ width: size.width, withoutEnlargement: true });
+            pipeline = pipeline.resize({ 
+              width: size.width, 
+              withoutEnlargement: true,
+              fit: 'inside'
+            });
           }
           
           if (format === 'webp') {
-            pipeline = pipeline.webp({ quality: 80 });
+            pipeline = pipeline.webp(QUALITY_SETTINGS.webp);
           } else if (format === 'avif') {
-            pipeline = pipeline.avif({ quality: 70 });
+            pipeline = pipeline.avif(QUALITY_SETTINGS.avif);
           }
           
           await pipeline.toFile(outPath);
@@ -82,7 +130,7 @@ async function processImage(inputPath, relativePath) {
           
           // calculate bytes saved for 'full' size vs original
           if (size.name === 'full') {
-              bytesSaved += Math.max(0, inputStats.size - newStats.size);
+            bytesSaved += Math.max(0, inputStats.size - newStats.size);
           }
 
           processed++;
@@ -99,6 +147,11 @@ async function processImage(inputPath, relativePath) {
   return { processed, skipped, bytesSaved, manifestEntry };
 }
 
+/**
+ * Traverses directories recursively to locate all nested files.
+ * @param {string} dir - The absolute directory path.
+ * @returns {Promise<string[]>} A flat array of nested file paths.
+ */
 async function walkDir(dir) {
   let results = [];
   const list = await fs.readdir(dir);
@@ -114,7 +167,13 @@ async function walkDir(dir) {
   return results;
 }
 
-// Simple concurrency limiter for Promise.all
+/**
+ * Processes items concurrently with a concurrency limit.
+ * 
+ * @param {Array} items - The items to process.
+ * @param {number} limit - Concurrency threshold limit.
+ * @param {Function} processor - Asynchronous item handler function.
+ */
 async function processConcurrently(items, limit, processor) {
   let active = 0;
   let index = 0;
@@ -145,15 +204,19 @@ async function processConcurrently(items, limit, processor) {
   });
 }
 
+/**
+ * Orchestrator entry point that scans directories, triggers concurrent tasks,
+ * aggregates report metadata, and writes the JSON asset manifest.
+ */
 async function main() {
-  console.log('Starting advanced image optimization pipeline...');
+  console.log('🚀 Starting advanced image optimization pipeline...');
   const startTime = Date.now();
   
   try {
     await ensureDir(INPUT_DIR);
     await ensureDir(OUTPUT_DIR);
   } catch (err) {
-    console.error('Failed to initialize directories:', err);
+    console.error('❌ Failed to initialize directories:', err);
     process.exit(1);
   }
 
@@ -164,7 +227,7 @@ async function main() {
     return SUPPORTED_EXTENSIONS.includes(ext);
   });
 
-  console.log(`Found ${imageFiles.length} image(s) to process in ${INPUT_DIR}`);
+  console.log(`📸 Found ${imageFiles.length} image(s) to process in ${INPUT_DIR}`);
 
   let totalProcessed = 0;
   let totalSkipped = 0;
@@ -208,7 +271,7 @@ async function main() {
   // Save manifest
   try {
     await fs.writeFile(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
-    console.log(`\nManifest generated at: ${MANIFEST_PATH}`);
+    console.log(`\n📄 Manifest generated at: ${MANIFEST_PATH}`);
   } catch (err) {
     console.error(`[ERROR] Failed to save manifest:`, err);
   }
@@ -216,16 +279,16 @@ async function main() {
   const timeTaken = ((Date.now() - startTime) / 1000).toFixed(2);
   const megabytesSaved = (totalBytesSaved / (1024 * 1024)).toFixed(2);
 
-  console.log('\n--- Optimization Report ---');
-  console.log(`Time taken: ${timeTaken} seconds`);
-  console.log(`Variants generated: ${totalProcessed}`);
-  console.log(`Variants skipped: ${totalSkipped}`);
-  console.log(`Errors encountered: ${totalErrors}`);
-  console.log(`Bandwidth saved (full vs original): ~${megabytesSaved} MB`);
-  console.log('---------------------------\n');
+  console.log('\n✨ --- Optimization Report --- ✨');
+  console.log(`⏱️  Time taken: ${timeTaken} seconds`);
+  console.log(`⚙️  Variants generated: ${totalProcessed}`);
+  console.log(`⏭️  Variants skipped: ${totalSkipped}`);
+  console.log(`⚠️  Errors encountered: ${totalErrors}`);
+  console.log(`💾 Bandwidth saved (full vs original): ~${megabytesSaved} MB`);
+  console.log('---------------------------------\n');
 }
 
 main().catch(err => {
-  console.error('Fatal error during optimization:', err);
+  console.error('❌ Fatal error during optimization:', err);
   process.exit(1);
 });
