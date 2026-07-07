@@ -29,6 +29,21 @@ const globalSearch = (req, res, next) => {
   }
 };
 
+const getIndexData = (req, res, next) => {
+  try {
+    const data = {
+      culturalItems: store.culturalItems.values(),
+      heritagePaths: store.heritagePaths.values(),
+      villagePosts: store.villagePosts.values(),
+      timelineEvents: store.timelineEvents.values()
+    };
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  globalSearch
+  globalSearch,
+  getIndexData
 };

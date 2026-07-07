@@ -11,6 +11,9 @@ const searchLimiter = new HeuristicRateLimiter({
   message: 'Too many search requests, please try again later.'
 });
 
+// GET /api/search/index-data
+router.get('/index-data', cacheMiddleware, require('../controllers/search.controller').getIndexData);
+
 // GET /api/search?q=query
 router.get('/', searchLimiter.middleware(), cacheMiddleware, globalSearch);
 
