@@ -3,8 +3,11 @@ const store = require('../data/store');
 // Get all artisans
 exports.getAllArtisans = (req, res, next) => {
   try {
-    const artisans = store.artisans || [];
-    res.json(artisans);
+    const artisans = Array.isArray(store.artisans) ? [...store.artisans] : [];
+
+    res.json({
+      data: artisans,
+    });
   } catch (err) {
     next(err);
   }
