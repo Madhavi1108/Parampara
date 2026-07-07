@@ -149,6 +149,20 @@ const uploadChunk = (req, res, next) => {
       return res.status(400).json({ error: 'Chunk body is empty (zero bytes received)' });
     }
 
+    const isLastChunk = index === session.totalChunks - 1;
+    const remainingBytes = session.fileSize - (index * session.chunkSizeBytes);
+    const maxChunkSize = isLastChunk
+      ? Math.min(session.chunkSizeBytes, remainingBytes)
+      : session.chunkSizeBytes;
+
+    if (chunkBuffer.length > maxChunkSize) {
+      return res.status(400).json({
+        error: `Chunk ${index} exceeds the allowed size of ${maxChunkSize} bytes`,
+        receivedBytes: chunkBuffer.length,
+        maxAllowedBytes: maxChunkSize
+      });
+    }
+
     // Store chunk
     session.receivedChunks[index] = chunkBuffer;
     session.receivedCount += 1;
