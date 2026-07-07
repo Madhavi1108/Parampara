@@ -604,4 +604,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Pre-fetch reviews to bootstrap LocalStorage dynamically
   getReviews();
+
+  // Support Artisan Action handler
+  const supportBtn = document.getElementById('btn-support-artisan');
+  if (supportBtn) {
+    supportBtn.addEventListener('click', () => {
+      alert("Thank you! You have successfully sent a token of appreciation to Ramesh Kumhar.");
+    });
+  }
 });

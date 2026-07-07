@@ -2841,7 +2841,101 @@ body > * {
   background: #d4a853;
   color: #1e140f;
   border-color: #d4a853;
-  transform: rotate(90deg);
+}
+
+/* ==========================================================================
+   Featured Artisan Spotlight Section
+   ========================================================================== */
+.artisan-spotlight-section {
+  padding: 5rem 0;
+  background: linear-gradient(180deg, #1c0f0a 0%, #170d09 100%);
+  border-top: 1px solid rgba(212, 168, 83, 0.15);
+  border-bottom: 1px solid rgba(212, 168, 83, 0.15);
+}
+.section-subtitle {
+  text-align: center;
+  color: #a8988a;
+  margin-top: -1rem;
+  margin-bottom: 3rem;
+  font-size: 1.1rem;
+}
+.spotlight-card {
+  display: flex;
+  background: #251b14;
+  border: 1px solid rgba(212, 168, 83, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease;
+}
+.spotlight-card:hover {
+  transform: translateY(-4px);
+}
+.spotlight-image-container {
+  flex: 1;
+  position: relative;
+  min-height: 320px;
+}
+.spotlight-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.spotlight-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: #d4a853;
+  color: #1e140f;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.spotlight-info {
+  flex: 1.2;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.spotlight-craft-tag {
+  color: #d4a853;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+.spotlight-info h3 {
+  font-family: 'Georgia', serif;
+  font-size: 2.2rem;
+  color: #dfd5c6;
+  margin: 0 0 0.5rem 0;
+}
+.spotlight-location {
+  color: #a8988a;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+.spotlight-bio {
+  color: #dfd5c6;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+.spotlight-actions {
+  display: flex;
+  gap: 1rem;
+}
+@media (max-width: 768px) {
+  .spotlight-card {
+    flex-direction: column;
+  }
+  .spotlight-image-container {
+    min-height: 240px;
+  }
+  .spotlight-info {
+    padding: 2rem;
+  }
 }
 
 .rating-modal-header {
