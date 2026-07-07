@@ -170,6 +170,11 @@ app.get('/moderation', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'moderation.html'));
 });
 
+// Chunked Video Upload Route
+app.get('/upload', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'upload.html'));
+});
+
 // ==================== RECOMMENDATION ENGINE ROUTES ====================
 
 // Import recommendation routes
@@ -246,6 +251,15 @@ app.use('/api/audio', audioRoutes);
 
 const moderationRoutes = require('./routes/moderation.routes');
 app.use('/api/moderation', moderationRoutes);
+
+const uploadRoutes = require('./routes/upload.routes');
+// Bypass CSRF and body-parser for raw chunk uploads
+app.use('/api/upload/chunk', express.raw({ type: '*/*', limit: '10mb' }));
+app.use('/api/upload', uploadRoutes);
+
+// Start upload session cleanup (every 5 minutes)
+const { cleanupSessions } = require('./controllers/upload.controller');
+setInterval(cleanupSessions, 5 * 60 * 1000);
 
 // ==================== ADDITIONAL API ENDPOINTS ====================
 
