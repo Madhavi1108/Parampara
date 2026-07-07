@@ -2,12 +2,34 @@ const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const store = require('../data/store');
 
+function resolveConsensusThreshold(rawValue) {
+  const DEFAULT_THRESHOLD = 2;
+
+  if (typeof rawValue !== 'string') {
+    return DEFAULT_THRESHOLD;
+  }
+
+  const normalizedValue = rawValue.trim();
+
+  // Only allow whole positive integers like "1", "2", "10"
+  if (!/^\d+$/.test(normalizedValue)) {
+    return DEFAULT_THRESHOLD;
+  }
+
+  const parsedValue = Number(normalizedValue);
+
+  if (!Number.isInteger(parsedValue) || parsedValue <= 0) {
+    return DEFAULT_THRESHOLD;
+  }
+
+  return parsedValue;
+}
+
 // Configurable consensus threshold (number of approvals needed to publish)
-const CONSENSUS_THRESHOLD = parseInt(process.env.MODERATION_THRESHOLD) || 2;
+const CONSENSUS_THRESHOLD = resolveConsensusThreshold(process.env.MODERATION_THRESHOLD);
 
 // Moderation timeout: 10 minutes
 const MODERATION_TIMEOUT_MS = 10 * 60 * 1000;
-
 // ============================================================
 //  Helper: HMAC-SHA256 signature verification
 // ============================================================
