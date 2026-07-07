@@ -612,4 +612,287 @@ document.addEventListener('DOMContentLoaded', () => {
       alert("Thank you! You have successfully sent a token of appreciation to Ramesh Kumhar.");
     });
   }
+
+  // ==========================================
+  // TRIBAL BADGE GENERATION SYSTEM
+  // ==========================================
+  const badgeModal = document.getElementById('badgeModal');
+  const navBadgeBtn = document.getElementById('nav-badge');
+  const footerBadgeBtn = document.getElementById('footer-get-badge');
+  const closeBadgeBtn = document.getElementById('closeBadgeModal');
+  const shuffleBtn = document.getElementById('btnShuffleStyle');
+  const downloadBtn = document.getElementById('btnDownloadBadge');
+  const badgeCanvas = document.getElementById('badgeCanvas');
+
+  const badgeNameInput = document.getElementById('badgeUserName');
+  const badgeRoleInput = document.getElementById('badgeRole');
+  const badgeVillageInput = document.getElementById('badgeVillage');
+
+  let activeStyleIndex = 0;
+
+  const BADGE_STYLES = [
+    {
+      name: "Suryavanshi Gold",
+      bgGradStart: "#3b1d11", bgGradEnd: "#241009",
+      accent: "#d4a853", textMain: "#dfd5c6", textMuted: "#a8988a",
+      drawPattern: (ctx) => {
+        ctx.strokeStyle = "rgba(212, 168, 83, 0.07)";
+        ctx.lineWidth = 2;
+        for (let r = 50; r <= 350; r += 40) {
+          ctx.beginPath();
+          ctx.arc(250, 250, r, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+    },
+    {
+      name: "Nilgiri Indigo",
+      bgGradStart: "#0b1a30", bgGradEnd: "#050c18",
+      accent: "#64e3e3", textMain: "#dfd5c6", textMuted: "#8fa3b5",
+      drawPattern: (ctx) => {
+        ctx.strokeStyle = "rgba(100, 227, 227, 0.05)";
+        ctx.lineWidth = 1;
+        for (let x = -500; x < 1000; x += 40) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x + 500, 500);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x - 500, 500);
+          ctx.stroke();
+        }
+      }
+    },
+    {
+      name: "Forest Sage",
+      bgGradStart: "#0a2214", bgGradEnd: "#041008",
+      accent: "#dfc794", textMain: "#dfd5c6", textMuted: "#8fa898",
+      drawPattern: (ctx) => {
+        ctx.strokeStyle = "rgba(223, 199, 148, 0.06)";
+        ctx.lineWidth = 2;
+        for (let y = 10; y < 500; y += 30) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          for (let x = 0; x <= 500; x += 20) {
+            ctx.lineTo(x, y + (x % 40 === 0 ? 10 : 0));
+          }
+          ctx.stroke();
+        }
+      }
+    },
+    {
+      name: "Varanasi Plum",
+      bgGradStart: "#2f0a28", bgGradEnd: "#160413",
+      accent: "#f2aac0", textMain: "#dfd5c6", textMuted: "#a88e9f",
+      drawPattern: (ctx) => {
+        ctx.fillStyle = "rgba(242, 170, 192, 0.05)";
+        for (let x = 30; x < 500; x += 50) {
+          for (let y = 30; y < 500; y += 50) {
+            ctx.beginPath();
+            ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(x - 5, y - 1, 10, 2);
+            ctx.fillRect(x - 1, y - 5, 2, 10);
+          }
+        }
+      }
+    },
+    {
+      name: "Marigold Ochre",
+      bgGradStart: "#452607", bgGradEnd: "#241302",
+      accent: "#ffd075", textMain: "#dfd5c6", textMuted: "#a89481",
+      drawPattern: (ctx) => {
+        ctx.strokeStyle = "rgba(255, 208, 117, 0.04)";
+        ctx.lineWidth = 1.5;
+        for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 16) {
+          ctx.beginPath();
+          ctx.moveTo(250, 250);
+          ctx.lineTo(250 + Math.cos(angle) * 400, 250 + Math.sin(angle) * 400);
+          ctx.stroke();
+        }
+      }
+    }
+  ];
+
+  function drawBadge() {
+    if (!badgeCanvas) return;
+    const ctx = badgeCanvas.getContext('2d');
+    const style = BADGE_STYLES[activeStyleIndex];
+    const name = (badgeNameInput ? badgeNameInput.value.trim() : "") || "Contributor";
+    const role = (badgeRoleInput ? badgeRoleInput.value : "") || "Heritage Guardian";
+    const village = (badgeVillageInput ? badgeVillageInput.value.trim() : "") || "Khurja";
+
+    // Draw Background Gradient
+    const grad = ctx.createLinearGradient(0, 0, 500, 500);
+    grad.addColorStop(0, style.bgGradStart);
+    grad.addColorStop(1, style.bgGradEnd);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 500, 500);
+
+    // Draw Texture Pattern
+    style.drawPattern(ctx);
+
+    // Draw Decorative Borders
+    ctx.strokeStyle = style.accent;
+    ctx.lineWidth = 3;
+    ctx.strokeRect(20, 20, 460, 460); // Outer border
+    
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(255,255,255,0.15)";
+    ctx.strokeRect(26, 26, 448, 448); // Inner border
+
+    // Draw Ornamental Corners
+    ctx.fillStyle = style.accent;
+    const cornerSize = 12;
+    ctx.fillRect(15, 15, cornerSize, cornerSize);
+    ctx.fillRect(473, 15, cornerSize, cornerSize);
+    ctx.fillRect(15, 473, cornerSize, cornerSize);
+    ctx.fillRect(473, 473, cornerSize, cornerSize);
+
+    // Draw Header text
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = style.accent;
+    ctx.font = "bold 13px 'Outfit', sans-serif";
+    ctx.fillText("🏛️  PARAMPARA DIGITAL ARCHIVE  🏛️", 250, 60);
+
+    ctx.fillStyle = style.textMain;
+    ctx.font = "italic 11px 'Georgia', serif";
+    ctx.fillText("This credential represents a badge of honor for community support", 250, 95);
+
+    // Draw Central emblem seal background
+    ctx.beginPath();
+    ctx.arc(250, 240, 90, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0,0,0,0.18)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(212, 168, 83, 0.15)";
+    ctx.stroke();
+
+    // Draw User Name
+    ctx.fillStyle = style.accent;
+    ctx.font = "bold 26px 'Georgia', serif";
+    ctx.fillText(name, 250, 195);
+
+    ctx.fillStyle = style.textMain;
+    ctx.font = "italic 12px 'Georgia', serif";
+    ctx.fillText("is officially recognized as a", 250, 230);
+
+    // Draw Role Banner
+    ctx.fillStyle = style.accent;
+    ctx.fillRect(110, 250, 280, 32); // Banner box
+    ctx.fillStyle = "#1e140f"; // Dark text inside banner
+    ctx.font = "bold 14px 'Outfit', sans-serif";
+    ctx.fillText(role.toUpperCase(), 250, 266);
+
+    // Draw Village Attribution
+    ctx.fillStyle = style.textMain;
+    ctx.font = "12px 'Outfit', sans-serif";
+    ctx.fillText(`For preserving folklore & oral traditions in the region of`, 250, 310);
+    ctx.fillStyle = style.accent;
+    ctx.font = "bold 14px 'Outfit', sans-serif";
+    ctx.fillText(village, 250, 330);
+
+    // Draw Verification Stamp seal
+    ctx.save();
+    ctx.translate(390, 390);
+    ctx.beginPath();
+    ctx.arc(0, 0, 38, 0, Math.PI * 2);
+    ctx.strokeStyle = style.accent;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Inner dashed line
+    ctx.beginPath();
+    ctx.arc(0, 0, 33, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.setLineDash([3, 3]);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle = style.accent;
+    ctx.font = "bold 8px 'Outfit', sans-serif";
+    ctx.fillText("APPROVED", 390, 385);
+    ctx.font = "9px 'Outfit', sans-serif";
+    ctx.fillText("PARAMPARA", 390, 395);
+    ctx.fillStyle = style.textMain;
+    ctx.font = "7px 'Outfit', sans-serif";
+    ctx.fillText("HERITAGE SEAL", 390, 404);
+
+    // Draw Left footer date
+    ctx.textAlign = "left";
+    ctx.fillStyle = style.textMuted;
+    ctx.font = "9px 'Outfit', sans-serif";
+    ctx.fillText("DATE GENERATED", 50, 420);
+    ctx.fillStyle = style.textMain;
+    ctx.font = "11px 'Outfit', sans-serif";
+    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    ctx.fillText(today, 50, 435);
+
+    // Draw Right footer registration ID
+    ctx.textAlign = "right";
+    ctx.fillStyle = style.textMuted;
+    ctx.font = "9px 'Outfit', sans-serif";
+    ctx.fillText("REGISTRATION ID", 310, 420);
+    ctx.fillStyle = style.textMain;
+    ctx.font = "11px 'Outfit', sans-serif";
+
+    // Generate static stable registration ID based on name hash
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const stableId = `PP-${Math.abs(hash % 900000 + 100000)}`;
+    ctx.fillText(stableId, 310, 435);
+  }
+
+  // Toggle handlers for Badge modal
+  const openBadgeModal = (e) => {
+    e.preventDefault();
+    badgeModal.classList.add('active');
+    drawBadge();
+  };
+
+  const closeBadgeModal = () => {
+    badgeModal.classList.remove('active');
+  };
+
+  if (navBadgeBtn) navBadgeBtn.addEventListener('click', openBadgeModal);
+  if (footerBadgeBtn) footerBadgeBtn.addEventListener('click', openBadgeModal);
+  if (closeBadgeBtn) closeBadgeBtn.addEventListener('click', closeBadgeModal);
+
+  // Close on Backdrop Click
+  window.addEventListener('click', (e) => {
+    if (e.target === badgeModal) closeBadgeModal();
+  });
+
+  // Re-draw canvas dynamically as users type
+  if (badgeNameInput) {
+    badgeNameInput.addEventListener('input', drawBadge);
+  }
+  if (badgeRoleInput) {
+    badgeRoleInput.addEventListener('change', drawBadge);
+  }
+  if (badgeVillageInput) {
+    badgeVillageInput.addEventListener('input', drawBadge);
+  }
+
+  // Shuffle textures and background palettes
+  if (shuffleBtn) {
+    shuffleBtn.addEventListener('click', () => {
+      activeStyleIndex = (activeStyleIndex + 1) % BADGE_STYLES.length;
+      drawBadge();
+    });
+  }
+
+  // Download Badge canvas as high-resolution PNG
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+      if (!badgeCanvas) return;
+      const name = (badgeNameInput ? badgeNameInput.value.trim() : "") || "Contributor";
+      const link = document.createElement('a');
+      link.download = `${name.replace(/\s+/g, '_')}_heritage_badge.png`;
+      link.href = badgeCanvas.toDataURL('image/png');
+      link.click();
+    });
+  }
 });

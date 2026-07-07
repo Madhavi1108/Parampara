@@ -3150,3 +3150,10 @@ body > * {
     transform: translateY(0);
   }
 }
+
+/* Badge Generator Responsive styles */
+@media (max-width: 768px) {
+  .badge-modal-body {
+    flex-direction: column !important;
+  }
+}
