@@ -391,6 +391,14 @@ app.get('/api/recommendations/health', async (req, res) => {
     });
   }
 });
+// Add AR experience routes
+const arRoutes = require('./routes/arExperience.routes');
+app.use('/api/ar', arRoutes);
+
+// AR Experience page
+app.get('/ar-experience', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'ar-experience.html'));
+});
 // Add search engine routes
 const searchEngineRoutes = require('./routes/searchEngine.routes');
 app.use('/api/search', searchEngineRoutes);
