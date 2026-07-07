@@ -4,7 +4,7 @@ const globalSearch = (req, res, next) => {
   try {
     const query = req.query.q;
     const type = req.query.type; // Optional: filter by type (e.g., 'culturalItem', 'heritagePath')
-    const limit = parseInt(req.query.limit) || 20;
+    const limit = parseInt(req.query.limit, 10) || 20;
 
     if (!query) {
       return res.status(400).json({ error: 'Search query (q) is required' });
@@ -32,11 +32,12 @@ const globalSearch = (req, res, next) => {
 const getIndexData = (req, res, next) => {
   try {
     const data = {
-      culturalItems: store.culturalItems.values(),
-      heritagePaths: store.heritagePaths.values(),
-      villagePosts: store.villagePosts.values(),
-      timelineEvents: store.timelineEvents.values()
+      culturalItems: Array.from(store.culturalItems.values()),
+      heritagePaths: Array.from(store.heritagePaths.values()),
+      villagePosts: Array.from(store.villagePosts.values()),
+      timelineEvents: Array.from(store.timelineEvents.values())
     };
+
     res.json(data);
   } catch (err) {
     next(err);
