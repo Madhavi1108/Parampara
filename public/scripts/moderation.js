@@ -119,7 +119,7 @@
   // ── WebSocket ────────────────────────────────────────────────────
   function connectWebSocket() {
     setWsStatus('connecting');
-    ws = new WebSocket(WS_URL);
+    ws = new ResilientWebSocket(WS_URL);
 
     ws.onopen = () => {
       setWsStatus('connected');

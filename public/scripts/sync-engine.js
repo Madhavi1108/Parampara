@@ -33,7 +33,7 @@ class SyncEngine {
 
     start() {
         console.log(`Starting Sync Engine connecting to ${this.serverUrl}`);
-        this.ws = new WebSocket(this.serverUrl);
+        this.ws = new ResilientWebSocket(this.serverUrl);
 
         this.ws.onopen = () => {
             console.log('Connected to Signaling Server');

@@ -16,6 +16,9 @@ class CollaborativeMapServer {
     
     // Trivia Game State
     this.triviaGames = new Map(); // roomId -> game state
+    // Deduplication across reconnections
+    this.processedMessageIds = new Set();
+    this.processedMessageQueue = [];
     
     this.setupWebSocket();
     console.log(`WebSocket server running on port ${port}`);
@@ -50,6 +53,28 @@ class CollaborativeMapServer {
       ws.on('message', (data) => {
         try {
           const message = JSON.parse(data);
+          
+          // Respond to application-level ping for health check
+          if (message.type === 'ping') {
+              ws.send(JSON.stringify({ type: 'pong' }));
+              return;
+          }
+
+          // Global deduplication check (cross-connection)
+          if (message.msgId) {
+              if (this.processedMessageIds.has(message.msgId)) {
+                  return; // Ignore duplicate message
+              }
+              this.processedMessageIds.add(message.msgId);
+              this.processedMessageQueue.push(message.msgId);
+              
+              // Keep memory bounds strict (only track last 5000 messages globally)
+              if (this.processedMessageQueue.length > 5000) {
+                  const oldestId = this.processedMessageQueue.shift();
+                  this.processedMessageIds.delete(oldestId);
+              }
+          }
+
           this.handleMessage(userId, message);
         } catch (error) {
           console.error('Error parsing message:', error);

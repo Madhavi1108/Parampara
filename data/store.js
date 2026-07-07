@@ -47,6 +47,7 @@ const store = {
     searchEngine, 'artisan', ['name', 'craft', 'village', 'bio'],
     createAuditProxy('artisans', new LRUCache(500), auditLog)
   ),
+  villageThemes: new LRUCache(100), // Custom Village Themes (villageId -> css string)
   analytics: {
     pageViews: {},
     events: [],

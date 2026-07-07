@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ? `wss://${window.location.hostname}:8080`
       : `ws://${window.location.hostname}:8080`;
       
-    ws = new WebSocket(wsUrl);
+    ws = new ResilientWebSocket(wsUrl);
 
     ws.onopen = () => {
       console.log('Connected to Trivia Server');

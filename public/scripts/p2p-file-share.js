@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Connection
     function initSignaling() {
-        ws = new WebSocket(wsUrl);
+        ws = new ResilientWebSocket(wsUrl);
         
         ws.onopen = () => {
             console.log('Connected to Signaling Server for File Sharing');
