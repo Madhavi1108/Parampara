@@ -135,6 +135,11 @@ app.get('/paths', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'paths.html'));
 });
 
+// P2P Share Route
+app.get('/p2p-share', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'p2p-share.html'));
+});
+
 // Quest Route
 app.get('/quest', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'quest.html'));
