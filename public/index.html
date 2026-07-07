@@ -127,6 +127,11 @@
               ><i class="ti ti-heart"></i> My Favorites</a
             >
           </li>
+          <li>
+            <a href="#" id="nav-reviews"
+              ><i class="ti ti-star"></i> Reviews</a
+            >
+          </li>
         </ul>
       </div>
     </nav>
@@ -316,6 +321,9 @@
             Preserving rural heritage, traditions, and stories for future
             generations.
           </p>
+          <div style="margin-top: 1rem;">
+            <a href="#" id="footer-rate-us" class="btn-rate-us">⭐ Rate Us</a>
+          </div>
         </div>
 
         <!-- Social media links -->
@@ -398,5 +406,54 @@
     <script src="scripts/idb-storage.js"></script>
   <script src="scripts/sync-manager.js"></script>
   <script src="scripts/offline-dashboard.js"></script>
+
+  <!-- Rating Modals -->
+  <div id="rateUsModal" class="rating-modal-overlay">
+    <div class="rating-modal-content">
+      <button class="rating-modal-close" id="closeRateModal">&times;</button>
+      <div class="rating-modal-header">
+        <h2>⭐ Rate Your Experience</h2>
+        <p>Your feedback helps us preserve cultural heritage better!</p>
+      </div>
+      <form id="ratingForm" class="rating-form">
+        <div class="rating-user-info">
+          <label for="ratingUserName">Your Name</label>
+          <input type="text" id="ratingUserName" placeholder="Enter your name" required />
+        </div>
+        <div class="rating-stars-container">
+          <span class="rating-star" data-value="1">★</span>
+          <span class="rating-star" data-value="2">★</span>
+          <span class="rating-star" data-value="3">★</span>
+          <span class="rating-star" data-value="4">★</span>
+          <span class="rating-star" data-value="5">★</span>
+        </div>
+        <div class="rating-desc-container">
+          <label for="ratingComment">Your Review</label>
+          <textarea id="ratingComment" rows="4" placeholder="Tell us what you like or how we can improve..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary rating-submit-btn">Submit Rating</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="reviewsListModal" class="rating-modal-overlay">
+    <div class="rating-modal-content large">
+      <button class="rating-modal-close" id="closeReviewsModal">&times;</button>
+      <div class="rating-modal-header">
+        <h2>💬 What Our Visitors Say</h2>
+        <p>Community ratings and feedback about the Parampara platform</p>
+      </div>
+      <div class="reviews-summary-container">
+        <div class="avg-rating-box">
+          <span class="avg-rating-value" id="avgRatingVal">4.8</span>
+          <div class="avg-stars" id="avgStarsRow">★★★★★</div>
+          <span class="total-reviews-count" id="totalReviewsCount">Based on 5 reviews</span>
+        </div>
+      </div>
+      <div class="reviews-scroll-list" id="reviewsScrollList">
+        <!-- Reviews load dynamically -->
+      </div>
+    </div>
+  </div>
 </body>
 </html>

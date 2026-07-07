@@ -439,3 +439,169 @@ window.toggleReadMore = function(postId, fullContentEncoded) {
     btn.classList.add('expanded');
   }
 };
+
+// ==========================================
+// WEBSITE RATING & REVIEW SYSTEM
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  const rateUsBtn = document.getElementById('footer-rate-us');
+  const reviewsBtn = document.getElementById('nav-reviews');
+  const rateModal = document.getElementById('rateUsModal');
+  const reviewsModal = document.getElementById('reviewsListModal');
+  const closeRateBtn = document.getElementById('closeRateModal');
+  const closeReviewsBtn = document.getElementById('closeReviewsModal');
+  const ratingForm = document.getElementById('ratingForm');
+  const stars = document.querySelectorAll('.rating-star');
+  
+  let selectedRating = 0;
+
+  // Preset mock reviews for heritage platform feedback
+  const DEFAULT_REVIEWS = [
+    { name: "Aarav Sharma", rating: 5, comment: "Beautiful interface! Preserving oral histories through audio recordings is a genius feature. The translations are clean too.", date: "2 hours ago" },
+    { name: "Priya Patel", rating: 4, comment: "Love the interactive cultural map. Visual gallery image qualities are amazing. Keep up the good work.", date: "1 day ago" },
+    { name: "Kabir Mehta", rating: 5, comment: "Fascinating AI story generator. Brings folklore to life beautifully.", date: "3 days ago" },
+    { name: "Anjali Deshmukh", rating: 5, comment: "Traditional blue pottery tutorials and maps are very accurate. The ambient music gives a serene village vibe!", date: "1 week ago" },
+    { name: "Vikram Singh", rating: 4, comment: "A masterpiece for digital preservation. Very smooth user interface.", date: "2 weeks ago" }
+  ];
+
+  // Helper to load reviews from LocalStorage
+  function getReviews() {
+    const stored = localStorage.getItem('parampara_site_reviews');
+    if (!stored) {
+      localStorage.setItem('parampara_site_reviews', JSON.stringify(DEFAULT_REVIEWS));
+      return DEFAULT_REVIEWS;
+    }
+    return JSON.parse(stored);
+  }
+
+  // Helper to save review
+  function saveReview(name, rating, comment) {
+    const reviews = getReviews();
+    const newReview = {
+      name: name,
+      rating: parseInt(rating),
+      comment: comment,
+      date: "Just now"
+    };
+    reviews.unshift(newReview);
+    localStorage.setItem('parampara_site_reviews', JSON.stringify(reviews));
+    updateReviewsDisplay();
+  }
+
+  // Update Reviews Modal Display
+  function updateReviewsDisplay() {
+    const reviewsList = getReviews();
+    const scrollList = document.getElementById('reviewsScrollList');
+    const avgVal = document.getElementById('avgRatingVal');
+    const avgStars = document.getElementById('avgStarsRow');
+    const totalCount = document.getElementById('totalReviewsCount');
+    
+    if (!scrollList) return;
+
+    // Calculate Average rating dynamically
+    const totalRating = reviewsList.reduce((acc, curr) => acc + curr.rating, 0);
+    const avg = reviewsList.length ? (totalRating / reviewsList.length).toFixed(1) : "0.0";
+    
+    avgVal.textContent = avg;
+    totalCount.textContent = `Based on ${reviewsList.length} reviews`;
+    
+    // Generate Stars String representation
+    const roundedAvg = Math.round(parseFloat(avg));
+    avgStars.textContent = "★".repeat(roundedAvg) + "☆".repeat(5 - roundedAvg);
+
+    // Render List markup
+    scrollList.innerHTML = reviewsList.map(r => {
+      const initials = r.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const starString = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+      return `
+        <div class="review-card">
+          <div class="review-card-header">
+            <div class="review-user-info">
+              <div class="user-avatar-placeholder">${initials}</div>
+              <span class="review-user-name">${r.name}</span>
+            </div>
+            <div class="review-stars">${starString}</div>
+          </div>
+          <p class="review-comment">${r.comment}</p>
+          <span class="review-date">${r.date}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Star Hover & Selection Listeners
+  stars.forEach(star => {
+    star.addEventListener('mouseover', () => {
+      const val = parseInt(star.getAttribute('data-value'));
+      stars.forEach(s => {
+        const sVal = parseInt(s.getAttribute('data-value'));
+        s.classList.toggle('hovered', sVal <= val);
+      });
+    });
+
+    star.addEventListener('mouseout', () => {
+      stars.forEach(s => s.classList.remove('hovered'));
+    });
+
+    star.addEventListener('click', () => {
+      selectedRating = parseInt(star.getAttribute('data-value'));
+      stars.forEach(s => {
+        const sVal = parseInt(s.getAttribute('data-value'));
+        s.classList.toggle('selected', sVal <= selectedRating);
+      });
+    });
+  });
+
+  // Modal toggle handlers
+  if (rateUsBtn) {
+    rateUsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      selectedRating = 0;
+      stars.forEach(s => s.classList.remove('selected', 'hovered'));
+      ratingForm.reset();
+      rateModal.classList.add('active');
+    });
+  }
+
+  if (reviewsBtn) {
+    reviewsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      updateReviewsDisplay();
+      reviewsModal.classList.add('active');
+    });
+  }
+
+  const closeModal = (modal) => {
+    modal.classList.remove('active');
+  };
+
+  if (closeRateBtn) closeRateBtn.addEventListener('click', () => closeModal(rateModal));
+  if (closeReviewsBtn) closeReviewsBtn.addEventListener('click', () => closeModal(reviewsModal));
+
+  // Close Modal on Backdrop Click
+  window.addEventListener('click', (e) => {
+    if (e.target === rateModal) closeModal(rateModal);
+    if (e.target === reviewsModal) closeModal(reviewsModal);
+  });
+
+  // Form Submission listener
+  if (ratingForm) {
+    ratingForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('ratingUserName').value.trim();
+      const comment = document.getElementById('ratingComment').value.trim();
+
+      if (selectedRating === 0) {
+        alert("Please select a star rating!");
+        return;
+      }
+
+      saveReview(name, selectedRating, comment);
+      closeModal(rateModal);
+      alert("Thank you! Your rating has been successfully submitted.");
+    });
+  }
+
+  // Pre-fetch reviews to bootstrap LocalStorage dynamically
+  getReviews();
+});
