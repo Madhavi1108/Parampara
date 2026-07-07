@@ -477,6 +477,14 @@ app.get('/api/recommendations/health', async (req, res) => {
     });
   }
 });
+// Add language learning routes
+const languageLearningRoutes = require('./routes/languageLearning.routes');
+app.use('/api/language', languageLearningRoutes);
+
+// Language Learning page
+app.get('/language-learning', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'language-learning.html'));
+});
 // Add AR experience routes
 const arRoutes = require('./routes/arExperience.routes');
 app.use('/api/ar', arRoutes);
