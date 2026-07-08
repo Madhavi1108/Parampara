@@ -226,11 +226,17 @@ const apiLimiter = new HeuristicRateLimiter({
 });
 app.use('/api', apiLimiter.middleware());
 
+const tenantMiddleware = require('./middleware/tenant.middleware');
+app.use('/api', tenantMiddleware);
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/gallery', galleryRoutes);
+
+const tenantRoutes = require('./routes/tenant.routes');
+app.use('/api/tenant', tenantRoutes);
 
 // Heritage Score API
 const heritageScoreRoutes = require('./routes/heritageScore.routes');
