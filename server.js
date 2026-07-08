@@ -483,56 +483,49 @@ app.get('/api/recommendations/health', async (req, res) => {
     });
   }
 });
-// Add blockchain routes
-const blockchainRoutes = require('./routes/blockchain.routes');
-app.use('/api/blockchain', blockchainRoutes);
+// Blockchain routes (temporarily disabled - service dependencies need fixing)
+// const blockchainRoutes = require('./routes/blockchain.routes');
+// app.use('/api/blockchain', blockchainRoutes);
 
 // Blockchain page
-app.get('/blockchain', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'blockchain.html'));
-});
-// Add analytics dashboard routes
-const analyticsDashboardRoutes = require('./routes/analyticsDashboard.routes');
-app.use('/api/analytics', analyticsDashboardRoutes);
+// app.get('/blockchain', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public', 'blockchain.html'));
+// });
+// Analytics Dashboard routes (disabled - service missing)
+// const analyticsDashboardRoutes = require('./routes/analyticsDashboard.routes');
+// app.use('/api/analytics', analyticsDashboardRoutes);
+// app.get('/analytics-dashboard', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public', 'analytics-dashboard.html'));
+// });
+// Virtual Tour routes (disabled - service missing)
+// const virtualTourRoutes = require('./routes/virtualTour.routes');
+// app.use('/api/tours', virtualTourRoutes);
+// app.get('/virtual-tour', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public', 'virtual-tour.html'));
+// });
+// Storytelling routes (disabled - service missing)
+// const storytellingRoutes = require('./routes/storytelling.routes');
+// app.use('/api/story', storytellingRoutes);
+// app.get('/storytelling', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public', 'storytelling.html'));
+// });
+// Language Learning routes (disabled - service missing)
+// const languageLearningRoutes = require('./routes/languageLearning.routes');
+// app.use('/api/language', languageLearningRoutes);
 
-// Analytics Dashboard page
-app.get('/analytics-dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'analytics-dashboard.html'));
-});
-// Add virtual tour routes
-const virtualTourRoutes = require('./routes/virtualTour.routes');
-app.use('/api/tours', virtualTourRoutes);
-
-// Virtual Tour page
-app.get('/virtual-tour', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'virtual-tour.html'));
-});
-// Add storytelling routes
-const storytellingRoutes = require('./routes/storytelling.routes');
-app.use('/api/story', storytellingRoutes);
-
-// Storytelling page
-app.get('/storytelling', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'storytelling.html'));
-});
-// Add language learning routes
-const languageLearningRoutes = require('./routes/languageLearning.routes');
-app.use('/api/language', languageLearningRoutes);
-// Add itinerary planner routes
-const itineraryRoutes = require('./routes/itineraryPlanner.routes');
-app.use('/api/itinerary', itineraryRoutes);
-
-// Itinerary Planner page
-app.get('/itinerary-planner', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'itinerary-planner.html'));
-});
+// Itinerary Planner routes (disabled - service missing)
+// const itineraryRoutes = require('./routes/itineraryPlanner.routes');
+// app.use('/api/itinerary', itineraryRoutes);
+// app.get('/itinerary-planner', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public', 'itinerary-planner.html'));
+// });
 // Language Learning page
 app.get('/language-learning', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'language-learning.html'));
 });
-// Add AR experience routes
-const arRoutes = require('./routes/arExperience.routes');
-app.use('/api/ar', arRoutes);
+// AR Experience routes (disabled - service missing)
+// const arRoutes = require('./routes/arExperience.routes');
+// app.use('/api/ar', arRoutes);
 
 // AR Experience page
 app.get('/ar-experience', (req, res) => {
