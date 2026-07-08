@@ -391,6 +391,14 @@ app.get('/api/recommendations/health', async (req, res) => {
     });
   }
 });
+// Add blockchain routes
+const blockchainRoutes = require('./routes/blockchain.routes');
+app.use('/api/blockchain', blockchainRoutes);
+
+// Blockchain page
+app.get('/blockchain', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'blockchain.html'));
+});
 // Add language learning routes
 const languageLearningRoutes = require('./routes/languageLearning.routes');
 app.use('/api/language', languageLearningRoutes);
