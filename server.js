@@ -399,6 +399,14 @@ app.use('/api/blockchain', blockchainRoutes);
 app.get('/blockchain', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'blockchain.html'));
 });
+// Add analytics dashboard routes
+const analyticsDashboardRoutes = require('./routes/analyticsDashboard.routes');
+app.use('/api/analytics', analyticsDashboardRoutes);
+
+// Analytics Dashboard page
+app.get('/analytics-dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'analytics-dashboard.html'));
+});
 // Add language learning routes
 const languageLearningRoutes = require('./routes/languageLearning.routes');
 app.use('/api/language', languageLearningRoutes);
