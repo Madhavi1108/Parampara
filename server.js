@@ -63,9 +63,14 @@ app.use(
           'https://encrypted-tbn0.gstatic.com',
           'https://cdn.shopify.com',
           'https://images.unsplash.com',
-          'https://tile.openstreetmap.org'
+          'https://tile.openstreetmap.org',
         ],
-        connectSrc: ["'self'", 'https://api.maptiler.com', `ws://localhost:${WS_PORT}`, `wss://*.onrender.com`],
+        connectSrc: [
+          "'self'",
+          'https://api.maptiler.com',
+          `ws://localhost:${WS_PORT}`,
+          `wss://*.onrender.com`,
+        ],
         workerSrc: ["'self'", 'blob:'],
         childSrc: ["'self'", 'blob:'],
         objectSrc: ["'none'"],
@@ -85,15 +90,18 @@ app.use(
 
 // Serve static files (placed before rate limiter to prevent script throttling)
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/scripts/collaborative', express.static(path.join(__dirname, 'public/scripts/collaborative')));
+app.use(
+  '/scripts/collaborative',
+  express.static(path.join(__dirname, 'public/scripts/collaborative'))
+);
 
 // Global Heuristic Rate Limiter
 // Base protection for all endpoints: 300 tokens per minute
 const globalLimiter = new HeuristicRateLimiter({
-  windowMs: 60000, 
-  maxTokens: 300, 
+  windowMs: 60000,
+  maxTokens: 300,
   baseDelayMs: 2000, // Up to 2s delay for tarpitting
-  message: 'Too many requests, please slow down.'
+  message: 'Too many requests, please slow down.',
 });
 app.use(globalLimiter.middleware());
 
@@ -103,10 +111,13 @@ initializeSampleData();
 // Start Background Integrity Scanner
 const integrityService = require('./services/integrityService');
 integrityService.scanAll();
-setInterval(() => {
-  integrityService.scanAll();
-  console.log('🔍 Scheduled integrity scan completed');
-}, 60 * 60 * 1000); // Every hour
+setInterval(
+  () => {
+    integrityService.scanAll();
+    console.log('🔍 Scheduled integrity scan completed');
+  },
+  60 * 60 * 1000
+); // Every hour
 
 // ==================== FRONTEND ROUTES ====================
 
@@ -163,6 +174,11 @@ app.get('/chat', (req, res) => {
 // Archives Route
 app.get('/archives', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'archives.html'));
+});
+
+// Data Exchange Route
+app.get('/data-exchange', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'data-exchange.html'));
 });
 
 // Serve Trivia Game Page
@@ -259,6 +275,9 @@ app.use('/api/export', exportRoutes);
 
 const archiveRoutes = require('./routes/archive.routes');
 app.use('/api/archives', archiveRoutes);
+
+const dataExchangeRoutes = require('./routes/dataExchange.routes');
+app.use('/api/data-exchange', dataExchangeRoutes);
 
 const audioRoutes = require('./routes/audio.routes');
 app.use('/api/audio', audioRoutes);
@@ -391,7 +410,8 @@ app.get('/api/map-style', async (req, res) => {
     if (!response.ok) {
       return res.status(502).json({
         configured: false,
-        message: 'Unable to load map tiles. Please verify your MAPTILER_KEY is valid.',
+        message:
+          'Unable to load map tiles. Please verify your MAPTILER_KEY is valid.',
       });
     }
 
@@ -422,15 +442,17 @@ try {
 
 // Health check endpoint that includes WebSocket status
 app.get('/api/health', (req, res) => {
-  const wsStatus = wsServer ? {
-    status: 'running',
-    port: WS_PORT,
-    clients: wsServer.clients ? wsServer.clients.size : 0,
-    markers: wsServer.markers ? wsServer.markers.size : 0
-  } : {
-    status: 'stopped',
-    port: WS_PORT
-  };
+  const wsStatus = wsServer
+    ? {
+        status: 'running',
+        port: WS_PORT,
+        clients: wsServer.clients ? wsServer.clients.size : 0,
+        markers: wsServer.markers ? wsServer.markers.size : 0,
+      }
+    : {
+        status: 'stopped',
+        port: WS_PORT,
+      };
 
   res.json({
     status: 'OK',
@@ -438,7 +460,7 @@ app.get('/api/health', (req, res) => {
     uptime: process.uptime(),
     version: '1.0.0',
     websocket: wsStatus,
-    memory: process.memoryUsage()
+    memory: process.memoryUsage(),
   });
 });
 
@@ -447,7 +469,7 @@ app.get('/api/ws/stats', (req, res) => {
   if (!wsServer) {
     return res.status(503).json({
       error: 'WebSocket server not running',
-      status: 'unavailable'
+      status: 'unavailable',
     });
   }
 
@@ -456,7 +478,7 @@ app.get('/api/ws/stats', (req, res) => {
     clients: wsServer.clients ? wsServer.clients.size : 0,
     markers: wsServer.markers ? wsServer.markers.size : 0,
     rooms: wsServer.rooms ? wsServer.rooms.size : 0,
-    history: wsServer.operationHistory ? wsServer.operationHistory.length : 0
+    history: wsServer.operationHistory ? wsServer.operationHistory.length : 0,
   });
 });
 
@@ -468,59 +490,59 @@ app.get('/api/recommendations/health', async (req, res) => {
     const RecommendationEngine = require('./server/services/recommendationEngine');
     const engine = new RecommendationEngine();
     const stats = engine.getModelStats();
-    
+
     res.json({
       status: 'healthy',
       engine: 'recommendation',
       ...stats,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     res.status(503).json({
       status: 'unhealthy',
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
 // Add blockchain routes
-const blockchainRoutes = require('./routes/blockchain.routes');
-app.use('/api/blockchain', blockchainRoutes);
+// const blockchainRoutes = require('./routes/blockchain.routes');
+// app.use('/api/blockchain', blockchainRoutes);
 
 // Blockchain page
 app.get('/blockchain', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'blockchain.html'));
 });
 // Add analytics dashboard routes
-const analyticsDashboardRoutes = require('./routes/analyticsDashboard.routes');
-app.use('/api/analytics', analyticsDashboardRoutes);
+// const analyticsDashboardRoutes = require('./routes/analyticsDashboard.routes');
+// app.use('/api/analytics', analyticsDashboardRoutes);
 
 // Analytics Dashboard page
 app.get('/analytics-dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'analytics-dashboard.html'));
 });
 // Add virtual tour routes
-const virtualTourRoutes = require('./routes/virtualTour.routes');
-app.use('/api/tours', virtualTourRoutes);
+// const virtualTourRoutes = require('./routes/virtualTour.routes');
+// app.use('/api/tours', virtualTourRoutes);
 
 // Virtual Tour page
 app.get('/virtual-tour', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'virtual-tour.html'));
 });
 // Add storytelling routes
-const storytellingRoutes = require('./routes/storytelling.routes');
-app.use('/api/story', storytellingRoutes);
+// const storytellingRoutes = require('./routes/storytelling.routes');
+// app.use('/api/story', storytellingRoutes);
 
 // Storytelling page
 app.get('/storytelling', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'storytelling.html'));
 });
 // Add language learning routes
-const languageLearningRoutes = require('./routes/languageLearning.routes');
-app.use('/api/language', languageLearningRoutes);
+// const languageLearningRoutes = require('./routes/languageLearning.routes');
+// app.use('/api/language', languageLearningRoutes);
 // Add itinerary planner routes
-const itineraryRoutes = require('./routes/itineraryPlanner.routes');
-app.use('/api/itinerary', itineraryRoutes);
+// const itineraryRoutes = require('./routes/itineraryPlanner.routes');
+// app.use('/api/itinerary', itineraryRoutes);
 
 // Itinerary Planner page
 app.get('/itinerary-planner', (req, res) => {
@@ -531,8 +553,8 @@ app.get('/language-learning', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'language-learning.html'));
 });
 // Add AR experience routes
-const arRoutes = require('./routes/arExperience.routes');
-app.use('/api/ar', arRoutes);
+// const arRoutes = require('./routes/arExperience.routes');
+// app.use('/api/ar', arRoutes);
 
 // AR Experience page
 app.get('/ar-experience', (req, res) => {
@@ -569,7 +591,6 @@ app.use(notFound);
 // Error Middleware
 app.use(errorHandler);
 
-
 // ==================== START SERVER ====================
 
 // Create HTTP server
@@ -579,19 +600,23 @@ const server = http.createServer(app);
 server.listen(PORT, () => {
   console.log(`✨ Parampara server running on http://localhost:${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🗺️  Collaborative Map: http://localhost:${PORT}/collaborative-map`);
+  console.log(
+    `🗺️  Collaborative Map: http://localhost:${PORT}/collaborative-map`
+  );
   console.log(`🎮 Trivia Game: http://localhost:${PORT}/trivia`);
   console.log(`📚 Recommendations: http://localhost:${PORT}/recommendations`);
   console.log(`📊 Health Check: http://localhost:${PORT}/api/health`);
   console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}`);
-  console.log(`🤖 Recommendation Engine: http://localhost:${PORT}/api/recommendations/stats`);
+  console.log(
+    `🤖 Recommendation Engine: http://localhost:${PORT}/api/recommendations/stats`
+  );
 });
 
 // ==================== GRACEFUL SHUTDOWN ====================
 
 const shutdown = () => {
   console.log('🛑 Shutting down gracefully...');
-  
+
   // Close WebSocket server
   if (wsServer && wsServer.wss) {
     wsServer.wss.close(() => {
